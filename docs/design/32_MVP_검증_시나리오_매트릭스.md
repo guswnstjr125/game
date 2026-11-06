@@ -98,13 +98,14 @@
 | ID | 단계 | 시나리오 | 기대 결과 | 기준 문서 |
 |---|---|---|---|---|
 | DATA-01 | 1 | `python3 tools/check_design.py` | 모든 규칙 그룹 OK, 0 failed | 00_문서_인덱스.md |
+| DATA-02 | 1 | `python3 tools/export_game_data.py --check` 후 Unity 임포트 | JSON이 Excel과 같고, 임포터 검사(`38` §5) 0 실패 | 38_데이터_임포트_매핑.md |
 
 ---
 
 ## 10. 합격 기준
 
 **1단계 (1~2층 NEC 빌드)**
-- Must Pass: 단계 1인 `CORE-*`, `DMG-*`, `CMD-01`, `INT-01`, `HIT-01`, `HAND-01`, `SUM-01`, `TUT-01`, `UPG-01`, `FLOW-01`, `CARD-01~04`, `ECO-01`, `FUS-01~04`, `PROG-01`(1~2층)·`02`·`04`·`06`·`07`, `DATA-01`
+- Must Pass: 단계 1인 `CORE-*`, `DMG-*`, `CMD-01`, `INT-01`, `HIT-01`, `HAND-01`, `SUM-01`, `TUT-01`, `UPG-01`, `FLOW-01`, `CARD-01~04`, `ECO-01`, `FUS-01~04`, `PROG-01`(1~2층)·`02`·`04`·`06`·`07`, `DATA-01~02`
 - Should Pass: 단계 1인 `ST-*`, `AI-*`, `BOSS-01`, `BAL-04`
 
 **MVP 릴리즈 (2단계)**
@@ -112,6 +113,54 @@
 - Should Pass: 나머지 `ST-*`, `AI-*`, `BOSS-02`
 - Release Gate: `BAL-01~03` 중 2개 이상 통과 + 잔여 리스크 문서화
 
+
+---
+
+## 11. 테스트 전략 (이슈 #52)
+
+### 11.1 어셈블리 구조
+
+전투·런 규칙은 Unity 없이 돌아가는 순수 C# 어셈블리에 둔다. 그래야 EditMode 테스트가 씬 없이 빠르게 돈다.
+
+| asmdef | 폴더 (`DarkLegion/Assets/_Project/`) | 참조 | 내용 |
+|---|---|---|---|
+| `DarkLegion.Core` | `Scripts/Core/` | 없음 (`noEngineReferences: true`) | Runtime 유닛·Queue·TriggerBus·Damage·Status·AI·Turn·BattleRandom·런 진행·Save DTO |
+| `DarkLegion.Data` | `Scripts/Data/` | Core | ScriptableObject 정의(`38` §3)와 SO → Core 정의 변환 |
+| `DarkLegion.Game` | `Scripts/Game/`, `Scripts/UI/` | Core, Data | MonoBehaviour·ViewModel·View·연출 |
+| `DarkLegion.Editor` | `Scripts/Editor/` | Core, Data | 임포터 (`38`) |
+| `DarkLegion.Tests.EditMode` | `Tests/EditMode/` | Core, Data | 규칙·데이터 테스트 |
+| `DarkLegion.Tests.PlayMode` | `Tests/PlayMode/` | Core, Data, Game | 화면 흐름 테스트 |
+
+Core가 `UnityEngine`을 참조하면 컴파일 오류가 나므로, 로직이 UI·연출 쪽으로 새는 것을 어셈블리가 막는다 (`05` §1 Rule 5).
+
+### 11.2 시나리오별 테스트 방식
+
+| 시나리오 | 방식 | 데이터 |
+|---|---|---|
+| `CORE-*`·`DMG-*`·`CMD-01`·`INT-01`·`HIT-01`·`HAND-01`·`SUM-01`·`ST-*`·`AI-*`·`ECO-*` | **EditMode 자동** | 테스트 코드 안에서 만든 유닛 (손으로 적은 값) |
+| `CARD-01~04`·`FUS-01~05`·`BOSS-*`·`UPG-01`·`RELIC-01` | **EditMode 자동** | 임포트된 SO (실제 카드·레시피·보스 데이터) |
+| `PROG-01`·`02`·`04`·`06`·`07` | **EditMode 자동** | 임포트된 SO. 런 진행은 Core만으로 노드를 넘긴다. `PROG-07`은 SaveData JSON 왕복 비교 |
+| `TUT-01`·`FLOW-01` | **PlayMode 자동** + 수동 확인 1회 | 씬 전환·버튼 입력. 문구·연출은 사람이 본다 |
+| `BAL-04` | **수동** (10런) | 결과는 `35_운영_검증_팩.xlsx` 플레이테스트_로그에 기록 |
+| `BAL-01~03` | Battle Simulator (2단계, `15`) | — |
+| `DATA-01`·`DATA-02` | 명령 실행 | Python 도구와 Unity 임포터 |
+
+- 테스트 이름은 시나리오 ID로 시작한다: `CORE_02_DeathTriggerChain()`. 단계는 `[Category("Stage1")]`·`[Category("Stage2")]`로 표시한다.
+- **D-01 피해·D-29 피격 같은 규칙 테스트의 기대값은 손으로 적는다.** 같은 계산 함수로 기대값을 만들면 틀린 공식도 통과한다 (`check_design.py` R13과 같은 이유).
+
+### 11.3 난수와 시드
+
+- 모든 난수는 `BattleRandom`으로 뽑는다 (`06` §15). 테스트는 시드를 상수로 넘긴다: `new BattleContext(seed: 1234)`.
+- 실패한 테스트는 메시지에 시드를 출력한다.
+- 확률 테스트(`FUS-03` 1만 회)는 시드를 고정하고 허용 오차 ±1.5%p로 비교한다. 80% 기대값의 표준편차는 1만 회에서 0.4%p이므로 3σ(1.2%p)보다 여유가 있다.
+- 전투 중 종료 재현(`14` §3 노드 시드): 같은 노드 시드로 두 번 시작했을 때 첫 손패와 적 의도가 같은지 `PROG-07`에 포함한다.
+
+### 11.4 실행과 기록
+
+- 에디터: Window → General → Test Runner에서 EditMode·PlayMode 실행
+- 명령줄: `Unity -batchmode -projectPath DarkLegion -runTests -testPlatform EditMode -testResults TestResults/editmode.xml` (PlayMode도 같은 방식). `TestResults/`는 커밋하지 않는다
+- 구현 PR 본문에는 EditMode·PlayMode 통과·실패 수를 적는다 (`30` §2)
+- 1단계 완료 판정: §10 1단계 Must Pass가 모두 자동 테스트 통과(TUT-01·FLOW-01은 수동 확인 포함), Should Pass는 실패 목록과 사유를 `34`에 기록
 ---
 
 *문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*

@@ -65,6 +65,7 @@
 - **요약**: 전투 루프에서 공통 컨텍스트를 공유하고, 액션 단위 실행 흐름을 고정한다.
 - **완료 조건**
   - `DarkLegion/`에 Unity 6.3 LTS 2D URP 프로젝트 생성, uGUI·TextMeshPro·Input System, Force Text·Visible Meta, Unity `.gitignore` (D-39)
+  - `32` §11.1 asmdef 6개 생성(Core는 `noEngineReferences`), Test Framework 패키지, EditMode 테스트 1개 이상이 Test Runner에서 통과
   - `BattleAction` 실행/취소/로깅 훅 동작
   - `BattleContext`에 턴/유닛/큐/난수/전투상태 접근 일원화
   - 승패 판정 진입 지점 고정 (노드 30턴 제한 포함, `03` §2)
