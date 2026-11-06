@@ -32,6 +32,48 @@ START_CLASS_CUM = {  # D-07 / D-17
 TURN_LIMITED_RELICS = ("REL_BLOOD_CHALICE", "REL_BOSS_1F", "REL_BOSS_5F")  # D-04 / D-15
 NEC_ACT_001_BONUS = 1  # D-20
 
+EFFECT_COLS = ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special")
+
+
+def split_sentences(text):
+    """마침표 기준 문장 분리. 괄호 안 보충 설명은 앞 문장에 붙인다."""
+    parts = re.split(r"(?<=다\.)\s+(?!\()", text.strip())
+    return [s.strip() for s in parts if s.strip()]
+
+
+def classify_effect(kind, sentence):
+    """D-25 분류 계약. kind: '효과' | '패시브'. 반환: 효과 칸 이름."""
+    s = sentence
+    if s.startswith("[Deathrattle]") or re.search(r"이 몬스터(가|를|이)? ?(사망|희생|파괴)|희생하면|죽으면", s):
+        return "OnDeath"
+    if kind == "효과":
+        return "OnSummon" if s.startswith("소환 시") else "Special"
+    if re.search(r"공격할 때마다|공격 시|공격으로", s):
+        return "OnAttack"
+    return "Passive"
+
+
+def classify_card(fields):
+    """17 카드 항목(dict) → {칸: 문장들}. 키워드는 Special에 [키워드]로 둔다."""
+    out = {c: [] for c in EFFECT_COLS}
+    for kind in ("효과", "패시브"):
+        v = (fields.get(kind) or "").strip()
+        if v and v not in ("없음", "—"):
+            for s in split_sentences(v):
+                out[classify_effect(kind, s)].append(s)
+    kw = (fields.get("키워드") or "").strip()
+    if kw and kw not in ("없음", "—"):
+        out["Special"].append(f"[키워드] {kw}")
+    return {c: " / ".join(v) if v else None for c, v in out.items()}
+
+
+def parse_17(text):
+    ent = {}
+    for m in re.finditer(r"#### \[([A-Z]+_MON_\d+)\][^\n]*\n((?:- \*\*[^\n]*\n)+)", text):
+        ent[m.group(1)] = dict(re.findall(r"- \*\*([^*]+)\*\*: ([^\n]*)", m.group(2)))
+    return ent
+
+
 failures = []
 passes = 0
 
@@ -78,6 +120,11 @@ def r1_boss():
             fl = r.get("Floor") or floor_of(r["Boss_ID"])
             check("R1 boss stats", (r["HP"], r["ATK"], r["DEF"]) == BOSS[fl], f"{f}/{s}/{r['Boss_ID']}",
                   (r["HP"], r["ATK"], r["DEF"]), BOSS[fl])
+    for r in sheet("04_밸런스_테이블.xlsx", "Floor_Scale"):
+        if str(r.get("Stage", "")).endswith("-9"):
+            fl = int(r["Floor"])
+            check("R1 Floor_Scale boss", (r["BossHP"], r["BossATK"]) == BOSS[fl][:2], f"04/Floor_Scale/{r['Stage']}",
+                  (r["BossHP"], r["BossATK"]), BOSS[fl][:2])
     for r in sheet("14_보스_패턴.xlsx", "Boss_Phase"):
         want = BOSS[floor_of(r["Boss_ID"])][1]
         for k, v in r.items():
@@ -144,6 +191,15 @@ def r4_unlock():
                 eff[g if (start and r["Card_ID"].startswith(start) and g) else r["UnlockFloor"]] += 1
             got = [sum(eff[k] for k in range(1, fl + 1)) for fl in range(1, 6)]
             check("R4 cumulative", got == want, f"{f}/start={start or 'NEC·NEU'}", got, want)
+        wb = openpyxl.load_workbook(DESIGN / f, read_only=True, data_only=True)
+        summ = {}
+        for row in wb["Floor_Pool_Summary"].iter_rows(values_only=True):
+            if row and isinstance(row[0], str) and row[0].startswith(("Default", "Start ")) and isinstance(row[1], int):
+                key = None if row[0].startswith("Default") else row[0].split()[1]
+                summ[key] = list(row[1:6])
+        for start, want in START_CLASS_CUM.items():
+            check("R4 Floor_Pool_Summary values", summ.get(start) == want, f"{f}/Floor_Pool_Summary/{start or 'Default'}",
+                  summ.get(start), want)
 
 
 # ---------- R5 융합 ----------
@@ -230,6 +286,12 @@ def r9_events():
             active = sum(1 for r in rows if str(r[f"Floor_{fl}"]) != "0%")
             check("R9 floor sum 100", tot == 100, f"{f}/Floor_{fl}", tot, 100)
             check("R9 active 6", active == 6, f"{f}/Floor_{fl}", active, 6)
+        for r in rows:
+            common = r["Note"] == "공통"
+            for fl in range(1, 6):
+                v = str(r[f"Floor_{fl}"])
+                ok = v == "14%" if common else v in ("22%", "0%")
+                check("R9 D-23 weights", ok, f"{f}/{r['Event_ID']}/Floor_{fl}", v, "14%" if common else "22% or 0%")
 
 
 # ---------- R10 Exhaust MD ↔ Excel ----------
@@ -245,26 +307,37 @@ def r10_exhaust():
 
 # ---------- R11 몬스터 효과 MD ↔ Excel (D-25) ----------
 def r11_monster_effects():
-    t = md("17_카드_데이터베이스.md")
-    ent = {}
-    for m in re.finditer(r"#### \[([A-Z]+_MON_\d+)\][^\n]*\n((?:- \*\*[^\n]*\n)+)", t):
-        ent[m.group(1)] = dict(re.findall(r"- \*\*([^*]+)\*\*: ([^\n]*)", m.group(2)))
+    ent = parse_17(md("17_카드_데이터베이스.md"))
     for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
         cid = r["Card_ID"]
         if not cid or cid not in ent:
             continue
-        cells = " / ".join(str(r[k]) for k in ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special") if r[k])
-        for key in ("효과", "패시브"):
-            v = ent[cid].get(key, "없음").strip()
-            if v in ("없음", "—"):
-                continue
-            check("R11 monster effect in Excel", v in cells or cells and cid.endswith(("_013", "_014", "_015")),
-                  f"09/Monsters_Master/{cid}/{key}", cells[:60], v[:60])
+        want = classify_card(ent[cid])
+        for col in EFFECT_COLS:
+            check("R11 monster effect column", r[col] == want[col], f"09/Monsters_Master/{cid}/{col}",
+                  (r[col] or "")[:50], (want[col] or "")[:50])
+
+
+# ---------- R12 통합본 동기화 ----------
+def r12_master_sync():
+    a = [tuple(r.values()) for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master")]
+    b = [tuple(r.values()) for r in sheet("다크레기온_마스터통합.xlsx", "Monsters")]
+    diff = [x[0] for x, y in zip(a, b) if x != y]
+    check("R12 master Monsters sync", len(a) == len(b) and not diff, "09 Monsters_Master vs 마스터통합 Monsters",
+          diff[:5] or len(b), len(a))
+    wb = openpyxl.load_workbook(DESIGN / "다크레기온_마스터통합.xlsx", read_only=True)
+    gap = {r["Sheet"]: r for r in sheet("다크레기온_마스터통합.xlsx", "_GapIndex")}
+    for s in wb.sheetnames:
+        if s != "_GapIndex":
+            check("R12 _GapIndex lists sheet", s in gap, f"마스터통합/{s}", None, "_GapIndex 행")
+    for s in ("Relics_MVP", "Events_MVP", "Fusion_Recipes"):
+        check("R12 _GapIndex intentional exclusion", s in gap and str(gap[s]["Note"]).startswith("N"),
+              f"_GapIndex/{s}", gap.get(s, {}).get("Note"), "N (의도적 제외)")
 
 
 def main():
     for fn in (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
-               r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects):
+               r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync):
         try:
             fn()
         except Exception as e:  # 시트·열 이름이 바뀌면 여기서 드러난다

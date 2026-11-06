@@ -365,4 +365,17 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 
 **배경**: `09` Monsters_Master의 OnSummon·Passive·OnDeath·OnAttack·Special 칸이 97종 중 6종만 채워져 있고, 효과는 `17` MD에만 있었다. `01` §3의 Excel 정본 원칙과 맞지 않고, 검사 스크립트가 효과를 읽을 수 없었다.
 
-**결정**: 카드가 있는 몬스터는 `17`의 효과·패시브 문장을 Monsters_Master로 옮긴다 (`tools/check_design.py`가 일치 검사). 분류 규칙: "소환 시"로 시작하면 OnSummon, 사망·희생 조건이면 OnDeath, 공격 조건이면 OnAttack, 그 밖의 효과는 Special, 그 밖의 패시브는 Passive. 카드 없는 융합 전용 몬스터는 이번 범위에서 제외한다.
+**결정**: 카드가 있는 몬스터 62종은 `17`의 효과·패시브 문장을 Monsters_Master로 옮기고, 통합본 Monsters도 같은 내용으로 동기화한다. 카드 없는 융합 전용 몬스터는 이번 범위에서 제외한다.
+
+**분류 계약** (`tools/check_design.py`의 `classify_card`가 정본이며 R11이 칸 단위로 검사)
+
+| 순서 | 조건 (문장 단위로 판정) | 칸 |
+|---|---|---|
+| 1 | `[Deathrattle]`로 시작하거나, 이 몬스터 자신의 사망·희생 조건 | OnDeath |
+| 2 | 효과 문장이 "소환 시"로 시작 | OnSummon |
+| 3 | 그 밖의 효과 문장 | Special |
+| 4 | 패시브 문장에 "공격할 때마다 / 공격 시 / 공격으로" (공격으로 적을 처치할 때 포함) | OnAttack |
+| 5 | 그 밖의 패시브 문장 (아군 사망 시 발동하는 효과 포함) | Passive |
+| — | 키워드 | Special에 `[키워드] …` |
+
+한 항목에 문장이 여러 개면 문장마다 따로 판정한다 (예: 수정 골렘 `NEU_MON_007`은 피해 감소가 Passive, 희생 Crystal +3이 OnDeath).
