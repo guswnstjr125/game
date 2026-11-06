@@ -12,6 +12,7 @@ PR 본문에는 이 출력을 통째로 붙인다.
 의존성: openpyxl
 """
 import collections
+import json
 import math
 import pathlib
 import re
@@ -384,6 +385,18 @@ def r14_ops_xlsx():
     stale = build_ops_xlsx.run(DESIGN, write=False)
     check("R14 ops xlsx generated from MD", not stale, "운영 Excel 5개", stale,
           "[] (python3 tools/build_ops_xlsx.py로 다시 생성)")
+    import export_game_data
+    names = [n for n, _, _ in export_game_data.SHEETS]
+    t38 = md("38_데이터_임포트_매핑.md")
+    sec = t38.split("## 3.")[1].split("\n## ")[0]
+    mapped = [l.split("|")[1].strip() for l in sec.splitlines()
+              if l.startswith("| ") and not l.startswith("| JSON") and "Post-MVP" not in l and "·" not in l.split("|")[1]]
+    mapped += ["Meta_Unlock", "Meta_Achievement"]  # 38 §3에서 한 행으로 묶어 적은 시트
+    check("R14 exporter sheets = 38 §3", sorted(names) == sorted(mapped), "tools/export_game_data.py SHEETS vs 38 §3",
+          sorted(set(names) ^ set(mapped)), [])
+    rendered = export_game_data.render(DESIGN)
+    check("R14 exporter renders every sheet", len(rendered) == len(names) and all(json.loads(v)["rows"] for v in rendered.values()),
+          "tools/export_game_data.py", [k for k, v in rendered.items() if not json.loads(v)["rows"]], "모든 시트 1행 이상")
     import build_master_xlsx
     stale = build_master_xlsx.run(DESIGN, write=False)
     check("R14 master xlsx generated from sources", not stale, "다크레기온_마스터통합.xlsx", stale,
