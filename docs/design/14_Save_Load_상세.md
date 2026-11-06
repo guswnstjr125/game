@@ -76,6 +76,7 @@ public class CardSaveDTO
 {
     public string CardId;        // CardData.Id
     public int UpgradeLevel;     // 0 = 기본, 1 = 강화 (`25` §2, `01` D-31)
+    public bool FromFusion;      // 융합으로 만든 카드 (REL_BOSS_3F, `01` D-38)
 }
 ```
 

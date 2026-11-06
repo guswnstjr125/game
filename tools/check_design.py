@@ -441,6 +441,15 @@ def r16_data_completeness():
         if not r["Card_ID"] and r["MON_ID"] != "MON_NEC_L1_007":
             check("R16 card-less monster marked Post-MVP", "Post-MVP" in str(r["SkillNote"]), f"09/Monsters_Master/{r['MON_ID']}",
                   r["SkillNote"], "Post-MVP (D-33)")
+    t24 = md("24_콘텐츠_런타임_상세.md")
+    for r in sheet("06_콘텐츠_마스터.xlsx", "Relics_MVP"):
+        line = next((l for l in t24.splitlines() if l.startswith(f"| {r['Relic_ID']} |")), None)
+        check("R16 relic runtime defined in 24 §1", line is not None, f"24 §1/{r['Relic_ID']}", None, "런타임 정의 행")
+        if line:
+            check("R16 relic trigger matches 24 §1", line.split("|")[2].strip() == r["Trigger"],
+                  f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
+    line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
+    check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
     t27 = md("27_UI_바인딩_설계.md")
     check("R16 UI slot counts match 09", "MonsterSlotViewModel ×3" in t27 and "EnemySlotViewModel ×5" in t27,
           "27 §2", None, "아군 ×3, 적 ×5")
