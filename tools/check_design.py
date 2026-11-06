@@ -458,6 +458,29 @@ def r16_data_completeness():
                   f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
     line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
     check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    # 강화값 기계 판독 칸 (D-40, 38 §4): Up_Params는 Before/After 문구·Cards_Master와 일치
+    cm = {r["ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master")}
+    for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade"):
+        cid, txt = r["Card_ID"], f"{r['Before']} {r['After']}"
+        check("R16 upgrade text has no None", "None" not in txt, f"08/Cards_Upgrade/{cid}", txt, "빈 값 없음")
+        try:
+            up = dict(kv.split("=") for kv in str(r["Up_Params"]).split(";"))
+        except ValueError:
+            check("R16 Up_Params parses", False, f"08/Cards_Upgrade/{cid}", r["Up_Params"], "Key=Value;…")
+            continue
+        base = cm[cid]
+        if r["Upgrade_Type"] == "Cost-":
+            ok = set(up) == {"Cost"} and int(up["Cost"]) < (base["Crystal"] or 0) and up["Cost"] in str(r["After"])
+            check("R16 Up_Params cost", ok, f"08/Cards_Upgrade/{cid}", up, f"Cost < {base['Crystal']}, After={r['After']}")
+        elif r["Type"] == "Monster":
+            nums = re.findall(r"(HP|ATK|DEF)(\d+)", str(r["Before"]))
+            check("R16 upgrade Before = Cards_Master", all(int(v) == (base[k] or 0) for k, v in nums) and len(nums) == 3,
+                  f"08/Cards_Upgrade/{cid}", r["Before"], f"HP{base['HP']} ATK{base['ATK'] or 0} DEF{base['DEF'] or 0}")
+            want = {k: v for k, v in re.findall(r"(HP|ATK|DEF)(\d+)", str(r["After"]))}
+            check("R16 Up_Params monster = After", up == want, f"08/Cards_Upgrade/{cid}", up, want)
+        else:
+            ok = len(up) == 1 and list(up.values())[0] in str(r["After"])
+            check("R16 Up_Params value in After", ok, f"08/Cards_Upgrade/{cid}", up, r["After"])
     t27 = md("27_UI_바인딩_설계.md")
     check("R16 UI slot counts match 09", "MonsterSlotViewModel ×3" in t27 and "EnemySlotViewModel ×5" in t27,
           "27 §2", None, "아군 ×3, 적 ×5")

@@ -273,9 +273,10 @@
 - **제목**: `[#17] 설계 Excel을 ScriptableObject로 가져오는 에디터 임포터 구현`
 - **요약**: Excel 정본을 엔진 데이터로 옮기는 단일 경로를 만든다 (D-39).
 - **완료 조건**
-  - 메뉴 `DarkLegion/Import Design Data`로 `docs/design`의 데이터 정본 Excel을 읽어 `Assets/_Project/Data/Generated/`에 CardData·MonsterData·EnemyData·RelicData·EventData·BossPhaseData 생성
+  - `tools/export_game_data.py`가 정본 Excel을 `DarkLegion/DesignData/*.json`으로 내보낸다 (`38` §2, `--check` 포함, `01` D-40)
+  - 메뉴 `DarkLegion/Import Design Data`로 JSON을 읽어 `Assets/_Project/Data/Generated/`에 `38` §3 표의 SO(CardData·MonsterData·EnemyData·BossData·BossPhaseData·RelicData·EventData·StatusData 등) 생성. 카드 강화는 Up_Params(`38` §4)
   - 다시 임포트하면 같은 ID의 에셋을 덮어쓰고, 사라진 ID는 경고
-  - `05` §11 Validation(중복 ID, 잘못된 참조, 비용·효과 값 범위) 실패 시 임포트 중단
+  - `38` §5 검사(중복 ID, 잘못된 참조, 비용·확률 범위, 1단계 핸들러 등록) 실패 시 임포트 중단
   - 1단계는 1~2층에 필요한 데이터(카드 32장, 적 11종, 보스 2, 유물, 이벤트 7종)만 있어도 통과
 - **테스트**
   - 임포트 → 런타임 생성(`08` RuntimeFactory) → 값이 Excel과 같은지 샘플 대조

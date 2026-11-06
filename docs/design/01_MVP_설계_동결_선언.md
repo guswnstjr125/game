@@ -116,6 +116,8 @@
 | D-37 | 런 흐름 기본 규칙 (카드 보상 건너뛰기, 전투 중 종료, 메타 화폐 합산, 포기) | 2026-11-06 | `37` §1·§2 |
 | D-38 | 유물 13종 런타임 정의와 규칙 보정 | 2026-11-06 | `24` §1, `06_콘텐츠_마스터.xlsx` Relics_MVP, `14` §2 |
 | D-39 | 엔진·플랫폼: Unity 6.3 LTS, 2D URP, uGUI, PC 1920×1080, Excel → ScriptableObject 임포터 | 2026-11-06 | `05` §13, `27`, `33` §1, `37`, `31` #17 |
+| D-40 | 데이터 내보내기: Excel → JSON(Python) → SO, 강화값 Up_Params | 2026-11-06 | `38`, `05` §11·§13, `31` #17, `08` Cards_Upgrade |
+| D-41 | MVP 언어: 한국어 단일, 화면 문자열은 ID로 분리 | 2026-11-06 | `05` §11·§13, `38` §5 |
 
 ### D-01. 피해 공식
 
@@ -620,6 +622,38 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 | 버전 관리 | Unity 표준 `.gitignore`(Library·Temp·Obj·Logs·UserSettings 제외), Force Text 직렬화, Visible Meta Files | 머지 가능한 씬·프리팹 |
 | 대용량 에셋 | Git LFS는 아트·사운드가 들어오는 시점(#31·#32)에 설정 | 지금은 바이너리 에셋 없음 |
 
+
+### D-40. 데이터 내보내기 방식
+
+**결정 주체**: 사용자 위임 후 Claude 선정 — 「이거 너가 순서를 정해서 이슈를 생성하고 작업을 진행해줘」 (이슈 #50에 선택지 표와 근거)
+
+**배경**: D-39는 "Excel → 에디터 임포터 → ScriptableObject"까지만 정했다. Unity가 xlsx를 읽는 방법과 시트·열 → SO 필드 대응이 없었다. 또 `Cards_Upgrade`의 강화 전·후 값은 사람이 읽는 문구라 엔진이 읽을 수 없었고, 몬스터 12장의 문구에는 빈 칸이 `DEFNone`처럼 들어가 있었다.
+
+**결정**
+
+| 항목 | 결정 |
+|---|---|
+| 경로 | Excel(정본) → `tools/export_game_data.py` → `DarkLegion/DesignData/<Sheet>.json` → Unity 임포터 → SO. D-39의 데이터 경로를 구체화한 것이고 개정이 아니다 |
+| JSON 읽기 | `com.unity.nuget.newtonsoft-json` (Unity 공식 패키지). xlsx를 Unity에서 직접 읽지 않는다 (ExcelDataReader·NPOI 쓰지 않음) |
+| 커밋 | JSON과 생성된 SO 모두 커밋한다. 둘 다 손으로 고치지 않는다 |
+| 매핑 | `38_데이터_임포트_매핑.md` §3 표가 정본. 1단계도 모든 행을 임포트하고 범위는 런타임 해금·드롭 풀로 제한 |
+| 강화값 | `08` Cards_Upgrade에 **Up_Params** 열 추가 (`38` §4). Before/After는 화면 문구. 빈 칸 문구 `ATKNone`·`DEFNone` 24칸을 0으로 정정 (Cards_Master 값과 같음) |
+
+### D-41. MVP 언어
+
+**결정 주체**: 사용자 위임 후 Claude 선정 — 「이거 너가 순서를 정해서 이슈를 생성하고 작업을 진행해줘」 (이슈 #51에 선택지 표와 근거)
+
+**배경**: `05` §11에 "Missing Localization 검사", §13에 `Localization/` 폴더가 있지만 지원 언어가 정해지지 않았다.
+
+**결정**
+
+| 항목 | 결정 |
+|---|---|
+| 지원 언어 | MVP는 **한국어만** |
+| 카드·몬스터·유물·이벤트 문구 | Excel 한국어 문구를 그대로 SO에 담는다 |
+| 화면 고정 문자열 (버튼·메뉴·안내) | 코드에 직접 쓰지 않고 문자열 ID 테이블 하나(`DarkLegion/Assets/_Project/Data/Localization/ko.json`, 사람이 고치는 파일)에서 읽는다. 나중에 Unity Localization 패키지로 옮길 때 ID를 그대로 쓴다 |
+| Localization 검사 | MVP 임포터에서는 끈다 (`38` §5) |
+| 다국어 | Post-MVP. 도입할 때 새 D 번호로 정한다 |
 ---
 
 *문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*

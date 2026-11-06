@@ -36,7 +36,7 @@ description: 다크 레기온 게임 설계 작업 절차. 설계 문서(docs/de
 2. 자주 겹치는 곳:
    - 보스 ATK/HP/DEF: `10_적_바이블.xlsx` Enemies_Master·Boss_List, `14_보스_패턴.xlsx` Boss_List·Boss_Stats·Boss_TurnCycle(행동 피해)·Boss_Phase(문구), `04_밸런스_테이블.xlsx` Floor_Scale, MD `03`·`16`·`20`·`22`
    - 카드: `08_카드_데이터베이스.xlsx` Cards_Master·Cards_Effect·Cards_Upgrade·Cards_FloorUnlock, MD `17`·`10` (통합본은 생성 도구가 따라감)
-   - 몬스터 효과: `09_몬스터_바이블.xlsx` Monsters_Master 효과 칸(D-25 분류), 통합본 Monsters, MD `17`
+   - 몬스터 효과: `09_몬스터_바이블.xlsx` Monsters_Master 효과 칸(D-25 분류), MD `17`
    - 유물: `06_콘텐츠_마스터.xlsx` Relics_MVP, MD `23` §1·`24` §1
 3. **같은 효과를 내는 것도 찾는다.** 하나를 너프하면 우회로가 남기 쉽다.
    - 희생→Crystal: 피의 잔, `REL_BOSS_1F`, `REL_BOSS_5F`, `NEC_ACT_001`, 무덤지기, 수정 골렘 파편(`NEU_MON_001`), Sacrifice_Economy
