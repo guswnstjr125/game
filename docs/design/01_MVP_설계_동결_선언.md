@@ -118,7 +118,7 @@
 | D-39 | 엔진·플랫폼: Unity 6.3 LTS, 2D URP, uGUI, PC 1920×1080, Excel → ScriptableObject 임포터 | 2026-11-06 | `05` §13, `27`, `33` §1, `37`, `31` #17 |
 | D-40 | 데이터 내보내기: Excel → JSON(Python) → SO, 강화값 Up_Params | 2026-11-06 | `38`, `05` §11·§13, `31` #17, `08` Cards_Upgrade |
 | D-41 | MVP 언어: 한국어 단일, 화면 문자열은 ID로 분리 | 2026-11-06 | `05` §11·§13, `38` §5 |
-| D-42 | `NEC_SKL_001` 영혼 추출: 지정 아군이 이번 턴 사망(희생 포함) 시 2장 드로우 | 2026-11-06 | `08` Cards_Effect, `17`, `10` §3 |
+| D-42 | `NEC_SKL_001` 영혼 추출: 지정 아군이 이번 턴 사망(희생 포함) 시 2장 드로우 | 2026-11-06 | `08` Cards_Effect·Cards_Upgrade, `17`, `10` §3, `37` §3 |
 
 ### D-01. 피해 공식
 
@@ -658,7 +658,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 
 ### D-42. 영혼 추출 발동 조건
 
-**결정 주체**: 사용자 선택 — 선택지 3개 중 「지정 아군 사망 시」 (2026-11-06, 질문·답 원문은 이슈 #54)
+**결정 주체**: 사용자 선택 — 선택지 3개 중 「지정 아군 사망 시」 (2026-11-06, [#54 근거 댓글](https://github.com/guswnstjr125/game/issues/54#issuecomment-6684882416))
 
 **배경**: `NEC_SKL_001` 영혼 추출의 정의가 `17`·`10`(지정 아군이 이번 턴 사망하면 드로우)과 `08` Cards_Effect(Target Self, Condition OnSacrifice)에서 달랐다 (`36` J16).
 
@@ -667,7 +667,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 | 항목 | 결정 |
 |---|---|
 | 대상 | 아군 몬스터 1마리를 지정한다 (`SelectedAlly`) |
-| 발동 | 이번 턴 안에 그 몬스터가 사망하면 카드 2장 드로우. **희생도 사망이라 발동한다** (희생은 Death Queue를 거친다, `13` §3). 전투 사망도 발동 |
+| 발동 | 이번 턴 안에 그 몬스터가 사망하면 카드 2장 드로우. **희생도 사망이라 발동한다** (희생은 `SacrificeAction` 안에서 `IsDead = true → Death Queue`로 처리된다, `13` §2.2·§2.4). 전투 사망도 발동 |
 | 지속 | 사용한 턴의 끝까지. 턴이 끝나면 지정이 풀린다 |
 | 데이터 | `08` Cards_Effect: Target `SelectedAlly`, Condition `TargetDiesThisTurn`, Duration 1, Value1 2. 강화(D-31)는 `DeathThisTurnDraw=3` |
 ---
