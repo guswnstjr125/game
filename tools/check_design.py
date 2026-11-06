@@ -384,6 +384,10 @@ def r14_ops_xlsx():
     stale = build_ops_xlsx.run(DESIGN, write=False)
     check("R14 ops xlsx generated from MD", not stale, "운영 Excel 5개", stale,
           "[] (python3 tools/build_ops_xlsx.py로 다시 생성)")
+    import build_master_xlsx
+    stale = build_master_xlsx.run(DESIGN, write=False)
+    check("R14 master xlsx generated from sources", not stale, "다크레기온_마스터통합.xlsx", stale,
+          "[] (python3 tools/build_master_xlsx.py로 다시 생성)")
 
 
 # ---------- R15 문서 구조 ----------
@@ -417,9 +421,22 @@ def r15_doc_structure():
     secs = [int(x) for x in re.findall(r"^### D-(\d+)\.", d01, re.M)]
     check("R15 D-log table contiguous", rows == list(range(1, len(rows) + 1)), "01 §7 표", rows[-3:], f"1..{len(rows)}")
     check("R15 D-log sections match table", secs == rows, "01 §7 본문", secs[-3:], rows[-3:])
+    for n in secs:
+        if n >= 27:
+            body = re.search(rf"^### D-{n}\.[^\n]*\n(.*?)(?=^### D-|\Z)", d01, re.M | re.S).group(1)
+            check("R15 D-log decision owner (D-27+)", "**결정 주체**:" in body, f"01 §7 D-{n}", None, "**결정 주체**: ...")
 
 
 # ---------- R16 데이터 완결성 (D-31·D-33·D-35) ----------
+UP_PARAM_TEXT = {  # Up_Params 키 → Before/After 문구에서 값을 읽는 정규식 (38 §4)
+    "DeathThisTurnDraw": r"Draw(\d+)", "CrystalBonus": r"BonusCrystal(\d+)", "TokenHp": r"HP(\d+)",
+    "DamageMult": r"×([\d.]+)$", "Damage": r"(?:피해|광역)(\d+)", "Burn": r"Burn(\d+)",
+    "IgniteAllBurnThenApplyBurn": r"Burn(\d+) 재부여", "ExtraAttackDamage": r"피해\+(\d+)",
+    "AtkBuff": r"ATK\+(\d+)", "Heal": r"회복(\d+)", "Draw": r"드로우(\d+)",
+}
+UP_PARAM_DEFAULT = {"DamageMult": "1", "ExtraAttackDamage": "0"}  # 강화 전 문구에 값이 없을 때의 기본값
+
+
 def r16_data_completeness():
     for f in ("06_콘텐츠_마스터.xlsx", "다크레기온_마스터통합.xlsx"):
         try:
@@ -450,6 +467,35 @@ def r16_data_completeness():
                   f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
     line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
     check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    # 강화값 기계 판독 칸 (D-40, 38 §4): Up_Params는 Before/After 문구·Cards_Master와 일치
+    cm = {r["ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master")}
+    for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade"):
+        cid, txt = r["Card_ID"], f"{r['Before']} {r['After']}"
+        check("R16 upgrade text has no None", "None" not in txt, f"08/Cards_Upgrade/{cid}", txt, "빈 값 없음")
+        try:
+            up = dict(kv.split("=") for kv in str(r["Up_Params"]).split(";"))
+        except ValueError:
+            check("R16 Up_Params parses", False, f"08/Cards_Upgrade/{cid}", r["Up_Params"], "Key=Value;…")
+            continue
+        base = cm[cid]
+        if r["Upgrade_Type"] == "Cost-":
+            ok = set(up) == {"Cost"} and int(up["Cost"]) < (base["Crystal"] or 0) and up["Cost"] in str(r["After"])
+            check("R16 Up_Params cost", ok, f"08/Cards_Upgrade/{cid}", up, f"Cost < {base['Crystal']}, After={r['After']}")
+        elif r["Type"] == "Monster":
+            nums = re.findall(r"(HP|ATK|DEF)(\d+)", str(r["Before"]))
+            check("R16 upgrade Before = Cards_Master", all(int(v) == (base[k] or 0) for k, v in nums) and len(nums) == 3,
+                  f"08/Cards_Upgrade/{cid}", r["Before"], f"HP{base['HP']} ATK{base['ATK'] or 0} DEF{base['DEF'] or 0}")
+            want = {k: v for k, v in re.findall(r"(HP|ATK|DEF)(\d+)", str(r["After"]))}
+            check("R16 Up_Params monster = After", up == want, f"08/Cards_Upgrade/{cid}", up, want)
+        else:
+            # Params 키마다 After 문구에서 읽을 위치를 정해 둔다. 한 자리 숫자가 문구 아무 데나 걸리지 않게
+            pat = UP_PARAM_TEXT.get(next(iter(up), ""))
+            got = [re.search(pat, str(r[c])) for c in ("Before", "After")] if pat else [None, None]
+            before = got[0].group(1) if got[0] else UP_PARAM_DEFAULT.get(next(iter(up), ""))
+            ok = len(up) == 1 and got[1] is not None and before is not None \
+                and got[1].group(1) == list(up.values())[0] and before != got[1].group(1)
+            check("R16 Up_Params value in After", ok, f"08/Cards_Upgrade/{cid}", up,
+                  f"{pat} in Before/After: {r['Before']} → {r['After']}")
     t27 = md("27_UI_바인딩_설계.md")
     check("R16 UI slot counts match 09", "MonsterSlotViewModel ×3" in t27 and "EnemySlotViewModel ×5" in t27,
           "27 §2", None, "아군 ×3, 적 ×5")

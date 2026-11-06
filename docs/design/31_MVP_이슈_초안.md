@@ -65,6 +65,7 @@
 - **요약**: 전투 루프에서 공통 컨텍스트를 공유하고, 액션 단위 실행 흐름을 고정한다.
 - **완료 조건**
   - `DarkLegion/`에 Unity 6.3 LTS 2D URP 프로젝트 생성, uGUI·TextMeshPro·Input System, Force Text·Visible Meta, Unity `.gitignore` (D-39)
+  - `32` §11.1 asmdef 6개 생성(Core는 `noEngineReferences`), Test Framework 패키지, EditMode 테스트 1개 이상이 Test Runner에서 통과
   - `BattleAction` 실행/취소/로깅 훅 동작
   - `BattleContext`에 턴/유닛/큐/난수/전투상태 접근 일원화
   - 승패 판정 진입 지점 고정 (노드 30턴 제한 포함, `03` §2)
@@ -273,9 +274,10 @@
 - **제목**: `[#17] 설계 Excel을 ScriptableObject로 가져오는 에디터 임포터 구현`
 - **요약**: Excel 정본을 엔진 데이터로 옮기는 단일 경로를 만든다 (D-39).
 - **완료 조건**
-  - 메뉴 `DarkLegion/Import Design Data`로 `docs/design`의 데이터 정본 Excel을 읽어 `Assets/_Project/Data/Generated/`에 CardData·MonsterData·EnemyData·RelicData·EventData·BossPhaseData 생성
+  - `tools/export_game_data.py`가 정본 Excel을 `DarkLegion/DesignData/*.json`으로 내보낸다 (`38` §2, `--check` 포함, `01` D-40)
+  - 메뉴 `DarkLegion/Import Design Data`로 JSON을 읽어 `Assets/_Project/Data/Generated/`에 `38` §3 표의 SO(CardData·MonsterData·EnemyData·BossData·BossPhaseData·RelicData·EventData·StatusData 등) 생성. 카드 강화는 Up_Params(`38` §4)
   - 다시 임포트하면 같은 ID의 에셋을 덮어쓰고, 사라진 ID는 경고
-  - `05` §11 Validation(중복 ID, 잘못된 참조, 비용·효과 값 범위) 실패 시 임포트 중단
+  - `38` §5 검사(중복 ID, 잘못된 참조, 비용·확률 범위, 1단계 핸들러 등록) 실패 시 임포트 중단
   - 1단계는 1~2층에 필요한 데이터(카드 32장, 적 11종, 보스 2, 유물, 이벤트 7종)만 있어도 통과
 - **테스트**
   - 임포트 → 런타임 생성(`08` RuntimeFactory) → 값이 Excel과 같은지 샘플 대조
@@ -287,7 +289,7 @@
 
 - 각 이슈는 실제 시스템명/모듈명으로 세분화해 하위 이슈로 분리 가능
 - 커밋 메시지는 `feat|fix|chore|refactor|docs` + `(#이슈번호)` 규칙 유지
-- MR 본문은 `30_MVP_구현_이슈_템플릿.md` 템플릿을 그대로 사용
+- PR 본문은 `30_MVP_구현_이슈_템플릿.md` §2 형식을 따른다
 - 설계 수치를 바꾸는 PR은 `tools/check_design.py` 출력 전체를 본문에 붙인다
 
 ---
