@@ -129,7 +129,7 @@
 
 - 드롭: Common 60% · 일반 골드 **5~10** (정본: §8 · `06_콘텐츠_마스터.xlsx` Reward_BattleTable)
 - 엘리트: 유물 3택1 · Rare 보정
-- 보스: REL_CURSED_SKULL · 카드 Rare+
+- 보스: `REL_BOSS_1F` 굶주린 자의 뼈 · 카드 Rare+ (`01` D-16)
 - 카드 풀: NEC 전체 Lv1~2 + NEU Lv1~2 + ELE Lv1 일부 (**32장**, 08 기준)
 
 ---
@@ -162,7 +162,7 @@
 ### 4.3 보상·카드 풀
 
 - 일반 골드 **10~20** (§8) · 2층 Rare +5% (`16_밸런스_규칙.md`)
-- 보스: REL_CORRUPT_CHALICE 후보
+- 보스: `REL_BOSS_2F` 재의 심장 (`01` D-16)
 - 카드 풀 해금: **ELE Lv1~2 전체**, BEA Lv1 4장 추가 (**+16장**)
 
 ---
@@ -198,8 +198,8 @@
 
 ### 5.3 보상·카드 풀
 
-- 융합 레시피 FUS_001~009 전부 활성 (`09_몬스터_바이블.xlsx`)
-- 보스: REL_ABYSS_HEART 후보
+- 융합 레시피 FUS_001~013 활성, FUS_009만 MVP 비활성 (`09_몬스터_바이블.xlsx`, `01` D-03)
+- 보스: `REL_BOSS_3F` 혈육의 인장 (`01` D-16)
 - 카드 풀: **BEA Lv1~2 전체** (+20장)
 
 ---
@@ -231,7 +231,7 @@
 
 ### 6.3 보상·카드 풀
 
-- 보스: REL_FORBIDDEN_CANDLE 후보
+- 보스: `REL_BOSS_4F` 심판의 성인 (`01` D-16)
 - 카드 풀: **HOL Lv1~2 전체** (+18장)
 
 ---
@@ -284,8 +284,8 @@
 | 보스 | 3택1 Rare+ | Boss Relic 1 | 층×25 ~ 층×40 |
 
 카드 풀 층별 해금: `08_카드_데이터베이스.xlsx` **Cards_FloorUnlock** · 요약 **Floor_Pool_Summary**  
-아래 §3~§7의 "32장 / +16 / +20 / +18 / 92장"은 **NEC 등 기본 시작**(HOL·BEA가 시작 클래스가 아님) 기준이다.  
-HOL 또는 BEA로 시작하면 그 클래스 카드의 유효 해금층은 1이다 (`UnlockFloor_IfStartClass`, `01` D-07). 누적: HOL 52/68/86/88/92, BEA 52/64/70/86/92.  
+아래 §3~§7의 "32장 / +16 / +20 / +18 / 92장"은 **NEC·NEU 시작** 기준이다.  
+ELE·BEA·HOL로 시작하면 그 클래스 카드의 유효 해금층은 1이다 (`UnlockFloor_IfStartClass`, `01` D-07·D-17). 누적: ELE 50/54/70/88/92, HOL 52/68/86/88/92, BEA 52/64/70/86/92.  
 맵 노드 수치(Excel 정본): `06_콘텐츠_마스터.xlsx` **RestNode_Rules** · **TreasureNode_Rules** · **MimicNode_Rules** (Treasure/Mimic은 Post-MVP)
 
 이벤트 8종 (`06_콘텐츠_마스터.xlsx` Events_MVP, `01` D-10). 각 층 풀 = 공통 4 + 그 층 신규 2. 가중치 정본은 **Event_FloorPool** (합 100%).
