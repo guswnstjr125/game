@@ -1,4 +1,4 @@
-# 다크 레기온 — MVP 이슈 초안 (#1~#16)
+# 다크 레기온 — MVP 이슈 초안 (#1~#17)
 
 > **문서 역할**: 이슈 트래커에 그대로 등록할 MVP 구현 이슈 초안. 단계 배정과 순서의 정본
 > **기준**: `30_MVP_구현_이슈_템플릿.md` (형식), `02_개발_로드맵.md` §4 (주차), `01_MVP_설계_동결_선언.md` §7 D-13·D-26 (단계 범위)
@@ -13,8 +13,8 @@
 
 | 주차 | 이슈 |
 |---|---|
-| 1 | #1 전투 코어 · #2 Queue · #3 Runtime 유닛 |
-| 2 | #4 카드 시스템 · #5 ResolverSpec (32장) |
+| 1 | #1 전투 코어(프로젝트 생성 포함) · #17 Excel 임포터 · #2 Queue · #3 Runtime 유닛 |
+| 2 | #4 카드 시스템 · #5 ResolverSpec (32장) · #17 마무리 |
 | 3 | #6 상태이상 · #7 AI (1~2층) · #8 희생/소환/슬롯 |
 | 4 | #13 융합 (Lv1) · #10 Stage/Wave/이벤트/보상 (1~2층) |
 | 5 | #9 보스 (1~2층) |
@@ -41,6 +41,7 @@
 - **제목**: `[#1] BattleAction/BattleContext 기반 전투 코어 구현`
 - **요약**: 전투 루프에서 공통 컨텍스트를 공유하고, 액션 단위 실행 흐름을 고정한다.
 - **완료 조건**
+  - `DarkLegion/`에 Unity 6.3 LTS 2D URP 프로젝트 생성, uGUI·TextMeshPro·Input System, Force Text·Visible Meta, Unity `.gitignore` (D-39)
   - `BattleAction` 실행/취소/로깅 훅 동작
   - `BattleContext`에 턴/유닛/큐/난수/전투상태 접근 일원화
   - 승패 판정 진입 지점 고정 (노드 30턴 제한 포함, `03` §2)
@@ -241,6 +242,21 @@
 - **테스트**
   - 유물 트리거 샘플 회귀
   - 언락 구매 후 다음 런 반영
+
+---
+
+## #17 Excel → ScriptableObject 임포터 — 1단계
+
+- **제목**: `[#17] 설계 Excel을 ScriptableObject로 가져오는 에디터 임포터 구현`
+- **요약**: Excel 정본을 엔진 데이터로 옮기는 단일 경로를 만든다 (D-39).
+- **완료 조건**
+  - 메뉴 `DarkLegion/Import Design Data`로 `docs/design`의 데이터 정본 Excel을 읽어 `Assets/_Project/Data/Generated/`에 CardData·MonsterData·EnemyData·RelicData·EventData·BossPhaseData 생성
+  - 다시 임포트하면 같은 ID의 에셋을 덮어쓰고, 사라진 ID는 경고
+  - `05` §11 Validation(중복 ID, 잘못된 참조, 비용·효과 값 범위) 실패 시 임포트 중단
+  - 1단계는 1~2층에 필요한 데이터(카드 32장, 적 11종, 보스 2, 유물, 이벤트 7종)만 있어도 통과
+- **테스트**
+  - 임포트 → 런타임 생성(`08` RuntimeFactory) → 값이 Excel과 같은지 샘플 대조
+  - Excel 값을 하나 바꾸고 다시 임포트 → 에셋에 반영
 
 ---
 

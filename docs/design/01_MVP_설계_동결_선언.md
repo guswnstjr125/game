@@ -114,6 +114,7 @@
 | D-36 | 몬스터는 카드로만 생산 (포획 없음) | 2026-11-06 | `04` §4, `23` §2, `33` §4 |
 | D-37 | 런 흐름 기본 규칙 (카드 보상 건너뛰기, 전투 중 종료, 메타 화폐 합산, 포기) | 2026-11-06 | `37` §1·§2 |
 | D-38 | 유물 13종 런타임 정의와 규칙 보정 | 2026-11-06 | `24` §1, `06_콘텐츠_마스터.xlsx` Relics_MVP, `14` §2 |
+| D-39 | 엔진·플랫폼: Unity 6.3 LTS, 2D URP, uGUI, PC 1920×1080, Excel → ScriptableObject 임포터 | 2026-11-06 | `05` §13, `27`, `33` §1, `37`, `31` #17 |
 
 ### D-01. 피해 공식
 
@@ -572,6 +573,25 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 | `REL_RARE_003` 공허의 메아리 | Exhaust 카드를 드로우할 때 Crystal +1. **턴당 2회** |
 | `REL_LEG_001` 죽음의 왕관 | 아군 사망(희생 포함)마다 다음 아군 공격 피해 +3, **누적 최대 +9**, 공격 1회에 모두 소모 |
 | `REL_BOSS_3F` 혈육의 인장 | 융합으로 만든 카드의 몬스터가 소환될 때 MaxHP +5. 카드에 `FromFusion` 표시를 저장 (`14` CardSaveDTO) |
+
+### D-39. 엔진·플랫폼
+
+**배경**: 설계 문서는 Unity C#(ScriptableObject·`05` 폴더 구조·`08` RuntimeFactory)을 전제로 하지만, 엔진·버전·UI 방식·플랫폼과 Excel 데이터를 엔진으로 옮기는 방법이 정해지지 않았다 (이슈 #24).
+
+**결정**
+
+| 항목 | 결정 | 이유 |
+|---|---|---|
+| 엔진 | **Unity 6.3 LTS** (6000.3.x 최신 패치) | 현재 LTS, 2027년 12월까지 지원. 6.6은 LTS가 아니고 6.7 LTS는 미출시. 2단계 착수 때 6.7 LTS가 나와 있으면 업그레이드를 새 D 번호로 판단 |
+| 렌더 | URP + 2D Renderer | 2D 카드·몬스터 연출, 조명(붉은 조명 콘셉트 `29` §1) |
+| UI | **uGUI + TextMeshPro** 하나로 통일 | 카드 드래그·드롭(포인터 이벤트), Animation Clip·Timeline 연동, 검증된 런타임 UI. 솔로 개발이라 UI 시스템을 섞지 않는다 |
+| 입력 | Input System 패키지 | 마우스·키보드 기본, 패드는 Post-MVP |
+| 플랫폼 | **PC (Windows)**, 가로 **1920×1080** 기준, 16:9 | 마우스 입력 기준. 모바일은 Post-MVP |
+| 저장소 위치 | 루트에 Unity 프로젝트 폴더 **`DarkLegion/`**. `docs/`·`tools/`는 그대로 | 설계와 코드를 한 저장소에서 관리 |
+| 스크립트 위치 | `DarkLegion/Assets/_Project/Scripts/` 아래에 `05` §13 구조 그대로 | — |
+| 데이터 경로 | **Excel(정본) → 에디터 임포터 → ScriptableObject** (`Assets/_Project/Data/Generated/`). 생성된 SO는 손으로 고치지 않고 Excel을 고친 뒤 다시 임포트 | `01` §3 Excel 정본 원칙을 엔진까지 유지. `05` §11 Validation을 임포터에서 수행 |
+| 버전 관리 | Unity 표준 `.gitignore`(Library·Temp·Obj·Logs·UserSettings 제외), Force Text 직렬화, Visible Meta Files | 머지 가능한 씬·프리팹 |
+| 대용량 에셋 | Git LFS는 아트·사운드가 들어오는 시점(#31·#32)에 설정 | 지금은 바이너리 에셋 없음 |
 
 ---
 
