@@ -674,7 +674,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 
 ### D-43. 아트 방향
 
-**결정 주체**: 사용자 선택 — 선택지 질문 6개 중 5개에 답, 제작 방식은 이후 사용자 지시 「이미지는 ai를 사용 할거야」 (2026-11-06, 질문·선택지·답 [#32 근거 댓글](https://github.com/guswnstjr125/game/issues/32#issuecomment-6685165091), 제작 방식 [#32 추가 근거 댓글](https://github.com/guswnstjr125/game/issues/32#issuecomment-6685798910))
+**결정 주체**: 사용자 선택 — 선택지 질문 6개 중 5개에 답, 제작 방식은 이후 사용자 지시 「이미지는 ai를 사용 할거야」 (2026-11-06, 질문·선택지·답 [#32 근거 댓글](https://github.com/guswnstjr125/game/issues/32#issuecomment-6685165091), 제작 방식 [#32 추가 근거 댓글](https://github.com/guswnstjr125/game/issues/32#issuecomment-6685798910)). **사용자 승인 댓글: 대기** — 승인 댓글이 달리기 전에는 D-43 전체(제작 방식 포함)가 확정이 아니며 이 PR은 병합하지 않는다 (§4)
 
 **배경**: 아트 방향은 `29` §1의 "Stylized Dark Fantasy, 붉은 조명, 심연 분위기" 한 줄뿐이었다 (이슈 #32). 화풍·해상도가 정해지지 않아 스프라이트 크기와 에셋 목록을 만들 수 없었다.
 
