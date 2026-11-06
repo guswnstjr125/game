@@ -66,10 +66,16 @@ public class PlayerSaveDTO
 ```csharp
 public class DeckSaveDTO
 {
-    public List<string> DrawPile;    // CardData.Id
-    public List<string> Hand;
-    public List<string> DiscardPile;
-    public List<string> ExhaustPile;
+    public List<CardSaveDTO> DrawPile;
+    public List<CardSaveDTO> Hand;
+    public List<CardSaveDTO> DiscardPile;
+    public List<CardSaveDTO> ExhaustPile;
+}
+
+public class CardSaveDTO
+{
+    public string CardId;        // CardData.Id
+    public int UpgradeLevel;     // 0 = 기본, 1 = 강화 (`25` §2, `01` D-31)
 }
 ```
 
@@ -96,6 +102,7 @@ public class MetaSaveDTO
     public List<string> UnlockedCards;
     public List<string> UnlockedRelics;
     public Dictionary<string, bool> AchievementFlags;
+    public bool TutorialDone;    // 1층 노드 1 희생 안내 전투 완료 여부 (`01` D-32)
 }
 ```
 

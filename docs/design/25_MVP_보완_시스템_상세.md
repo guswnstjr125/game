@@ -54,7 +54,9 @@ public class RuntimeCard
 
 Save: `DeckSaveDTO` 항목을 `{ "cardId", upgradeLevel }` 쌍으로 저장.
 
-### 2.2 강화 효과 (MVP 단일 규칙)
+### 2.2 강화 효과 기준
+
+> 정본은 `08_카드_데이터베이스.xlsx` **Cards_Upgrade의 카드별 값**이다 (`01` D-31). 아래 표는 카드별 값을 정할 때의 기준이다.
 
 | UpgradeLevel | 효과 |
 |--------------|------|
