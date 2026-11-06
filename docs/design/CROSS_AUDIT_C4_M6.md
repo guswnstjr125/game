@@ -11,9 +11,10 @@
 |------|---------|-------|------|------|
 | 시트 위치 | `08_카드_데이터베이스.xlsx` Cards_FloorUnlock | `08_카드_데이터베이스.xlsx` → **Cards_FloorUnlock** | OK | |
 | 컬럼 | Card_ID, UnlockFloor, DropPool_* | 동일 6컬럼 | OK | |
-| 1층 누적 32장 | `03_MVP_전층_스펙.md` §3.3 "32장" | **Floor_Pool_Summary** F1=32 | OK | |
-| 2~5층 누적 | §4~7 "+16/+20/+18" → 48/68/86 | Summary 48/68/86 | OK | |
-| 5층 전체 92장 | §7 "전 클래스 92장" | F5 누적 92 | OK | |
+| 1층 누적 32장 | `03_MVP_전층_스펙.md` §3.3 "32장" (NEC 등 기본 시작) | **Floor_Pool_Summary** F1=32 | OK | HOL/BEA 시작은 D-07 별도 누적 |
+| 2~5층 누적 | §4~7 "+16/+20/+18" → 48/68/86 (기본 시작) | Summary 48/68/86 | OK | |
+| 5층 전체 92장 | §7 "전 클래스 92장" 드롭 풀 | F5 누적 92 | OK | 융합 전용 6장은 풀 제외 |
+| 시작 클래스 | HOL/BEA 유효 해금층 1 | `UnlockFloor_IfStartClass=1` | OK | D-07. 기본 UnlockFloor는 유지 |
 | 카드별 해금 규칙 | NEC/NEU F1, ELE 일부 F1… | UnlockFloor 1~5 per card | OK | 18 서술과 정렬 알고리즘 일치 |
 
 **MD 링크:** `17_카드_데이터베이스.md`, `03_MVP_전층_스펙.md` §8 — **Cards_FloorUnlock** 명시 OK
@@ -87,7 +88,7 @@
 
 | 항목 | 설계 MD | Excel | 상태 |
 |------|---------|-------|------|
-| 언락 6종 | `26_메타_언락_설계.md` §2 | **Meta_Unlock** 6행 | OK |
+| 언락 7종 | `26_메타_언락_설계.md` §2 | **Meta_Unlock** 7행 (`UNL_CLASS_NEU`) | OK |
 | 층 클리어 Soul/Sigil | `26_메타_언락_설계.md` §1 표 | **Meta_Currency** 5행 | OK |
 | 업적 12종 | `26_메타_언락_설계.md` §3 | **Meta_Achievement** 12행 | OK |
 | MD 링크 | `26_메타_언락_설계.md` § 수치 표 | Meta_Unlock · Meta_Currency · Meta_Achievement | OK |
