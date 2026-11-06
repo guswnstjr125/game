@@ -15,6 +15,7 @@
 | `docs/design/` | 설계 패키지 (MD + Excel). 시작은 [00_문서_인덱스.md](docs/design/00_문서_인덱스.md) |
 | `tools/check_design.py` | 설계 MD·Excel 정합 검사. 설계 수치를 바꾼 PR에는 출력 전체를 붙인다 |
 | `tools/build_ops_xlsx.py` | 운영 Excel 5종을 MD에서 생성 (`--check`는 차이만 보고) |
+| `tools/export_game_data.py` | 정본 Excel을 Unity용 JSON으로 내보냄 (`docs/design/38`) |
 | `tools/build_master_xlsx.py` | 리뷰용 `다크레기온_마스터통합.xlsx`를 정본 Excel에서 생성 |
 | `.claude/skills/game-design/` | Claude Code용 설계 작업 스킬 |
 
