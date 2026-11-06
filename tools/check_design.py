@@ -418,6 +418,25 @@ def r15_doc_structure():
         t = p.read_text(encoding="utf-8")
         check("R15 no prev/next links", not re.search(r"\*(이전|다음) 문서:", t), p.name, None, "문서 목록 링크로 통일")
         check("R15 footer", t.rstrip().endswith("*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*"), p.name, t.rstrip()[-40:], "문서 목록 footer")
+    # `NN` §X 참조가 그 문서의 실제 절을 가리키는지. "구 `NN`"(이력)과 36 수정 기록은 제외
+    heads = {}
+    for p in DESIGN.glob("[0-9][0-9]_*.md"):
+        hs = set()
+        for line in p.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"#+\s+(\d+(?:\.\d+)*|[A-Z])[.)\s]", line)
+            if m:
+                hs.add(m.group(1))
+        heads[p.name[:2]] = hs
+    broken = []
+    for p in sorted(DESIGN.glob("*.md")):
+        if p.name.startswith("36_"):
+            continue
+        for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            for m in re.finditer(r"(구 )?`(\d{2})(?:_[^`]*)?`\s*§\s*([0-9A-Z]+(?:\.\d+)*)", line):
+                old_ref, k, sec = m.groups()
+                if not old_ref and k in heads and sec not in heads[k]:
+                    broken.append(f"{p.name}:{i} `{k}` §{sec}")
+    check("R15 section references exist", not broken, "MD의 `NN` §X 참조", broken[:5], [])
     top = max(int(p.name[:2]) for p in numbered)
     check("R15 index range", f"01~{top:02d}" in index or f"01`~`{top:02d}" in index, "00_문서_인덱스.md", None, f"01~{top:02d}")
     log = DESIGN / "archive" / "35_리네임_매핑_로그.md"
