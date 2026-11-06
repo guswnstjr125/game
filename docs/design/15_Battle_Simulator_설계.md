@@ -69,7 +69,9 @@ public class BattleRunner
 | OVERPOWERED_CARD | 사용률 > 80% |
 | FAST_KILL_META | avg_turn < 2 |
 | STALEMATE | avg_turn > 10 |
-| WIN_RATE_LOW / HIGH | < 20% or > 80% |
+| RUN_CLEAR_LOW / HIGH | 런 클리어율 < 30% or > 45% (1차 Go/No-Go, `01` D-04) |
+| BATTLE_WIN_LOW | 전투 승률 일반 < 75% / 엘리트 < 60% / 보스 < 45% (참고치, `16` §8) |
+| HP_LOSS_HIGH | 전투당 평균 PlayerHP 손실 > 일반 4 / 엘리트 10 / 보스 15 (`01` D-14) |
 
 ---
 
