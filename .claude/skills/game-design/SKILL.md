@@ -34,8 +34,8 @@ description: 다크 레기온 게임 설계 작업 절차. 설계 문서(docs/de
 
 1. 바꿀 값과 ID로 **MD 전체와 모든 xlsx를 검색**한다. Excel은 openpyxl로 모든 시트·셀을 훑는다 (`grep`으로는 안 잡힌다).
 2. 자주 겹치는 곳:
-   - 보스 ATK/HP/DEF: `10_적_바이블.xlsx` Enemies_Master·Boss_List, `14_보스_패턴.xlsx` Boss_List·Boss_Stats·Boss_TurnCycle(행동 피해)·Boss_Phase(문구), `04_밸런스_테이블.xlsx` Floor_Scale, `다크레기온_마스터통합.xlsx` Enemies, MD `03`·`16`·`20`·`22`
-   - 카드: `08_카드_데이터베이스.xlsx` Cards_Master·Cards_Effect·Cards_Upgrade·Cards_FloorUnlock, 통합본 Cards·Cards_Effect·Cards_Upgrade, MD `17`·`10`
+   - 보스 ATK/HP/DEF: `10_적_바이블.xlsx` Enemies_Master·Boss_List, `14_보스_패턴.xlsx` Boss_List·Boss_Stats·Boss_TurnCycle(행동 피해)·Boss_Phase(문구), `04_밸런스_테이블.xlsx` Floor_Scale, MD `03`·`16`·`20`·`22`
+   - 카드: `08_카드_데이터베이스.xlsx` Cards_Master·Cards_Effect·Cards_Upgrade·Cards_FloorUnlock, MD `17`·`10` (통합본은 생성 도구가 따라감)
    - 몬스터 효과: `09_몬스터_바이블.xlsx` Monsters_Master 효과 칸(D-25 분류), 통합본 Monsters, MD `17`
    - 유물: `06_콘텐츠_마스터.xlsx` Relics_MVP, MD `23` §1·`24` §1
 3. **같은 효과를 내는 것도 찾는다.** 하나를 너프하면 우회로가 남기 쉽다.
@@ -43,6 +43,7 @@ description: 다크 레기온 게임 설계 작업 절차. 설계 문서(docs/de
    - 그 밖에는 Trigger 이름(OnSacrifice, OnAllyDeath, OnKill 등)으로 Relics_MVP·Cards_Effect·Monsters_Master를 검색한다
 4. Excel은 openpyxl 스크립트로 고치고, 고친 뒤 다시 읽어 값을 확인한다. 스크립트는 스크래치 폴더에 두고 저장소에 커밋하지 않는다.
 5. **운영 Excel**(`03_전층_운영_체크리스트`, `10_카드_리졸버_작업표`, `21_적_AI_작업표`, `34_리스크_추적표`, `35_운영_검증_팩`)은 직접 고치지 않는다. 원본 MD를 고치고 `python3 tools/build_ops_xlsx.py`로 다시 만든다.
+6. **`다크레기온_마스터통합.xlsx`** 도 직접 고치지 않는다. 정본 Excel(04·06·08·09·10·12)을 고친 뒤 `python3 tools/build_master_xlsx.py`로 다시 만든다.
 
 ## 4. 수치를 검산할 때
 
@@ -70,7 +71,7 @@ description: 다크 레기온 게임 설계 작업 절차. 설계 문서(docs/de
 ## 6. 마무리 — 검사와 PR
 
 1. `python3 tools/check_design.py` → 모든 규칙 그룹 OK, 0 failed.
-2. `python3 tools/build_ops_xlsx.py --check` → 0 sheet(s).
+2. `python3 tools/build_ops_xlsx.py --check`와 `python3 tools/build_master_xlsx.py --check` → 둘 다 0 sheet(s).
 3. 검사가 놓친 종류의 실수였다면 `tools/check_design.py`에 규칙을 추가한다. 분류·계산 함수를 데이터 기입과 검사에 같이 쓰면, 손으로 적은 기대값 테스트(R13 방식)를 함께 넣는다.
 4. `docs/design/36_설계_수정_필요_목록.md`에 처리 기록을 남긴다.
 5. PR 본문에 넣는 것: 바꾼 시트·문서 목록, 계산 근거, 관련 D 번호와 **결정 주체·근거**, `check_design.py` **출력 전체**(`commit=` 줄 포함).

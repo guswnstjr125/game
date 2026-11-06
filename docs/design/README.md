@@ -21,7 +21,7 @@
 
 1. 문서끼리 충돌하면 `01` §7 결정 로그가 이긴다. 수치는 데이터 정본 Excel이 MD보다 우선한다 (`01` §3).
 2. 수치를 바꾸면 저장소 루트에서 `python3 tools/check_design.py`를 돌려 모든 규칙 그룹이 OK인지 확인하고, 출력 전체를 PR에 붙인다.
-3. 운영 Excel(체크리스트·작업표·리스크·검증 팩)은 MD에서 생성한다. MD를 고친 뒤 `python3 tools/build_ops_xlsx.py`를 실행한다.
+3. 운영 Excel(체크리스트·작업표·리스크·검증 팩)은 MD에서 생성한다. MD를 고친 뒤 `python3 tools/build_ops_xlsx.py`를 실행한다. 리뷰용 마스터통합 Excel은 정본 Excel을 고친 뒤 `python3 tools/build_master_xlsx.py`로 다시 만든다.
 
 ## 이 패키지에 넣지 않은 것
 

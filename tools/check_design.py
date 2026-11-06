@@ -384,6 +384,10 @@ def r14_ops_xlsx():
     stale = build_ops_xlsx.run(DESIGN, write=False)
     check("R14 ops xlsx generated from MD", not stale, "운영 Excel 5개", stale,
           "[] (python3 tools/build_ops_xlsx.py로 다시 생성)")
+    import build_master_xlsx
+    stale = build_master_xlsx.run(DESIGN, write=False)
+    check("R14 master xlsx generated from sources", not stale, "다크레기온_마스터통합.xlsx", stale,
+          "[] (python3 tools/build_master_xlsx.py로 다시 생성)")
 
 
 # ---------- R15 문서 구조 ----------
