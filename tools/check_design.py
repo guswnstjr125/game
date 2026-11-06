@@ -377,9 +377,51 @@ def r13_classify_contract():
         check("R13 fixture not elsewhere", not others, f"09/Monsters_Master/{cid}", others, [])
 
 
+# ---------- R14 운영 Excel ↔ MD ----------
+def r14_ops_xlsx():
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import build_ops_xlsx
+    stale = build_ops_xlsx.run(DESIGN, write=False)
+    check("R14 ops xlsx generated from MD", not stale, "운영 Excel 5개", stale,
+          "[] (python3 tools/build_ops_xlsx.py로 다시 생성)")
+
+
+# ---------- R15 문서 구조 ----------
+def r15_doc_structure():
+    index = md("00_문서_인덱스.md")
+    files = sorted(p.relative_to(DESIGN).as_posix() for p in DESIGN.rglob("*") if p.is_file())
+    for f in files:
+        if f not in ("00_문서_인덱스.md",):
+            check("R15 file listed in 00 index", f in index or pathlib.Path(f).name in index, f, None, "00_문서_인덱스.md에 등재")
+    numbered = sorted(p for p in DESIGN.glob("[0-9][0-9]_*.md") if not p.name.startswith("00_"))
+    for p in numbered:
+        t = p.read_text(encoding="utf-8")
+        check("R15 no prev/next links", not re.search(r"\*(이전|다음) 문서:", t), p.name, None, "문서 목록 링크로 통일")
+        check("R15 footer", t.rstrip().endswith("*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*"), p.name, t.rstrip()[-40:], "문서 목록 footer")
+    top = max(int(p.name[:2]) for p in numbered)
+    check("R15 index range", f"01~{top:02d}" in index or f"01`~`{top:02d}" in index, "00_문서_인덱스.md", None, f"01~{top:02d}")
+    log = DESIGN / "archive" / "35_리네임_매핑_로그.md"
+    old_names = []
+    if log.exists():
+        for a, b in re.findall(r"^\| `([^`]+\.md)` \| `([^`]+\.md)`", log.read_text(encoding="utf-8"), re.M):
+            if a != b and not (DESIGN / a).exists():
+                old_names.append(a)
+    for p in sorted(DESIGN.glob("*.md")):
+        t = p.read_text(encoding="utf-8")
+        bad = [n for n in old_names if n in t]
+        check("R15 no renamed-away file names", not bad, p.name, bad[:3], [])
+        for n in set(re.findall(r"\]\(([^)#\s]+\.(?:md|xlsx))\)", t)):
+            check("R15 link target exists", (p.parent / n).exists(), p.name, n, "존재하는 파일")
+    d01 = md("01_MVP_설계_동결_선언.md")
+    rows = [int(x) for x in re.findall(r"^\| D-(\d+) \|", d01, re.M)]
+    secs = [int(x) for x in re.findall(r"^### D-(\d+)\.", d01, re.M)]
+    check("R15 D-log table contiguous", rows == list(range(1, len(rows) + 1)), "01 §7 표", rows[-3:], f"1..{len(rows)}")
+    check("R15 D-log sections match table", secs == rows, "01 §7 본문", secs[-3:], rows[-3:])
+
+
 RULES = (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
          r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync,
-         r13_classify_contract)
+         r13_classify_contract, r14_ops_xlsx, r15_doc_structure)
 
 
 def git_revision():

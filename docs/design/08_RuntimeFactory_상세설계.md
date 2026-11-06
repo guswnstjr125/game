@@ -44,7 +44,7 @@ public sealed class RuntimeFactory
 | 메서드 | 입력 | 출력 | 비고 |
 |--------|------|------|------|
 | `CreatePlayer` | PlayerRunState, BattleContext | RuntimePlayer | HP/Crystal/Deck는 RunState에서 |
-| `CreateEnemy` | string enemyDataId, int floor, int stageIndex | RuntimeEnemy | 04 스케일 적용 |
+| `CreateEnemy` | string enemyDataId, int floor, int stageIndex | RuntimeEnemy | `16_밸런스_규칙.md` §2 스케일 적용 |
 | `CreateMonsterFromCard` | RuntimeCard, RuntimePosition | RuntimeMonster | 소환 카드용 |
 | `CreateMonsterFromData` | MonsterData, RuntimePosition | RuntimeMonster | 융합 결과·스킬 소환 |
 | `CreateSummonToken` | SummonTemplate, Owner, Position | RuntimeSummon | Duration·IsTemporary |
@@ -237,3 +237,7 @@ public static class ActionFactory
 □ Death 시 UnregisterAllOwnedBy(owner)
 □ Registry miss 시 명확한 예외 + 로그 (CardId/EnemyId)
 ```
+
+---
+
+*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*

@@ -145,14 +145,14 @@ docs: align mvp scope across docs (#125)
 
 ```md
 ## 제목
-[#{ISSUE_NO}] 카드 92장 ResolverSpec 등록 및 CardId 실행 검증
+[#{ISSUE_NO}] 카드 98장 ResolverSpec 등록 및 CardId 실행 검증
 
 ## 작업 요약
-- 카드 92장 Resolver 매핑 등록
+- 카드 98장(드롭 92 + 융합 전용 6) Resolver 매핑 등록
 - CardId 기준 실행/직렬화 규약 고정
 
 ## 완료 조건 (DoD)
-- [ ] ResolverSpec 92장 누락 없이 등록
+- [ ] ResolverSpec 98장 누락 없이 등록
 - [ ] TargetRule enum 고정(Front/Back/All/Selected/LowestHp)
 - [ ] Params 직렬화(`EffectDefinition[]`) 저장/로드 검증
 - [ ] 카드명 의존 없이 CardId만으로 실행 검증
@@ -228,3 +228,7 @@ docs: align mvp scope across docs (#125)
 - 커밋 prefix는 `feat/fix/chore/refactor/docs`만 사용
 - 커밋 메시지에 이슈 번호 포함
 - MR 본문에 작업 요약/해결 이슈/주요 변경점/검토사항 포함
+
+---
+
+*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*
