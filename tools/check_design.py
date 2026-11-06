@@ -6,12 +6,16 @@
     python3 tools/check_design.py <설계폴더>
 
 실패한 규칙이 하나라도 있으면 exit code 1.
+검사 0건인 규칙 그룹(EMPTY)도 실패로 본다. 조용히 건너뛴 규칙을 잡기 위해서다.
+출력 맨 위에 검사한 커밋, 아래에 규칙 그룹별 통과·실패 건수를 찍는다.
+PR 본문에는 이 출력을 통째로 붙인다.
 의존성: openpyxl
 """
 import collections
 import math
 import pathlib
 import re
+import subprocess
 import sys
 
 import openpyxl
@@ -373,16 +377,50 @@ def r13_classify_contract():
         check("R13 fixture not elsewhere", not others, f"09/Monsters_Master/{cid}", others, [])
 
 
+RULES = (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
+         r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync,
+         r13_classify_contract)
+
+
+def git_revision():
+    """검사 대상 폴더의 커밋 해시. 커밋 안 된 변경이 있으면 +dirty."""
+    def run(*args):
+        return subprocess.run(["git", "-C", str(DESIGN), *args], capture_output=True, text=True, check=True).stdout.strip()
+    try:
+        rev = run("rev-parse", "--short", "HEAD")
+        dirty = run("status", "--porcelain", "--", ".", str(pathlib.Path(__file__).resolve()))
+        return rev + ("+dirty" if dirty else "")
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown (git 아님)"
+
+
 def main():
-    for fn in (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
-               r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync, r13_classify_contract):
+    print(f"check_design.py  commit={git_revision()}  design={DESIGN}  rule_groups={len(RULES)}\n")
+    rows = []
+    for fn in RULES:
+        p0, f0 = passes, len(failures)
         try:
             fn()
         except Exception as e:  # 시트·열 이름이 바뀌면 여기서 드러난다
             failures.append(f"[ERROR] {fn.__name__}: {type(e).__name__}: {e}")
+        p, f = passes - p0, len(failures) - f0
+        if p + f == 0:
+            failures.append(f"[EMPTY] {fn.__name__}: 검사 0건 (규칙이 실행되지 않음)")
+            f = 1
+        new = failures[f0:]
+        status = ("OK" if not new else "ERROR" if any(x.startswith("[ERROR]") for x in new)
+                  else "EMPTY" if any(x.startswith("[EMPTY]") for x in new) else "FAIL")
+        rows.append((fn.__name__, p, f, status))
+    width = max(len(r[0]) for r in rows)
+    print(f"{'rule'.ljust(width)}  passed  failed  status")
+    for name, p, f, status in rows:
+        print(f"{name.ljust(width)}  {p:>6}  {f:>6}  {status}")
+    if failures:
+        print()
     for line in failures:
         print(line)
-    print(f"\n{passes} passed, {len(failures)} failed")
+    ok_groups = sum(1 for r in rows if r[3] == "OK")
+    print(f"\n{passes} passed, {len(failures)} failed ({ok_groups}/{len(RULES)} rule groups OK)")
     return 1 if failures else 0
 
 
