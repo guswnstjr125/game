@@ -428,6 +428,15 @@ def r15_doc_structure():
 
 
 # ---------- R16 데이터 완결성 (D-31·D-33·D-35) ----------
+UP_PARAM_TEXT = {  # Up_Params 키 → Before/After 문구에서 값을 읽는 정규식 (38 §4)
+    "DeathThisTurnDraw": r"Draw(\d+)", "CrystalBonus": r"BonusCrystal(\d+)", "TokenHp": r"HP(\d+)",
+    "DamageMult": r"×([\d.]+)$", "Damage": r"(?:피해|광역)(\d+)", "Burn": r"Burn(\d+)",
+    "IgniteAllBurnThenApplyBurn": r"Burn(\d+) 재부여", "ExtraAttackDamage": r"피해\+(\d+)",
+    "AtkBuff": r"ATK\+(\d+)", "Heal": r"회복(\d+)", "Draw": r"드로우(\d+)",
+}
+UP_PARAM_DEFAULT = {"DamageMult": "1", "ExtraAttackDamage": "0"}  # 강화 전 문구에 값이 없을 때의 기본값
+
+
 def r16_data_completeness():
     for f in ("06_콘텐츠_마스터.xlsx", "다크레기온_마스터통합.xlsx"):
         try:
@@ -479,8 +488,14 @@ def r16_data_completeness():
             want = {k: v for k, v in re.findall(r"(HP|ATK|DEF)(\d+)", str(r["After"]))}
             check("R16 Up_Params monster = After", up == want, f"08/Cards_Upgrade/{cid}", up, want)
         else:
-            ok = len(up) == 1 and list(up.values())[0] in str(r["After"])
-            check("R16 Up_Params value in After", ok, f"08/Cards_Upgrade/{cid}", up, r["After"])
+            # Params 키마다 After 문구에서 읽을 위치를 정해 둔다. 한 자리 숫자가 문구 아무 데나 걸리지 않게
+            pat = UP_PARAM_TEXT.get(next(iter(up), ""))
+            got = [re.search(pat, str(r[c])) for c in ("Before", "After")] if pat else [None, None]
+            before = got[0].group(1) if got[0] else UP_PARAM_DEFAULT.get(next(iter(up), ""))
+            ok = len(up) == 1 and got[1] is not None and before is not None \
+                and got[1].group(1) == list(up.values())[0] and before != got[1].group(1)
+            check("R16 Up_Params value in After", ok, f"08/Cards_Upgrade/{cid}", up,
+                  f"{pat} in Before/After: {r['Before']} → {r['After']}")
     t27 = md("27_UI_바인딩_설계.md")
     check("R16 UI slot counts match 09", "MonsterSlotViewModel ×3" in t27 and "EnemySlotViewModel ×5" in t27,
           "27 §2", None, "아군 ×3, 적 ×5")
