@@ -34,6 +34,29 @@
 
 > 여러 단계에 걸친 이슈(#5·#7·#9·#10·#13·#16)는 등록할 때 `[1단계]`·`[2단계]` 하위 이슈로 나눈다.
 
+### GitHub 이슈 번호 (1단계, 2026-11-06 등록)
+
+이 문서의 초안 번호(#1~#17)와 GitHub 이슈 번호는 다르다. 작업·커밋·PR에서는 **GitHub 번호**를 쓴다.
+
+| 주차 | 초안 | GitHub | 제목 |
+|---|---|---|---|
+| 1 | #1 | [#34](https://github.com/guswnstjr125/game/issues/34) | Unity 프로젝트 생성 + 전투 코어 |
+| 1 | #17 | [#35](https://github.com/guswnstjr125/game/issues/35) | Excel → ScriptableObject 임포터 |
+| 1 | #2 | [#36](https://github.com/guswnstjr125/game/issues/36) | Queue Flush 순서 |
+| 1 | #3 | [#37](https://github.com/guswnstjr125/game/issues/37) | Runtime 유닛 계층 |
+| 2 | #4 | [#38](https://github.com/guswnstjr125/game/issues/38) | 카드·덱·손패 |
+| 2 | #5 | [#39](https://github.com/guswnstjr125/game/issues/39) | ResolverSpec (1단계 32장) |
+| 3 | #6 | [#40](https://github.com/guswnstjr125/game/issues/40) | 상태이상 8종 |
+| 3 | #7 | [#41](https://github.com/guswnstjr125/game/issues/41) | EnemyAI (1~2층) |
+| 3 | #8 | [#42](https://github.com/guswnstjr125/game/issues/42) | 희생·소환·슬롯 |
+| 4 | #13 | [#43](https://github.com/guswnstjr125/game/issues/43) | 융합 (Lv1) |
+| 4 | #10 | [#44](https://github.com/guswnstjr125/game/issues/44) | Stage·Wave·이벤트·보상 (1~2층) |
+| 5 | #9 | [#45](https://github.com/guswnstjr125/game/issues/45) | 보스 패턴 (1~2층) |
+| 6 | #14 | [#46](https://github.com/guswnstjr125/game/issues/46) | 화면 UI |
+| 6 | #15 | [#47](https://github.com/guswnstjr125/game/issues/47) | 저장·이어하기 |
+
+2단계 이슈(#5·#7·#9·#10·#13의 2단계분, #11·#12·#16)는 2단계 착수 때 등록한다.
+
 ---
 
 ## #1 전투 코어 골격 구현 — 1단계
