@@ -419,9 +419,46 @@ def r15_doc_structure():
     check("R15 D-log sections match table", secs == rows, "01 §7 본문", secs[-3:], rows[-3:])
 
 
+# ---------- R16 데이터 완결성 (D-31·D-33·D-35) ----------
+def r16_data_completeness():
+    for f in ("06_콘텐츠_마스터.xlsx", "다크레기온_마스터통합.xlsx"):
+        try:
+            rows = sheet(f, "Reward_BattleTable")
+        except KeyError:
+            continue
+        for r in rows:
+            s = round(sum(r[k] for k in ("Drop_Common", "Drop_Uncommon", "Drop_Rare", "Drop_Legendary")), 6)
+            check("R16 reward rarity sum = 1", s == 1, f"{f}/Reward_BattleTable/{r['BattleType']} F{r['Floor']}", s, 1)
+            check("R16 reward probability >= 0", all(r[k] >= 0 for k in ("Drop_Common", "Drop_Uncommon", "Drop_Rare", "Drop_Legendary")),
+                  f"{f}/{r['BattleType']} F{r['Floor']}", None, ">= 0")
+    cards = {r["ID"] for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master")}
+    for f in ("08_카드_데이터베이스.xlsx", "다크레기온_마스터통합.xlsx"):
+        up = {r["Card_ID"]: r for r in sheet(f, "Cards_Upgrade")}
+        check("R16 upgrade row for every card", cards <= set(up), f"{f}/Cards_Upgrade", sorted(cards - set(up))[:5], [])
+        vague = [c for c, r in up.items() if str(r["Before"]).strip() in ("기본", "") or str(r["After"]).strip() in ("강화", "")]
+        check("R16 upgrade values concrete", not vague, f"{f}/Cards_Upgrade", vague[:5], [])
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        if not r["Card_ID"] and r["MON_ID"] != "MON_NEC_L1_007":
+            check("R16 card-less monster marked Post-MVP", "Post-MVP" in str(r["SkillNote"]), f"09/Monsters_Master/{r['MON_ID']}",
+                  r["SkillNote"], "Post-MVP (D-33)")
+    t24 = md("24_콘텐츠_런타임_상세.md")
+    for r in sheet("06_콘텐츠_마스터.xlsx", "Relics_MVP"):
+        line = next((l for l in t24.splitlines() if l.startswith(f"| {r['Relic_ID']} |")), None)
+        check("R16 relic runtime defined in 24 §1", line is not None, f"24 §1/{r['Relic_ID']}", None, "런타임 정의 행")
+        if line:
+            check("R16 relic trigger matches 24 §1", line.split("|")[2].strip() == r["Trigger"],
+                  f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
+    line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
+    check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    t27 = md("27_UI_바인딩_설계.md")
+    check("R16 UI slot counts match 09", "MonsterSlotViewModel ×3" in t27 and "EnemySlotViewModel ×5" in t27,
+          "27 §2", None, "아군 ×3, 적 ×5")
+
+
 RULES = (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
          r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync,
-         r13_classify_contract, r14_ops_xlsx, r15_doc_structure)
+         r13_classify_contract, r14_ops_xlsx, r15_doc_structure,
+         r16_data_completeness)
 
 
 def git_revision():
