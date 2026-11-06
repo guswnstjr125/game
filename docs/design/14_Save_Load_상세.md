@@ -47,7 +47,7 @@ public class RelicSaveDTO
 }
 ```
 
-> 턴당 1회 제한(D-04·D-15)은 전투 중 상태라 저장하지 않는다. 전투 중 저장은 §3 BattleSnapshotDTO.
+> 턴당 1회 제한(D-04·D-15)은 전투 중 상태라 저장하지 않는다. MVP는 전투 중 저장을 하지 않는다 (§3, `01` D-37).
 
 ### PlayerSaveDTO
 
@@ -111,7 +111,20 @@ public class MetaSaveDTO
 
 ---
 
-## 3. BattleSnapshotDTO (전투 중)
+## 3. 전투 중 종료 (`01` D-37)
+
+MVP(1·2단계)는 전투 상태를 저장하지 않는다. 전투 중에 게임을 끄면 마지막 저장(직전 노드 클리어 시점)이 남아 있고, 이어하면 **그 전투 노드를 처음부터 같은 시드로** 다시 시작한다. 덱 순서·적 의도·보상이 처음과 똑같다.
+
+노드 시드는 런 시드와 위치로 만든다. 그 노드의 전투·보상 난수는 모두 이 시드에서 시작한다 (`06` §15).
+
+```csharp
+// SaveData.RngSeed, Floor, StageIndex에서 계산. 저장하지 않는다
+int NodeSeed = unchecked((int)(RngSeed * 31 + Floor) * 31 + StageIndex);
+```
+
+### BattleSnapshotDTO (Post-MVP·디버그 전용)
+
+아래 구조는 디버그 재현(`06` §17)과 Post-MVP 전투 중 저장용이다. MVP 빌드는 파일로 저장하지 않는다.
 
 ```csharp
 public class BattleSnapshotDTO
@@ -132,8 +145,7 @@ public class BattleSnapshotDTO
 | 시점 | 파일 |
 |------|------|
 | 스테이지 클리어 | save_slot_N.json |
-| 전투 중 (옵션) | battle_snapshot.json |
-| 앱 백그라운드 | save_slot_0.json |
+| 게임 종료 (전투 밖) | save_slot_0.json |
 | 런 종료 | meta.json 갱신 |
 
 ---
@@ -144,7 +156,6 @@ public class BattleSnapshotDTO
 /SaveData/
   save_slot_0.json
   save_slot_1.json
-  battle_snapshot.json
   meta.json
 ```
 
