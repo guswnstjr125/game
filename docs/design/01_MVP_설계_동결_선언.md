@@ -658,7 +658,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 
 ### D-42. 영혼 추출 발동 조건
 
-**결정 주체**: 사용자 선택 — 선택지 3개 중 「지정 아군 사망 시」 (2026-11-06, [#54 근거 댓글](https://github.com/guswnstjr125/game/issues/54#issuecomment-6684882416))
+**결정 주체**: 사용자 선택 — 선택지 3개 중 「지정 아군 사망 시」 (2026-11-06, 질문·답 [#54 근거 댓글](https://github.com/guswnstjr125/game/issues/54#issuecomment-6684882416), **사용자 승인** [#54 승인 댓글](https://github.com/guswnstjr125/game/issues/54#issuecomment-6684921300))
 
 **배경**: `NEC_SKL_001` 영혼 추출의 정의가 `17`·`10`(지정 아군이 이번 턴 사망하면 드로우)과 `08` Cards_Effect(Target Self, Condition OnSacrifice)에서 달랐다 (`36` J16).
 
