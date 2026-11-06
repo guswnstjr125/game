@@ -94,6 +94,7 @@
 | D-16 | 보스 보상 유물 = `REL_BOSS_*` | 2026-11-06 | `03` §3~7 |
 | D-17 | ELE 시작 클래스 해금 (D-07 보완) | 2026-11-06 | `08`·마스터통합 Cards_FloorUnlock·Floor_Pool_Summary, `03` §8, `17` |
 | D-18 | 1층 보스 Phase 3 2회 공격 유지 | 2026-11-06 | `22` §2, `37` |
+| D-19 | A3 잔여: Boss_Phase 서술 ATK·마스터 Cards 동기화 | 2026-11-06 | `14` Boss_Phase, `다크레기온_마스터통합.xlsx`, `36` E7, `37` |
 
 ### D-01. 피해 공식
 
@@ -289,3 +290,19 @@ NEC가 두 유물과 피의 잔을 모두 가진 경우 턴당 첫 희생에서 
 **배경**: `37`에 "Phase 3 2회 공격에도 풀피 Front 한 마리는 버틴다"고 적혀 있었으나, D-01 기준 ATK 8 × 2회면 NEC 시작 몬스터(뼈 병사·구울·역병 쥐·떠돌이 용병)는 Front에서 모두 사망한다.
 
 **결정**: Phase 3(HP 20% 이하)는 `22` §2.5의 의도대로 **DPS 체크**로 유지한다. 단일 타격에 즉사하지 않는다는 D-05의 기준은 지키되, Phase 3에서는 턴당 Front 1체 손실을 전제로 Shield·희생·재소환으로 버티거나 그 전에 마무리해야 한다. 보스 HP 47의 20%는 9~10이라 Phase 3는 보통 1~2턴 안에 끝난다.
+
+### D-19. A3 잔여 동기화 (Boss_Phase · 마스터통합)
+
+**배경**: D-05·E2로 `14` Boss_List/TurnCycle Damage·Boss_Stats 배율·`10` Enemies·`20` md는 8/9/11/14/16으로 맞춰졌으나, `14` Boss_Phase 서술 칸에 ATK 12(구 ×2.0)가 남아 구현/검수 시 혼동을 줄 수 있었다. 통합본 `Cards`도 16행만 남아 `08`과 어긋났다.
+
+**결정**
+
+| 항목 | 내용 |
+|---|---|
+| Boss_Phase 서술 ATK | D-05와 동일. 1층 문구는 **ATK 8** (Phase 3 `ATK 8 ×2` 유지, **EnqueueTwice/2회 구조는 D-18**) |
+| TurnCycle Damage | 층별 SingleAttack·LifeSteal = 8/9/11/14/16 (이미 E2). AoE 등 별도 수치 유지 |
+| Boss_Stats 배율 | 1~3층 ×1.5, 4~5층 ×1.75 (이미 E2) |
+| 마스터통합 Enemies | 보스 ATK = `10` Enemies_Master (D-05) |
+| 마스터통합 Cards | `08` Cards_Master 전체 행 동기화 |
+
+D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=6, 2히트. Phase 3 2회는 D-18대로 Front 1체 손실 전제.
