@@ -417,6 +417,10 @@ def r15_doc_structure():
     secs = [int(x) for x in re.findall(r"^### D-(\d+)\.", d01, re.M)]
     check("R15 D-log table contiguous", rows == list(range(1, len(rows) + 1)), "01 §7 표", rows[-3:], f"1..{len(rows)}")
     check("R15 D-log sections match table", secs == rows, "01 §7 본문", secs[-3:], rows[-3:])
+    for n in secs:
+        if n >= 27:
+            body = re.search(rf"^### D-{n}\.[^\n]*\n(.*?)(?=^### D-|\Z)", d01, re.M | re.S).group(1)
+            check("R15 D-log decision owner (D-27+)", "**결정 주체**:" in body, f"01 §7 D-{n}", None, "**결정 주체**: ...")
 
 
 # ---------- R16 데이터 완결성 (D-31·D-33·D-35) ----------
