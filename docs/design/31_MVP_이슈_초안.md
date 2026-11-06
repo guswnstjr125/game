@@ -289,7 +289,7 @@
 ## 빠른 사용 메모
 
 - 각 이슈는 실제 시스템명/모듈명으로 세분화해 하위 이슈로 분리 가능
-- 커밋 메시지는 `feat|fix|chore|refactor|docs` + `(#이슈번호)` 규칙 유지
+- 커밋 메시지는 `30` §2 규칙: 접두어 `feat|fix|refactor|test|docs|chore` + 끝에 `(#이슈번호)`
 - PR 본문은 `30_MVP_구현_이슈_템플릿.md` §2 형식을 따른다
 - 설계 수치를 바꾸는 PR은 `tools/check_design.py` 출력 전체를 본문에 붙인다
 
