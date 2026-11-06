@@ -44,10 +44,14 @@ def split_sentences(text):
 def classify_effect(kind, sentence):
     """D-25 분류 계약. kind: '효과' | '패시브'. 반환: 효과 칸 이름."""
     s = sentence
-    if s.startswith("[Deathrattle]") or re.search(r"이 몬스터(가|를|이)? ?(사망|희생|파괴)|희생하면|죽으면", s):
+    if s.startswith("[Deathrattle]"):
         return "OnDeath"
+    if kind == "효과" and s.startswith("소환 시"):
+        return "OnSummon"  # "소환 시 아군을 희생하면 …"도 소환 시 발동 (NEC_MON_007)
+    if re.search(r"이 몬스터(가|를|이)? ?(사망|희생|파괴|죽)", s):
+        return "OnDeath"  # 이 몬스터 자신의 사망·희생만. 아군 사망·아군 희생은 해당 없음
     if kind == "효과":
-        return "OnSummon" if s.startswith("소환 시") else "Special"
+        return "Special"
     if re.search(r"공격할 때마다|공격 시|공격으로", s):
         return "OnAttack"
     return "Passive"
@@ -335,9 +339,43 @@ def r12_master_sync():
               f"_GapIndex/{s}", gap.get(s, {}).get("Note"), "N (의도적 제외)")
 
 
+# ---------- R13 분류 계약 고정 테스트 (손으로 적은 기대값) ----------
+CLASSIFY_FIXTURES = [  # (Card_ID, 칸, 그 칸에 있어야 할 문장 일부)
+    ("NEC_MON_007", "OnSummon", "소환 시 아군 몬스터 1마리를 희생하면"),
+    ("NEC_MON_002", "OnDeath", "[Deathrattle] 무작위 아군 1명"),
+    ("ELE_MON_003", "OnDeath", "[Deathrattle] 인접한 적 전체"),
+    ("NEU_MON_001", "OnDeath", "이 몬스터를 희생하면 Crystal 1"),
+    ("NEU_MON_007", "Passive", "Front 위치에서 아군 전체가 받는 피해"),
+    ("NEU_MON_007", "OnDeath", "이 몬스터를 희생하면 Crystal 3"),
+    ("NEC_MON_010", "OnAttack", "공격으로 적을 처치할 때마다"),
+    ("NEC_MON_012", "Passive", "아군 몬스터가 사망할 때마다"),
+    ("ELE_MON_002", "OnAttack", "공격할 때마다 대상에게 Burn 1"),
+]
+CLASSIFY_UNITS = [  # (kind, 문장, 기대 칸)
+    ("효과", "소환 시 아군 몬스터 1마리를 희생하면 카드를 2장 드로우한다.", "OnSummon"),
+    ("효과", "[Deathrattle] 적 단일 대상의 Burn 스택을 즉시 폭발(Ignite)시킨다.", "OnDeath"),
+    ("패시브", "아군 몬스터가 사망할 때마다 이 몬스터의 HP를 3 회복한다.", "Passive"),
+    ("패시브", "이 몬스터를 희생하면 Crystal 3을 획득한다.", "OnDeath"),
+    ("패시브", "이 몬스터가 공격으로 적을 처치할 때마다 Crystal을 1 획득한다.", "OnAttack"),
+    ("효과", "이 몬스터의 공격은 적 전체를 동시에 타격한다.", "Special"),
+]
+
+
+def r13_classify_contract():
+    for kind, s, want in CLASSIFY_UNITS:
+        got = classify_effect(kind, s)
+        check("R13 classify unit", got == want, s[:40], got, want)
+    rows = {r["Card_ID"]: r for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master") if r["Card_ID"]}
+    for cid, col, frag in CLASSIFY_FIXTURES:
+        cell = str(rows.get(cid, {}).get(col) or "")
+        check("R13 fixture column", frag in cell, f"09/Monsters_Master/{cid}/{col}", cell[:50], frag)
+        others = [c for c in EFFECT_COLS if c != col and frag in str(rows.get(cid, {}).get(c) or "")]
+        check("R13 fixture not elsewhere", not others, f"09/Monsters_Master/{cid}", others, [])
+
+
 def main():
     for fn in (r1_boss, r2_sacrifice, r3_status, r4_unlock, r5_fusion, r6_cards,
-               r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync):
+               r7_text, r8_damage, r9_events, r10_exhaust, r11_monster_effects, r12_master_sync, r13_classify_contract):
         try:
             fn()
         except Exception as e:  # 시트·열 이름이 바뀌면 여기서 드러난다
