@@ -13,6 +13,7 @@
 | 구현 이슈 #1~#17 (GitHub #34~#47) | [31_MVP_이슈_초안.md](31_MVP_이슈_초안.md) |
 | 검증 시나리오 | [32_MVP_검증_시나리오_매트릭스.md](32_MVP_검증_시나리오_매트릭스.md) |
 | 핸드오프 가이드 | [33_개발_핸드오프_운영_가이드.md](33_개발_핸드오프_운영_가이드.md) |
+| 데이터 임포트 (Excel → JSON → SO, #35) | [38_데이터_임포트_매핑.md](38_데이터_임포트_매핑.md) |
 | 수치·표 한눈에 (리뷰용) | [다크레기온_마스터통합.xlsx](다크레기온_마스터통합.xlsx) |
 
 > 구현 우선 기준: MVP는 `03_MVP_전층_스펙.md`의 단일 경로 9노드 템플릿을 따른다. `23_콘텐츠_설계.md`·`24_콘텐츠_런타임_상세.md`의 맵 분기/Treasure/Mimic은 Post-MVP 확장 규칙이다.
@@ -21,7 +22,7 @@
 
 1. 문서끼리 충돌하면 `01` §7 결정 로그가 이긴다. 수치는 데이터 정본 Excel이 MD보다 우선한다 (`01` §3).
 2. 수치를 바꾸면 저장소 루트에서 `python3 tools/check_design.py`를 돌려 모든 규칙 그룹이 OK인지 확인하고, 출력 전체를 PR에 붙인다.
-3. 운영 Excel(체크리스트·작업표·리스크·검증 팩)은 MD에서 생성한다. MD를 고친 뒤 `python3 tools/build_ops_xlsx.py`를 실행한다. 리뷰용 마스터통합 Excel은 정본 Excel을 고친 뒤 `python3 tools/build_master_xlsx.py`로 다시 만든다.
+3. 운영 Excel(체크리스트·작업표·리스크·검증 팩)은 MD에서 생성한다. MD를 고친 뒤 `python3 tools/build_ops_xlsx.py`를 실행한다. 리뷰용 마스터통합 Excel은 정본 Excel을 고친 뒤 `python3 tools/build_master_xlsx.py`로 다시 만든다. 정본 Excel을 고쳤으면 `python3 tools/export_game_data.py`로 Unity용 JSON도 다시 내보낸다 (`38` §1, `DarkLegion/`이 생긴 뒤).
 
 ## 이 패키지에 넣지 않은 것
 
