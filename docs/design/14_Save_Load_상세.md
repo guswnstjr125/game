@@ -27,11 +27,27 @@ public class SaveData
     public List<RelicSaveDTO> Relics;
     public MetaSaveDTO Meta;
     public long RngSeed;
+    public string StartClass;    // NEC/ELE/BEA/HOL/NEU — 카드 해금(D-07·D-17)·시작 유물(D-06) 기준
     public int Floor;
     public int StageIndex;
     public int Gold;
+    public int FusionCharge;     // 0~3, 층 이동 시 유지 (01 D-03)
+    public bool FreeFusionUsed;  // 3층 융합 성소 무료 1회 사용 여부 (D-03, 2단계)
 }
 ```
+
+### RelicSaveDTO
+
+```csharp
+public class RelicSaveDTO
+{
+    public string RelicId;
+    public bool UsedThisRun;     // OncePerRun 유물(REL_FORBIDDEN_CANDLE, REL_RARE_001)
+    public int Counter;          // 런 단위로 누적되는 유물 값. 해당 유물이 없으면 0
+}
+```
+
+> 턴당 1회 제한(D-04·D-15)은 전투 중 상태라 저장하지 않는다. 전투 중 저장은 §3 BattleSnapshotDTO.
 
 ### PlayerSaveDTO
 
@@ -74,7 +90,7 @@ public class MapSaveDTO
 public class MetaSaveDTO
 {
     public List<string> UnlockedClasses;
-    public List<string> PermanentUnlocks;  // 가마솥
+    public List<string> PermanentUnlocks;  // 심연의 가마솥 — Post-MVP (`29` §8). MVP에서는 빈 목록
     public int MetaSoul;
     public int MetaSigil;
     public List<string> UnlockedCards;
@@ -126,5 +142,4 @@ public class BattleSnapshotDTO
 
 ---
 
-*이전 문서: [15_Battle_Simulator_설계.md](15_Battle_Simulator_설계.md)*
-*다음 문서: [27_UI_바인딩_설계.md](27_UI_바인딩_설계.md)*
+*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*
