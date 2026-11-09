@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Unity 없이 DarkLegion.Core와 EditMode 테스트를 돌리는 프로젝트 (`32` §11.4).
+    소스는 Unity 폴더의 파일을 그대로 컴파일한다. 여기에는 코드를 두지 않는다.
+    Core는 UnityEngine을 참조하지 않으므로(noEngineReferences) 여기서도 컴파일된다.
+    LangVersion 9: Unity 6의 C# 버전에 맞춘다 (파일 범위 namespace 같은 C# 10 문법 금지).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../DarkLegion/Assets/_Project/Scripts/Core/**/*.cs" />
+    <Compile Include="../../../DarkLegion/Assets/_Project/Tests/EditMode/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+  </ItemGroup>
+</Project>
