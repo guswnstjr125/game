@@ -104,6 +104,19 @@ public class MetaSaveDTO
     public List<string> UnlockedRelics;
     public Dictionary<string, bool> AchievementFlags;
     public bool TutorialDone;    // 1층 노드 1 희생 안내 전투 완료 여부 (`01` D-32)
+    public MetaStatsDTO Stats;   // 언락 조건·업적 판정용 누적 기록 (`01` D-53, `41` §4.1). 2단계
+}
+
+public class MetaStatsDTO
+{
+    public int[] FloorClearCount;            // 길이 5, 층별 보스 처치 런 수
+    public int TotalSacrifice;
+    public int TotalFusion;
+    public int TotalExecuteKill;
+    public int TotalBurnDamage;
+    public int TotalPoisonDamage;
+    public Dictionary<string, int> ClassWins;
+    public string LastClass;
 }
 ```
 
