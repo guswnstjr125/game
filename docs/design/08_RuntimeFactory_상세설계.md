@@ -82,7 +82,7 @@ public RuntimePlayer CreatePlayer(PlayerRunState run, BattleContext ctx)
 public RuntimeEnemy CreateEnemy(string dataId, int floor, int stageIndex, BattleContext ctx)
 {
     var data = _enemies.Get(dataId);
-    var scaled = BalanceScaler.ScaleEnemy(data, floor, stageIndex);  // 04 공식
+    var scaled = BalanceScaler.ScaleEnemy(data, stageIndex);  // Enemies_Master 값 × 노드 계수만, 보스는 그대로 (`01` D-56)
 
     return new RuntimeEnemy {
         UnitId = NextUnitId(),
