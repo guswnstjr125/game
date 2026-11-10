@@ -38,6 +38,7 @@ namespace DarkLegion.Core
         public bool IsDead { get; private set; }
         public bool IsTargetable => !IsDead && !Flags.Untargetable;
         public RuntimeBattleFlags Flags { get; } = new RuntimeBattleFlags();
+        public StatusContainer Statuses { get; }
         public List<string> Tags { get; } = new List<string>();
 
         /// <summary>위치 DEF 보너스 (Front +1, `04` Position_Bonus). 슬롯 배치(#42)가 넣는다.</summary>
@@ -55,6 +56,7 @@ namespace DarkLegion.Core
             Attack = new RuntimeStat(attack);
             Defense = new RuntimeStat(defense);
             CurrentHP = maxHp;
+            Statuses = new StatusContainer(this);
         }
 
         /// <summary>HP ≤ 0이 된 순간 한 번만 true. 슬롯은 DeathAction이 실행될 때까지 유지한다 (`06` §12).</summary>

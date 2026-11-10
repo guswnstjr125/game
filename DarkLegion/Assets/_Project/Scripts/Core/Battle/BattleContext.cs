@@ -86,6 +86,48 @@ namespace DarkLegion.Core
             State = BattleState.PlayerPhase;
         }
 
+        /// <summary>전투에 있는 살아 있는 유닛 전부 (아군 Front→Back 순서는 슬롯 구현 #42에서, 지금은 목록 순서).</summary>
+        private System.Collections.Generic.List<RuntimeUnit> LivingUnits()
+        {
+            var list = new System.Collections.Generic.List<RuntimeUnit>();
+            foreach (var a in Allies) if (!a.IsDead) list.Add(a);
+            foreach (var e in Enemies) if (!e.IsDead) list.Add(e);
+            if (Player != null && !Player.IsDead) list.Add(Player);
+            return list;
+        }
+
+        /// <summary>
+        /// 턴 종료 (`06` §13.1): Burn·Poison 틱 → Burn −1·Shield 소멸·지속 턴 감소 → 손패 버림 → 승패 판정.
+        /// </summary>
+        public BattleOutcome EndTurn()
+        {
+            State = BattleState.TurnEnd;
+            var units = LivingUnits();
+            foreach (var u in units)
+            {
+                foreach (var dot in new[] { StatusType.Burn, StatusType.Poison })
+                {
+                    int stacks = u.Statuses.Stacks(dot);
+                    if (stacks > 0)
+                    {
+                        Queue.EnqueueMain(new DamageAction { Target = u, BaseDamage = stacks, IsStatusTick = true });
+                    }
+                }
+            }
+            Queue.Process();
+            foreach (var u in units) u.Statuses.ExpireAtTurnEnd();
+            if (Player != null) Player.Deck.EndTurn();
+            return EvaluateOutcome();
+        }
+
+        /// <summary>전투가 끝나면 상태이상을 전부 지운다 (Poison 포함, D-08). Wave 전환에서는 부르지 않는다.</summary>
+        public void EndBattleCleanup()
+        {
+            foreach (var a in Allies) a.Statuses.ClearAll();
+            foreach (var e in Enemies) e.Statuses.ClearAll();
+            if (Player != null) Player.Statuses.ClearAll();
+        }
+
         /// <summary>
         /// 승패 판정 진입점 (`06` §13.1 끝). 적이 모두 죽으면 승리, 플레이어 HP ≤ 0이면 패배,
         /// 30턴째 턴 종료에도 끝나지 않으면 패배 (`03` §2 노드 30턴 초과). 큐 비상 정지도 패배로 끝낸다.

@@ -14,9 +14,6 @@ namespace DarkLegion.Core
         public bool IgnoreShield;
         /// <summary>Burn·Poison 틱이면 true: 스택 값 그대로, DEF·Weak·Vulnerable 무시 (D-01).</summary>
         public bool IsStatusTick;
-        /// <summary>Weak·Vulnerable은 상태이상(#40) 구현 전까지 호출하는 쪽이 넘긴다.</summary>
-        public bool AttackerWeak;
-        public bool TargetVulnerable;
 
         public int LastDealt { get; private set; }
 
@@ -31,9 +28,10 @@ namespace DarkLegion.Core
                 {
                     BaseDamage = BaseDamage,
                     IsCritical = IsCritical,
-                    AttackerWeak = AttackerWeak,
+                    // Weak는 유닛 공격에만 (D-01: 플레이어 카드 피해에는 적용 안 함)
+                    AttackerWeak = Source != null && !(Source is RuntimePlayer) && Source.Statuses.Has(StatusType.Weak),
                     TargetDef = Target.EffectiveDefense,
-                    TargetVulnerable = TargetVulnerable,
+                    TargetVulnerable = Target.Statuses.Has(StatusType.Vulnerable),
                     IgnoreDefense = IgnoreDefense
                 });
             var (shield, hp) = DamageCalculator.ApplyToShieldAndHp(damage, Target.Shield, Target.CurrentHP, IgnoreShield);
