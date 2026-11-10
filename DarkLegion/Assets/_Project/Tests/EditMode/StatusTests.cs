@@ -123,6 +123,19 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void ShorterReapplyInEnemyPhase_DoesNotExtendDuration()
+        {
+            var ctx = NewBattle(out _);
+            var ally = new RuntimeMonster("A1", "NEC_MON_001", 10, 3, 1, null);
+            ctx.Allies.Add(ally);
+            ally.Statuses.Apply(StatusType.Bind, 2, ctx);   // Main Phase에 2턴
+            ctx.State = BattleState.EnemyPhase;
+            ally.Statuses.Apply(StatusType.Bind, 1, ctx);   // 더 짧은 재부여: 바뀌는 것이 없어야 한다
+            ctx.EndTurn();
+            Assert.AreEqual(1, ally.Statuses.Stacks(StatusType.Bind), "갱신되지 않은 상태는 그 턴 종료에 정상적으로 줄어든다");
+        }
+
+        [Test]
         public void BurnTickCanKill_AndBattleIsWon()
         {
             var ctx = NewBattle(out var e, enemyHp: 3);

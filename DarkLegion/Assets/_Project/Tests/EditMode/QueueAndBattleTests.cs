@@ -89,6 +89,30 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void LongBattle_ManyActionsOverTime_IsNotAnEmergency()
+        {
+            // MaxQueueCount(500)는 한 번에 쌓인 수의 한도다. 전투 전체 누적이 500을 넘어도 정상이다 (`06` §9.5)
+            var ctx = new BattleContext(1);
+            var log = new List<string>();
+            for (int turn = 0; turn < 30; turn++)
+            {
+                for (int i = 0; i < 30; i++) ctx.Queue.EnqueueMain(new Probe("a", log));
+                ctx.Queue.Process();
+            }
+            Assert.IsFalse(ctx.Queue.EmergencyStopped);
+            Assert.AreEqual(900, log.Count);
+        }
+
+        [Test]
+        public void TooManyQueuedAtOnce_IsAnEmergency()
+        {
+            var ctx = new BattleContext(1);
+            var log = new List<string>();
+            for (int i = 0; i < BattleLimits.MaxQueueCount + 1; i++) ctx.Queue.EnqueueMain(new Probe("a", log));
+            Assert.IsTrue(ctx.Queue.EmergencyStopped);
+        }
+
+        [Test]
         public void TriggerDepthOverLimitIsDropped()
         {
             var ctx = new BattleContext(1);

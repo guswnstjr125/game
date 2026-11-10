@@ -49,7 +49,9 @@ namespace DarkLegion.Core
         private void Enqueue(Queue<BattleAction> queue, BattleAction action)
         {
             if (EmergencyStopped) return;
-            if (++TotalEnqueued > BattleLimits.MaxQueueCount)
+            TotalEnqueued++;
+            // 한도는 한 번에 쌓인 수다. 전투 전체 누적으로 세면 긴 전투가 비상 정지된다 (`06` §9.5)
+            if (_main.Count + _trigger.Count + _death.Count >= BattleLimits.MaxQueueCount)
             {
                 EmergencyCleanup($"queue count > {BattleLimits.MaxQueueCount}");
                 return;

@@ -66,7 +66,8 @@ namespace DarkLegion.Core
                     _values[type] = 1;
                     return true;
                 default:
-                    _values[type] = System.Math.Max(Stacks(type), amount);
+                    if (amount < Stacks(type)) return true; // 더 짧은 재부여는 아무것도 바꾸지 않는다
+                    _values[type] = amount;
                     if (context != null && (context.State == BattleState.EnemyPhase || context.State == BattleState.TurnEnd))
                     {
                         _skipNextExpiry.Add(type);
