@@ -34,6 +34,8 @@ SHEETS = [
     ("Cards_Upgrade", F08, "Cards_Upgrade"),
     ("Cards_FloorUnlock", F08, "Cards_FloorUnlock"),
     ("Curse_Cards", F08, "Curse_Cards"),
+    ("Cards_Text", F08, "Cards_Text"),
+    ("Keywords", F08, "Keywords"),
     ("Monsters_Master", F09, "Monsters_Master"),
     ("Fusion_Recipes", F09, "Fusion_Recipes"),
     ("Fusion_RandomPool", F09, "Fusion_RandomPool"),
