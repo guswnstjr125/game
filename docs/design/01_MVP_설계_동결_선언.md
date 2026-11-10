@@ -931,7 +931,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 | 항목 | 결정 |
 |---|---|
 | 카드 문구 | `08` **Cards_Text** 시트에 Skill·Action 36장의 `Text_KO`와 강화 후 `Text_Up_KO`를 둔다. `17`의 효과 문장에서 설계 표기를 뺀 것이다. Cost- 강화는 두 문구가 같다. 몬스터 카드 문구는 `09` Monsters_Master의 효과 칸을 쓴다 |
-| 키워드 툴팁 | `08` **Keywords** 시트: Exhaust(소멸)·Ethereal(휘발)·Deathrattle(죽음의 메아리)·Soulbound(영혼 결속)·Execute(처형)·Ignite(폭발)·토큰·희생·융합 + 상태이상 8종 |
+| 키워드 툴팁 | `08` **Keywords** 시트: Exhaust(소멸)·Ethereal(휘발)·Deathrattle(죽음의 메아리)·Soulbound(영혼 결속)·Execute(처형)·Ignite(폭발)·Frenzy(광폭화)·토큰·희생·융합 + 상태이상 8종 |
 | 유물 문구 | `06` Relics_MVP **Text_KO** 열. 동작은 `24` §1 그대로다. Effect 열은 설계 요약으로 남긴다 |
 | 표기 규칙 | 화면 문구에 `DiscardPile` 같은 코드 이름, D 번호, 백틱을 쓰지 않는다 (`check_design.py` R16) |
 

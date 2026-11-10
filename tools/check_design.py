@@ -526,6 +526,11 @@ def r16_data_completeness():
     kw = {r["Term"] for r in sheet("08_카드_데이터베이스.xlsx", "Keywords")}
     used = {r["Keyword"] for r in ct.values() if r["Keyword"]}
     check("R16 card keywords have tooltips", used <= kw, "08/Cards_Text Keyword vs Keywords", sorted(used - kw), [])
+    mon_kw = set()
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        for k in ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special"):
+            mon_kw |= set(re.findall(r"\[(?:키워드\] )?([A-Za-z]+)\]?", str(r.get(k) or "")))
+    check("R16 monster keywords have tooltips", mon_kw <= kw, "09/Monsters_Master 키워드 vs 08/Keywords", sorted(mon_kw - kw), [])
     status = {r["Name_KO"] for r in sheet("12_상태이상_마스터.xlsx", "Status_Master")}
     check("R16 status tooltips", status <= kw, "08/Keywords vs 12/Status_Master", sorted(status - kw), [])
     # 강화값 기계 판독 칸 (D-40, 38 §4): Up_Params는 Before/After 문구·Cards_Master와 일치
