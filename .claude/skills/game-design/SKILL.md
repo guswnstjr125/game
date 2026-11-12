@@ -76,6 +76,7 @@ description: 다크 레기온 게임 설계 작업 절차. 설계 문서(docs/de
 
 1. `python3 tools/check_design.py` → 모든 규칙 그룹 OK, 0 failed.
 2. `python3 tools/build_ops_xlsx.py --check`와 `python3 tools/build_master_xlsx.py --check` → 둘 다 0 sheet(s).
+   `python3 tools/export_game_data.py --check --out <임시 폴더>` → 0 file(s) (`DarkLegion/`이 생긴 뒤에는 `--out` 없이). Excel을 바꿨다면 JSON도 다시 내보낸다 (`38` §1, `32` DATA-02).
 3. 검사가 놓친 종류의 실수였다면 `tools/check_design.py`에 규칙을 추가한다. 분류·계산 함수를 데이터 기입과 검사에 같이 쓰면, 손으로 적은 기대값 테스트(R13 방식)를 함께 넣는다.
 4. `docs/design/36_설계_수정_필요_목록.md`에 처리 기록을 남긴다.
 5. PR 본문에 넣는 것: 바꾼 시트·문서 목록, 계산 근거, 관련 D 번호와 **결정 주체·근거**, `check_design.py` **출력 전체**(`commit=` 줄 포함).
