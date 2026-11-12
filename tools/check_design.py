@@ -12,6 +12,7 @@ PR 본문에는 이 출력을 통째로 붙인다.
 의존성: openpyxl
 """
 import collections
+import json
 import math
 import pathlib
 import re
@@ -384,6 +385,21 @@ def r14_ops_xlsx():
     stale = build_ops_xlsx.run(DESIGN, write=False)
     check("R14 ops xlsx generated from MD", not stale, "운영 Excel 5개", stale,
           "[] (python3 tools/build_ops_xlsx.py로 다시 생성)")
+    import export_game_data
+    names = [n for n, _, _ in export_game_data.SHEETS]
+    t38 = md("38_데이터_임포트_매핑.md")
+    sec = t38.split("## 3.")[1].split("\n## ")[0]
+    mapped = [l.split("|")[1].strip() for l in sec.splitlines()
+              if l.startswith("| ") and not l.startswith("| JSON") and "Post-MVP" not in l and "·" not in l.split("|")[1]]
+    mapped += ["Meta_Unlock", "Meta_Achievement"]  # 38 §3에서 한 행으로 묶어 적은 시트
+    check("R14 exporter sheets = 38 §3", sorted(names) == sorted(mapped), "tools/export_game_data.py SHEETS vs 38 §3",
+          sorted(set(names) ^ set(mapped)), [])
+    src38 = {l.split("|")[1].strip(): l.split("|")[2] for l in sec.splitlines() if l.startswith("| ") and not l.startswith("| JSON")}
+    wrong = [n for n, f, s in export_game_data.SHEETS if n in src38 and (f"`{f[:2]}`" not in src38[n] or s not in src38[n])]
+    check("R14 exporter sources = 38 §3", not wrong, "tools/export_game_data.py SHEETS 원본 vs 38 §3 정본 시트", wrong, [])
+    rendered = export_game_data.render(DESIGN)
+    check("R14 exporter renders every sheet", len(rendered) == len(names) and all(json.loads(v)["rows"] for v in rendered.values()),
+          "tools/export_game_data.py", [k for k, v in rendered.items() if not json.loads(v)["rows"]], "모든 시트 1행 이상")
     import build_master_xlsx
     stale = build_master_xlsx.run(DESIGN, write=False)
     check("R14 master xlsx generated from sources", not stale, "다크레기온_마스터통합.xlsx", stale,
@@ -402,6 +418,25 @@ def r15_doc_structure():
         t = p.read_text(encoding="utf-8")
         check("R15 no prev/next links", not re.search(r"\*(이전|다음) 문서:", t), p.name, None, "문서 목록 링크로 통일")
         check("R15 footer", t.rstrip().endswith("*문서 목록: [00_문서_인덱스.md](00_문서_인덱스.md)*"), p.name, t.rstrip()[-40:], "문서 목록 footer")
+    # `NN` §X 참조가 그 문서의 실제 절을 가리키는지. "구 `NN`"(이력)과 36 수정 기록은 제외
+    heads = {}
+    for p in DESIGN.glob("[0-9][0-9]_*.md"):
+        hs = set()
+        for line in p.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"#+\s+(\d+(?:\.\d+)*|[A-Z])[.)\s]", line)
+            if m:
+                hs.add(m.group(1))
+        heads[p.name[:2]] = hs
+    broken = []
+    for p in sorted(DESIGN.glob("*.md")):
+        if p.name.startswith("36_"):
+            continue
+        for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            for m in re.finditer(r"(구 )?`(\d{2})(?:_[^`]*)?`\s*§\s*([0-9A-Z]+(?:\.\d+)*)", line):
+                old_ref, k, sec = m.groups()
+                if not old_ref and k in heads and sec not in heads[k]:
+                    broken.append(f"{p.name}:{i} `{k}` §{sec}")
+    check("R15 section references exist", not broken, "MD의 `NN` §X 참조", broken[:5], [])
     top = max(int(p.name[:2]) for p in numbered)
     check("R15 index range", f"01~{top:02d}" in index or f"01`~`{top:02d}" in index, "00_문서_인덱스.md", None, f"01~{top:02d}")
     log = DESIGN / "archive" / "35_리네임_매핑_로그.md"
@@ -467,6 +502,37 @@ def r16_data_completeness():
                   f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
     line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
     check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    # 화면 문구 (D-58): Skill·Action 전부 Cards_Text에, 유물 전부 Text_KO에, 문구에 설계 표기가 섞이지 않게
+    ct = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Text")}
+    need = {r["ID"] for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master") if r["타입"] in ("Skill", "Action")}
+    check("R16 Cards_Text covers Skill/Action", set(ct) == need, "08/Cards_Text", sorted(set(ct) ^ need)[:5], [])
+    upg = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade")}
+    for cid, r in ct.items():
+        check("R16 card text filled", bool(r["Text_KO"]) and bool(r["Text_Up_KO"]), f"08/Cards_Text {cid}", None, "Text_KO·Text_Up_KO")
+        if cid in upg:
+            same = r["Text_KO"] == r["Text_Up_KO"]
+            check("R16 upgraded text differs iff not Cost-", same == (upg[cid]["Upgrade_Type"] == "Cost-"),
+                  f"08/Cards_Text {cid}", upg[cid]["Upgrade_Type"], "Cost-면 같고 그 밖에는 다름")
+    texts = [(f"08/Cards_Text {k}", v["Text_KO"] + v["Text_Up_KO"]) for k, v in ct.items() if v["Text_KO"] and v["Text_Up_KO"]]
+    texts += [(f"08/Keywords {r['Keyword_ID']}", r["Tooltip_KO"] or "") for r in sheet("08_카드_데이터베이스.xlsx", "Keywords")]
+    relics = sheet("06_콘텐츠_마스터.xlsx", "Relics_MVP")
+    check("R16 relic Text_KO filled", all(r.get("Text_KO") for r in relics), "06/Relics_MVP Text_KO", None, "20개 모두")
+    texts += [(f"06/Relics_MVP {r['Relic_ID']}", r.get("Text_KO") or "") for r in relics]
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        texts += [(f"09/Monsters_Master {r['MON_ID']} {k}", r[k]) for k in ("OnSummon", "Passive", "OnDeath", "OnAttack") if r.get(k)]
+    for where, s in texts:
+        bad = re.search(r"`|D-\d|DiscardPile|ExhaustPile|DrawPile", s)
+        check("R16 player text has no design notation", not bad, where, bad.group(0) if bad else None, "화면 문구")
+    kw = {r["Term"] for r in sheet("08_카드_데이터베이스.xlsx", "Keywords")}
+    used = {r["Keyword"] for r in ct.values() if r["Keyword"]}
+    check("R16 card keywords have tooltips", used <= kw, "08/Cards_Text Keyword vs Keywords", sorted(used - kw), [])
+    mon_kw = set()
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        for k in ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special"):
+            mon_kw |= set(re.findall(r"\[(?:키워드\] )?([A-Za-z]+)\]?", str(r.get(k) or "")))
+    check("R16 monster keywords have tooltips", mon_kw <= kw, "09/Monsters_Master 키워드 vs 08/Keywords", sorted(mon_kw - kw), [])
+    status = {r["Name_KO"] for r in sheet("12_상태이상_마스터.xlsx", "Status_Master")}
+    check("R16 status tooltips", status <= kw, "08/Keywords vs 12/Status_Master", sorted(status - kw), [])
     # 강화값 기계 판독 칸 (D-40, 38 §4): Up_Params는 Before/After 문구·Cards_Master와 일치
     cm = {r["ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master")}
     for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade"):

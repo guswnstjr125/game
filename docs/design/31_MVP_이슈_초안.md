@@ -119,6 +119,7 @@
 - **요약**: 카드명을 배제하고 CardId 기반으로 실행 가능하도록 매핑을 완료한다.
 - **완료 조건**
   - 1단계: 1층 풀의 NEC·NEU 드롭 30장 + `NEC_MON_013`·`014` 등록
+  - 1단계 범위는 D-44로 32장 고정. 1~2층 드롭 풀의 나머지 카드는 1단계 빌드 설정 `Stage1CardPool`로 제외한다. 이벤트 저주(Curse_Cards)는 이 98장 Resolver 범위 밖이며 #10에서 다룬다 (D-45)
   - 2단계: 나머지 66장 등록 (드롭 92 + 융합 전용 6 = 98)
   - `TargetRule` enum 고정
   - `EffectDefinition[]` 직렬화/역직렬화 검증
@@ -188,6 +189,8 @@
   - 층당 9노드 템플릿 반영 (단일 경로, D-11)
   - 이벤트: 1단계는 1~2층 풀 7종, 2단계는 8종 전체. 층 풀 가중치 공통 14%·신규 22% (D-23)
   - 보상: `Reward_BattleTable`. 보스 보상 유물 `REL_BOSS_*` (D-16)
+  - 1단계 카드 보상·이벤트 `GrantCard`는 `Stage1CardPool`(D-44의 32장)과의 교집합에서만 뽑는다. 뽑힌 희귀도에 후보가 없으면 그 희귀도를 빼고 나머지 확률을 같은 비율로 키워 다시 굴리고, 후보가 3장 미만이면 나온 칸만 그 카드로 채우고 나머지 칸은 다시 굴린다. 한 보상 안 중복은 허용. 이벤트 `GrantCard`도 희귀도 지정 없이 같은 규칙 (D-49). 이벤트는 그 층 Normal 행 확률을 쓴다 (D-49, `36` J25)
+  - 이벤트 저주: 악마 계약 옵션2 = CUR_002·004 중 무작위(노드 시드), 어둠의 내기 = CUR_002, 저주 상자 = CUR_003 (D-45). 세 저주의 등록·실행(드로우 시 효과, Ethereal·Exhaust)·테스트를 이 이슈에서 한다
   - 시작 클래스 카드 해금 (D-07·D-17)
   - 2~5층 노드6은 상점(D-34). 1단계 빌드에서는 2층 노드6을 이벤트로 두고, 상점은 #16에서 구현
   - 첫 런 1층 노드 1 희생 안내 전투 (D-32)
@@ -274,7 +277,7 @@
 - **제목**: `[#17] 설계 Excel을 ScriptableObject로 가져오는 에디터 임포터 구현`
 - **요약**: Excel 정본을 엔진 데이터로 옮기는 단일 경로를 만든다 (D-39).
 - **완료 조건**
-  - `tools/export_game_data.py`가 정본 Excel을 `DarkLegion/DesignData/*.json`으로 내보낸다 (`38` §2, `--check` 포함, `01` D-40)
+  - `tools/export_game_data.py`가 정본 Excel을 `DarkLegion/DesignData/*.json`으로 내보낸다 (`38` §2, `--check` 포함, `01` D-40). 도구는 작성됨, #34 뒤 첫 내보내기와 JSON 커밋
   - 메뉴 `DarkLegion/Import Design Data`로 JSON을 읽어 `Assets/_Project/Data/Generated/`에 `38` §3 표의 SO(CardData·MonsterData·EnemyData·BossData·BossPhaseData·RelicData·EventData·StatusData 등) 생성. 카드 강화는 Up_Params(`38` §4)
   - 다시 임포트하면 같은 ID의 에셋을 덮어쓰고, 사라진 ID는 경고
   - `38` §5 검사(중복 ID, 잘못된 참조, 비용·확률 범위, 1단계 핸들러 등록) 실패 시 임포트 중단
@@ -282,13 +285,14 @@
 - **테스트**
   - 임포트 → 런타임 생성(`08` RuntimeFactory) → 값이 Excel과 같은지 샘플 대조
   - Excel 값을 하나 바꾸고 다시 임포트 → 에셋에 반영
+  - `38` §5.1 Position_Bonus 해석: Front `+1`→DEF 1, Back `+10%`→0.10, Middle→없음 (기대값 손으로 적음), 형식 오류는 임포트 실패
 
 ---
 
 ## 빠른 사용 메모
 
 - 각 이슈는 실제 시스템명/모듈명으로 세분화해 하위 이슈로 분리 가능
-- 커밋 메시지는 `feat|fix|chore|refactor|docs` + `(#이슈번호)` 규칙 유지
+- 커밋 메시지는 `30` §2 규칙: 접두어 `feat|fix|refactor|test|docs|chore` + 끝에 `(#이슈번호)`
 - PR 본문은 `30_MVP_구현_이슈_템플릿.md` §2 형식을 따른다
 - 설계 수치를 바꾸는 PR은 `tools/check_design.py` 출력 전체를 본문에 붙인다
 

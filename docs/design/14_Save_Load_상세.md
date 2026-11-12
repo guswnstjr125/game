@@ -20,7 +20,7 @@ Runtime 직접 직렬화 금지
 [Serializable]
 public class SaveData
 {
-    public string Version = "1.0.0";
+    public int SaveVersion = 1;  // 저장 형식 버전 (`01` D-59). 현재와 다르면 런 저장을 버린다
     public PlayerSaveDTO Player;
     public DeckSaveDTO Deck;
     public MapSaveDTO Map;
@@ -96,6 +96,7 @@ public class MapSaveDTO
 ```csharp
 public class MetaSaveDTO
 {
+    public int SaveVersion = 1;  // 메타 저장 형식 버전 (`01` D-59). 낮으면 변환, 높으면 읽지 않고 알림
     public List<string> UnlockedClasses;
     public List<string> PermanentUnlocks;  // 심연의 가마솥 — Post-MVP (`29` §8). MVP에서는 빈 목록
     public int MetaSoul;
@@ -104,6 +105,19 @@ public class MetaSaveDTO
     public List<string> UnlockedRelics;
     public Dictionary<string, bool> AchievementFlags;
     public bool TutorialDone;    // 1층 노드 1 희생 안내 전투 완료 여부 (`01` D-32)
+    public MetaStatsDTO Stats;   // 언락 조건·업적 판정용 누적 기록 (`01` D-53, `41` §4.1). 2단계
+}
+
+public class MetaStatsDTO
+{
+    public int[] FloorClearCount;            // 길이 5, 층별 보스 처치 런 수
+    public int TotalSacrifice;
+    public int TotalFusion;
+    public int TotalExecuteKill;
+    public int TotalBurnDamage;
+    public int TotalPoisonDamage;
+    public Dictionary<string, int> ClassWins;
+    public string LastClass;
 }
 ```
 
