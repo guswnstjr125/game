@@ -11,7 +11,7 @@
 | 구현 PR을 올리기 전 자체 검토 | `mattpocock-skills:code-review` |
 | PR 본문 작성 | `mattpocock-skills:pr` |
 | 테스트 실패·버그 | `mattpocock-skills:diagnosing-bugs` |
-| 결정 전에 규칙의 빈틈 찾기 | `mattpocock-skills:grilling` — 단, 사용자가 결정을 위임한 항목은 사용자에게 묻지 않고 Claude가 스스로 질문·답을 정리해 근거로 남긴다 |
+| 결정 전에 규칙의 빈틈 찾기 | `mattpocock-skills:grilling` — 단, 사용자가 결정을 위임한 항목은 사용자에게 묻지 않고 Claude가 스스로 질문·답을 정리해 근거로 남긴다. 묻지 않는 것은 선택지 질문뿐이고, **사용자 본인 승인 댓글은 위임 결정에도 그대로 필요하다** (game-design 스킬 §2.4) |
 | 구조·인터페이스 설계 | `mattpocock-skills:codebase-design` |
 
 ## 충돌할 때
