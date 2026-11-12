@@ -1,0 +1,39 @@
+# 설계 검사와 코어 테스트를 PR마다 자동으로 돌린다 (36 J37).
+name: checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl
+      - name: check_design
+        run: python3 tools/check_design.py
+      - name: generated xlsx are up to date
+        run: |
+          python3 tools/build_ops_xlsx.py --check
+          python3 tools/build_master_xlsx.py --check
+      - name: exporter round trip
+        if: hashFiles('tools/export_game_data.py') != ''
+        run: |
+          python3 tools/export_game_data.py --out "$RUNNER_TEMP/json"
+          python3 tools/export_game_data.py --check --out "$RUNNER_TEMP/json"
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        if: hashFiles('tools/dotnet/DarkLegion.Core.Tests/*.csproj') != ''
+        with:
+          dotnet-version: "8.0.x"
+      - name: core tests
+        if: hashFiles('tools/dotnet/DarkLegion.Core.Tests/*.csproj') != ''
+        run: dotnet test tools/dotnet/DarkLegion.Core.Tests

@@ -502,6 +502,37 @@ def r16_data_completeness():
                   f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
     line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
     check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    # 화면 문구 (D-58): Skill·Action 전부 Cards_Text에, 유물 전부 Text_KO에, 문구에 설계 표기가 섞이지 않게
+    ct = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Text")}
+    need = {r["ID"] for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master") if r["타입"] in ("Skill", "Action")}
+    check("R16 Cards_Text covers Skill/Action", set(ct) == need, "08/Cards_Text", sorted(set(ct) ^ need)[:5], [])
+    upg = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade")}
+    for cid, r in ct.items():
+        check("R16 card text filled", bool(r["Text_KO"]) and bool(r["Text_Up_KO"]), f"08/Cards_Text {cid}", None, "Text_KO·Text_Up_KO")
+        if cid in upg:
+            same = r["Text_KO"] == r["Text_Up_KO"]
+            check("R16 upgraded text differs iff not Cost-", same == (upg[cid]["Upgrade_Type"] == "Cost-"),
+                  f"08/Cards_Text {cid}", upg[cid]["Upgrade_Type"], "Cost-면 같고 그 밖에는 다름")
+    texts = [(f"08/Cards_Text {k}", v["Text_KO"] + v["Text_Up_KO"]) for k, v in ct.items() if v["Text_KO"] and v["Text_Up_KO"]]
+    texts += [(f"08/Keywords {r['Keyword_ID']}", r["Tooltip_KO"] or "") for r in sheet("08_카드_데이터베이스.xlsx", "Keywords")]
+    relics = sheet("06_콘텐츠_마스터.xlsx", "Relics_MVP")
+    check("R16 relic Text_KO filled", all(r.get("Text_KO") for r in relics), "06/Relics_MVP Text_KO", None, "20개 모두")
+    texts += [(f"06/Relics_MVP {r['Relic_ID']}", r.get("Text_KO") or "") for r in relics]
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        texts += [(f"09/Monsters_Master {r['MON_ID']} {k}", r[k]) for k in ("OnSummon", "Passive", "OnDeath", "OnAttack") if r.get(k)]
+    for where, s in texts:
+        bad = re.search(r"`|D-\d|DiscardPile|ExhaustPile|DrawPile", s)
+        check("R16 player text has no design notation", not bad, where, bad.group(0) if bad else None, "화면 문구")
+    kw = {r["Term"] for r in sheet("08_카드_데이터베이스.xlsx", "Keywords")}
+    used = {r["Keyword"] for r in ct.values() if r["Keyword"]}
+    check("R16 card keywords have tooltips", used <= kw, "08/Cards_Text Keyword vs Keywords", sorted(used - kw), [])
+    mon_kw = set()
+    for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master"):
+        for k in ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special"):
+            mon_kw |= set(re.findall(r"\[(?:키워드\] )?([A-Za-z]+)\]?", str(r.get(k) or "")))
+    check("R16 monster keywords have tooltips", mon_kw <= kw, "09/Monsters_Master 키워드 vs 08/Keywords", sorted(mon_kw - kw), [])
+    status = {r["Name_KO"] for r in sheet("12_상태이상_마스터.xlsx", "Status_Master")}
+    check("R16 status tooltips", status <= kw, "08/Keywords vs 12/Status_Master", sorted(status - kw), [])
     # 강화값 기계 판독 칸 (D-40, 38 §4): Up_Params는 Before/After 문구·Cards_Master와 일치
     cm = {r["ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master")}
     for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Upgrade"):
