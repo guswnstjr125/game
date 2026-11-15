@@ -118,6 +118,13 @@ namespace DarkLegion.Core
     {
         public RuntimeCard SourceCard { get; }
         public bool IsToken { get; }
+        /// <summary>몬스터 레벨. 희생 Crystal의 기본값이다 (`13` §2.3). 해골 토큰은 Lv1 (`17` NEC_ACT_002).</summary>
+        public int Level { get; set; } = 1;
+        /// <summary>레벨과 다른 희생 Crystal (파편 +1, 수정 골렘 Lv2 +3).</summary>
+        public int? SacrificeCrystalOverride { get; set; }
+        /// <summary>희생이 예약되어 사망 처리를 기다리는 중. 같은 유닛을 두 번 희생하지 못하게 한다.</summary>
+        public bool SacrificeReserved { get; internal set; }
+        public bool IsSoulbound => Tags.Contains("Soulbound");
 
         public RuntimeMonster(string unitId, string dataId, int maxHp, int attack, int defense, RuntimeCard sourceCard, bool isToken = false)
             : base(unitId, dataId, TeamType.Player, maxHp, attack, defense)

@@ -4,6 +4,8 @@ namespace DarkLegion.Core
     {
         Idle,
         PlayerPhase,
+        /// <summary>토큰 교체 대상 선택 대기 (`09` §3.2). Main Phase에서만 들어간다.</summary>
+        WaitingReplace,
         CommandPhase,
         Resolving,
         EnemyPhase,
@@ -32,6 +34,9 @@ namespace DarkLegion.Core
         public int Turn { get; private set; }
 
         public RuntimePlayer Player { get; set; }
+        public BattleField Field { get; } = new BattleField();
+        /// <summary>이번 턴 희생 횟수. 피의 잔·REL_BOSS_1F의 "턴당 첫 희생" 판정에 쓴다 (D-04·D-15).</summary>
+        public int SacrificesThisTurn { get; internal set; }
         public System.Collections.Generic.List<RuntimeMonster> Allies { get; } = new System.Collections.Generic.List<RuntimeMonster>();
         public System.Collections.Generic.List<RuntimeEnemy> Enemies { get; } = new System.Collections.Generic.List<RuntimeEnemy>();
         /// <summary>사망한 유닛 (`06` §12.2 Graveyard). 순서 = 사망 순서.</summary>
@@ -68,8 +73,43 @@ namespace DarkLegion.Core
             }
         }
 
+        /// <summary>
+        /// 희생 요청 (`13` §2). Player Phase에서만, 아군 몬스터만, Soulbound 불가. Bind는 막지 않는다 (`11` §2).
+        /// 통과하면 대상을 예약하고 SacrificeAction을 Main 큐에 넣는다 (즉시 제거 금지).
+        /// </summary>
+        public SacrificeResult Sacrifice(RuntimeMonster target)
+        {
+            if (State != BattleState.PlayerPhase) return SacrificeResult.InvalidPhase;
+            if (target == null || !Allies.Contains(target)) return SacrificeResult.NotAlly;
+            if (target.IsDead || target.SacrificeReserved) return SacrificeResult.TargetDead;
+            if (target.IsSoulbound) return SacrificeResult.Soulbound;
+            target.SacrificeReserved = true;
+            target.MarkDead();
+            Queue.EnqueueMain(new SacrificeAction { Target = target });
+            return SacrificeResult.Ok;
+        }
+
+        /// <summary>
+        /// 다음 Wave (`09` §6, `03` §2): 토큰은 사망 처리 없이 제거, 몬스터는 HP·상태·위치 유지, 적 칸 비움.
+        /// 새 적 배치와 Crystal·손패 처리는 Wave를 시작하는 쪽이 한다.
+        /// </summary>
+        public void StartNextWave()
+        {
+            foreach (var a in Allies.ToArray())
+            {
+                if (a.IsToken)
+                {
+                    Field.Remove(a);
+                    Allies.Remove(a);
+                }
+            }
+            Field.ClearEnemies();
+            Enemies.Clear();
+        }
+
         internal void RemoveUnit(RuntimeUnit unit)
         {
+            Field.Remove(unit);
             bool removed = unit is RuntimeMonster m ? Allies.Remove(m) : unit is RuntimeEnemy e && Enemies.Remove(e);
             if (removed) Graveyard.Add(unit);
         }
@@ -83,6 +123,7 @@ namespace DarkLegion.Core
         public void BeginTurn()
         {
             Turn++;
+            SacrificesThisTurn = 0;
             State = BattleState.PlayerPhase;
         }
 

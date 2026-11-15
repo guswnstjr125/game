@@ -52,6 +52,8 @@ namespace DarkLegion.Core
     {
         public RuntimeUnit Unit;
         public bool IsSacrifice;
+        /// <summary>칸에서 뺀 직후 부른다 (토큰 교체가 그 칸에 토큰을 놓을 때).</summary>
+        public System.Action<BattleContext> OnRemoved;
 
         public override BattleActionType Type => BattleActionType.Death;
 
@@ -62,6 +64,7 @@ namespace DarkLegion.Core
             {
                 context.Player.Deck.ReturnFromField(m.SourceCard);
             }
+            OnRemoved?.Invoke(context);
         }
 
         public override string ToString() => $"Death {Unit?.UnitId}";
