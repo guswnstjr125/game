@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace DarkLegion.Core
 {
     /// <summary>슬롯 위치 (`09` §1). 아군은 Front·Middle·Back, 적은 Extra1·Extra2까지.</summary>
@@ -12,19 +10,25 @@ namespace DarkLegion.Core
         Extra2 = 4
     }
 
+    /// <summary>아군 소환 요청의 결과 (`09` §3).</summary>
     public enum SummonResult
     {
+        /// <summary>칸을 잡았고 SummonAction을 큐에 넣었다.</summary>
         Placed,
-        /// <summary>몬스터 카드 소환인데 아군 3칸이 다 참: 거부, 비용을 쓰지 않는다 (`09` §3).</summary>
+        /// <summary>몬스터 카드인데 3칸이 다 찼거나, 토큰인데 Player Phase가 아니다. 거부, 비용을 쓰지 않는다.</summary>
         RejectedFullField,
-        /// <summary>토큰 소환인데 3칸이 다 참: 교체할 아군을 고를 때까지 대기 (`09` §3, BattleState.WaitingReplace).</summary>
+        /// <summary>토큰인데 3칸이 다 찼다. Front 아군을 고를 때까지 대기 (BattleState.WaitingReplace).</summary>
         WaitingReplace,
-        RejectedOccupied
+        /// <summary>지정한 칸이 차 있다.</summary>
+        RejectedOccupied,
+        /// <summary>아군에게 없는 칸(Extra1·Extra2)을 지정했다.</summary>
+        InvalidPosition
     }
 
     /// <summary>
-    /// 아군 3 / 적 5 슬롯 (`09`). 유닛이 들어가고 나가는 곳은 여기 하나다.
-    /// Front 위치의 유닛은 DEF +1을 받는다 (`04` Position_Bonus, D-01). 사망 후 자동 당김은 없다.
+    /// 아군 3 / 적 5 슬롯 (`09`). 유닛 배치는 SummonAction·DeathAction·RemoveTokenAction을 거쳐서만 바뀐다 (`06` §2).
+    /// 소환 요청은 칸을 예약하고 큐에 넣으므로, 큐를 처리하기 전에 두 번 소환해도 같은 칸을 고르지 않는다.
+    /// Front 위치의 유닛은 DEF +1 (`04` Position_Bonus, D-01). 사망 후 자동 당김은 없다.
     /// </summary>
     public sealed class BattleField
     {
@@ -34,8 +38,10 @@ namespace DarkLegion.Core
 
         private readonly RuntimeUnit[] _allies = new RuntimeUnit[AllySlotCount];
         private readonly RuntimeUnit[] _enemies = new RuntimeUnit[EnemySlotCount];
+        private readonly bool[] _allyReserved = new bool[AllySlotCount];
         private RuntimeMonster _pendingToken;
 
+        /// <summary>그 칸의 유닛. 비었으면 null.</summary>
         public RuntimeUnit At(TeamType team, SlotPosition pos)
         {
             var slots = Slots(team);
@@ -43,6 +49,7 @@ namespace DarkLegion.Core
             return i < slots.Length ? slots[i] : null;
         }
 
+        /// <summary>유닛이 있는 칸. 필드에 없으면 null.</summary>
         public SlotPosition? PositionOf(RuntimeUnit unit)
         {
             if (unit == null) return null;
@@ -54,80 +61,97 @@ namespace DarkLegion.Core
             return null;
         }
 
-        /// <summary>앞줄 = 비어 있지 않은 첫 슬롯 Front → Middle → Back (`09` §7). 살아 있는 유닛만.</summary>
+        /// <summary>앞줄 = 살아 있는 유닛이 있는 첫 칸 Front → Middle → Back (`09` §7).</summary>
         public RuntimeUnit FrontLine(TeamType team)
         {
             var slots = Slots(team);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < AllySlotCount; i++)
             {
                 if (slots[i] != null && !slots[i].IsDead) return slots[i];
             }
             return null;
         }
 
-        /// <summary>아군 소환. position이 없으면 Back → Middle → Front 첫 빈 칸 (`09` §2.1).</summary>
+        /// <summary>
+        /// 아군 소환 요청. 칸을 고르고(지정이 없으면 Back → Middle → Front 첫 빈 칸, `09` §2.1) 예약한 뒤 SummonAction을 Main 큐에 넣는다.
+        /// 3칸이 다 차면 몬스터 카드는 거부, 토큰은 Player Phase에서만 교체 대기로 들어간다 (`09` §3·§3.2).
+        /// </summary>
         public SummonResult TrySummonAlly(RuntimeMonster monster, SlotPosition? position, BattleContext context)
         {
+            int index;
             if (position.HasValue)
             {
-                if ((int)position.Value >= AllySlotCount) return SummonResult.RejectedOccupied;
-                if (_allies[(int)position.Value] != null) return SummonResult.RejectedOccupied;
-                Place(_allies, (int)position.Value, monster, context);
-                return SummonResult.Placed;
+                index = (int)position.Value;
+                if (index >= AllySlotCount) return SummonResult.InvalidPosition;
+                if (!IsAllyFree(index)) return SummonResult.RejectedOccupied;
             }
-            for (int i = AllySlotCount - 1; i >= 0; i--)
+            else
             {
-                if (_allies[i] == null)
+                index = -1;
+                for (int i = AllySlotCount - 1; i >= 0; i--)
                 {
-                    Place(_allies, i, monster, context);
-                    return SummonResult.Placed;
+                    if (IsAllyFree(i))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index < 0)
+                {
+                    if (!monster.IsToken || context.State != BattleState.PlayerPhase) return SummonResult.RejectedFullField;
+                    _pendingToken = monster;
+                    context.State = BattleState.WaitingReplace;
+                    return SummonResult.WaitingReplace;
                 }
             }
-            if (!monster.IsToken) return SummonResult.RejectedFullField;
-            _pendingToken = monster;
-            context.State = BattleState.WaitingReplace;
-            return SummonResult.WaitingReplace;
+            _allyReserved[index] = true;
+            context.Queue.EnqueueMain(new SummonAction { Unit = monster, Position = (SlotPosition)index });
+            return SummonResult.Placed;
         }
 
         /// <summary>
-        /// 토큰 교체: 고른 아군은 사망 처리(희생 아님, Crystal 없음)되고 그 칸에 대기 중인 토큰이 들어간다 (`09` §3).
-        /// 칸은 DeathAction이 비우므로, 사망 처리가 끝난 뒤 토큰을 놓는다.
+        /// 토큰 교체 대상 선택 (`09` §3). Front 칸의 살아 있는 아군만 고를 수 있다. 잘못 고르면 false이고 대기 상태를 유지한다.
+        /// 고른 아군은 사망 처리(희생 아님, Crystal 없음)되고, 그 다음에 SummonAction이 같은 칸에 토큰을 놓는다.
         /// </summary>
-        public void ResolveReplace(RuntimeUnit victim, BattleContext context)
+        public bool ResolveReplace(RuntimeUnit victim, BattleContext context)
         {
-            if (_pendingToken == null || victim == null || victim.Team != TeamType.Player) return;
-            var pos = PositionOf(victim);
-            if (!pos.HasValue) return;
+            if (_pendingToken == null || context.State != BattleState.WaitingReplace) return false;
+            if (victim == null || victim != _allies[(int)SlotPosition.Front] || victim.IsDead) return false;
+            if (victim is RuntimeMonster vm && vm.SacrificeReserved) return false;
             var token = _pendingToken;
             _pendingToken = null;
-            if (victim.MarkDead())
-            {
-                context.Queue.EnqueueDeath(new DeathAction { Unit = victim, OnRemoved = c => Place(_allies, (int)pos.Value, token, c) });
-            }
+            victim.MarkDead();
+            _allyReserved[(int)SlotPosition.Front] = true;
+            context.Queue.EnqueueDeath(new DeathAction { Unit = victim });
+            context.Queue.EnqueueMain(new SummonAction { Unit = token, Position = SlotPosition.Front });
             context.State = BattleState.PlayerPhase;
+            return true;
         }
 
-        /// <summary>적 배치. position이 없으면 Front부터 첫 빈 칸 (`09` §2.1). 빈 칸이 없으면 false.</summary>
+        /// <summary>
+        /// 적 배치 (`09` §2.1, 지정이 없으면 Front부터). Wave를 시작할 때의 전투 준비라서 큐를 거치지 않는다.
+        /// 전투 중 적 소환은 SummonAction을 쓴다. 빈 칸이 없으면 false.
+        /// </summary>
         public bool PlaceEnemy(RuntimeEnemy enemy, SlotPosition? position, BattleContext context)
         {
-            if (position.HasValue)
-            {
-                if (_enemies[(int)position.Value] != null) return false;
-                Place(_enemies, (int)position.Value, enemy, context);
-                return true;
-            }
-            for (int i = 0; i < EnemySlotCount; i++)
-            {
-                if (_enemies[i] == null)
-                {
-                    Place(_enemies, i, enemy, context);
-                    return true;
-                }
-            }
-            return false;
+            int index = position.HasValue ? (int)position.Value : System.Array.IndexOf(_enemies, null);
+            if (index < 0 || _enemies[index] != null) return false;
+            Put(index, enemy, context);
+            return true;
         }
 
-        /// <summary>칸에서 뺀다. 사망 처리(DeathAction)와 토큰 제거가 부른다.</summary>
+        /// <summary>SummonAction이 부른다: 예약한 칸에 유닛을 놓는다.</summary>
+        internal void Put(int index, RuntimeUnit unit, BattleContext context)
+        {
+            var slots = Slots(unit.Team);
+            slots[index] = unit;
+            if (unit.Team != TeamType.Enemy) _allyReserved[index] = false;
+            unit.PositionDefBonus = index == (int)SlotPosition.Front ? FrontDefBonus : 0;
+            if (unit is RuntimeMonster m && !context.Allies.Contains(m)) context.Allies.Add(m);
+            if (unit is RuntimeEnemy e && !context.Enemies.Contains(e)) context.Enemies.Add(e);
+        }
+
+        /// <summary>칸에서 뺀다. DeathAction·RemoveTokenAction이 부른다.</summary>
         internal void Remove(RuntimeUnit unit)
         {
             var slots = Slots(unit.Team);
@@ -141,54 +165,16 @@ namespace DarkLegion.Core
             }
         }
 
-        internal void ClearEnemies()
+        /// <summary>Wave 전환: 적 칸을 비우고, 대기 중인 토큰 교체를 취소한다.</summary>
+        internal void ResetForNextWave(BattleContext context)
         {
             for (int i = 0; i < EnemySlotCount; i++) _enemies[i] = null;
+            _pendingToken = null;
+            if (context.State == BattleState.WaitingReplace) context.State = BattleState.PlayerPhase;
         }
 
-        private void Place(RuntimeUnit[] slots, int index, RuntimeUnit unit, BattleContext context)
-        {
-            slots[index] = unit;
-            unit.PositionDefBonus = index == (int)SlotPosition.Front ? FrontDefBonus : 0;
-            if (unit is RuntimeMonster m && !context.Allies.Contains(m)) context.Allies.Add(m);
-            if (unit is RuntimeEnemy e && !context.Enemies.Contains(e)) context.Enemies.Add(e);
-        }
+        private bool IsAllyFree(int index) => _allies[index] == null && !_allyReserved[index];
 
         private RuntimeUnit[] Slots(TeamType team) => team == TeamType.Enemy ? _enemies : _allies;
-    }
-
-    public enum SacrificeResult
-    {
-        Ok,
-        InvalidPhase,
-        NotAlly,
-        TargetDead,
-        Soulbound
-    }
-
-    /// <summary>
-    /// 희생 (`13` §2): Crystal 지급 → (OnSacrifice 트리거 자리) → 사망 처리. 몬스터 카드는 버린 더미로.
-    /// Crystal: Lv1 +1, Lv2 +2, Lv3 +3. 파편·수정 골렘처럼 다른 값은 SacrificeCrystalOverride (`13` §2.3, D-04).
-    /// </summary>
-    public sealed class SacrificeAction : BattleAction
-    {
-        public RuntimeMonster Target;
-
-        public override BattleActionType Type => BattleActionType.Sacrifice;
-
-        public static int CrystalFor(RuntimeMonster m)
-        {
-            return m.SacrificeCrystalOverride ?? m.Level;
-        }
-
-        public override void Execute(BattleContext context)
-        {
-            if (Target == null || Target.IsDead && !Target.SacrificeReserved) return;
-            context.Player.CurrentCrystal += CrystalFor(Target);
-            context.SacrificesThisTurn++;
-            context.Queue.EnqueueDeath(new DeathAction { Unit = Target, IsSacrifice = true });
-        }
-
-        public override string ToString() => $"Sacrifice {Target?.UnitId}";
     }
 }

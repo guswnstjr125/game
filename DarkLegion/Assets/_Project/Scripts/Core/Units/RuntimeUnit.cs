@@ -122,7 +122,7 @@ namespace DarkLegion.Core
         public int Level { get; set; } = 1;
         /// <summary>레벨과 다른 희생 Crystal (파편 +1, 수정 골렘 Lv2 +3).</summary>
         public int? SacrificeCrystalOverride { get; set; }
-        /// <summary>희생이 예약되어 사망 처리를 기다리는 중. 같은 유닛을 두 번 희생하지 못하게 한다.</summary>
+        /// <summary>희생이 예약되어 SacrificeAction을 기다리는 중. 같은 유닛을 두 번 희생하지 못하게 한다. 유닛은 그동안 필드에 있다.</summary>
         public bool SacrificeReserved { get; internal set; }
         public bool IsSoulbound => Tags.Contains("Soulbound");
 

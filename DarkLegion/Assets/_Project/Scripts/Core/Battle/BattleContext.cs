@@ -37,6 +37,8 @@ namespace DarkLegion.Core
         public BattleField Field { get; } = new BattleField();
         /// <summary>이번 턴 희생 횟수. 피의 잔·REL_BOSS_1F의 "턴당 첫 희생" 판정에 쓴다 (D-04·D-15).</summary>
         public int SacrificesThisTurn { get; internal set; }
+        /// <summary>턴의 첫 희생에만 더하는 Crystal. 피의 잔 +1, REL_BOSS_1F +1 (D-04·D-15). 유물을 얻을 때 유물 시스템이 정한다.</summary>
+        public int FirstSacrificeBonus { get; set; }
         public System.Collections.Generic.List<RuntimeMonster> Allies { get; } = new System.Collections.Generic.List<RuntimeMonster>();
         public System.Collections.Generic.List<RuntimeEnemy> Enemies { get; } = new System.Collections.Generic.List<RuntimeEnemy>();
         /// <summary>사망한 유닛 (`06` §12.2 Graveyard). 순서 = 사망 순서.</summary>
@@ -81,29 +83,26 @@ namespace DarkLegion.Core
         {
             if (State != BattleState.PlayerPhase) return SacrificeResult.InvalidPhase;
             if (target == null || !Allies.Contains(target)) return SacrificeResult.NotAlly;
-            if (target.IsDead || target.SacrificeReserved) return SacrificeResult.TargetDead;
+            if (target.IsDead) return SacrificeResult.TargetDead;
+            if (target.SacrificeReserved) return SacrificeResult.AlreadyReserved;
             if (target.IsSoulbound) return SacrificeResult.Soulbound;
-            target.SacrificeReserved = true;
-            target.MarkDead();
+            target.SacrificeReserved = true; // 예약만 한다. 칸과 타겟팅은 SacrificeAction이 실행될 때까지 그대로 (`13` §2.2)
             Queue.EnqueueMain(new SacrificeAction { Target = target });
             return SacrificeResult.Ok;
         }
 
         /// <summary>
-        /// 다음 Wave (`09` §6, `03` §2): 토큰은 사망 처리 없이 제거, 몬스터는 HP·상태·위치 유지, 적 칸 비움.
+        /// 다음 Wave (`09` §6, `03` §2): 토큰은 RemoveTokenAction으로 제거(사망 아님), 몬스터는 HP·상태·위치 유지, 적 칸 비움.
         /// 새 적 배치와 Crystal·손패 처리는 Wave를 시작하는 쪽이 한다.
         /// </summary>
         public void StartNextWave()
         {
             foreach (var a in Allies.ToArray())
             {
-                if (a.IsToken)
-                {
-                    Field.Remove(a);
-                    Allies.Remove(a);
-                }
+                if (a.IsToken) Queue.EnqueueMain(new RemoveTokenAction { Token = a });
             }
-            Field.ClearEnemies();
+            Queue.Process();
+            Field.ResetForNextWave(this);
             Enemies.Clear();
         }
 
