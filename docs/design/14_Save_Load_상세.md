@@ -33,8 +33,24 @@ public class SaveData
     public int Gold;
     public int FusionCharge;     // 0~3, 층 이동 시 유지 (01 D-03)
     public bool FreeFusionUsed;  // 3층 융합 성소 무료 1회 사용 여부 (D-03, 2단계)
+    public bool FreeFusionPending; // 성소에서 받은 무료 융합을 아직 안 씀 (다음 융합 1회 충전 미소모, `01` D-62)
+    public List<string> Consumables; // 소모품 ID, 최대 3 (`25` §3, D-62)
+    public int ShopRemovalsUsed;     // 런 카드 제거 횟수, 최대 2 (`24` §3)
+    public ShopVisitDTO Shop;        // 현재 노드가 상점일 때만. 진열은 노드 시드로 다시 만든다
 }
 ```
+
+### ShopVisitDTO
+
+```csharp
+public class ShopVisitDTO
+{
+    public List<int> PurchasedSlots;   // 산 칸 번호 (카드 0~4, 유물 5, 소모품 6)
+    public int RefreshCount;           // 이번 방문 새로고침 횟수 (첫 1회 무료)
+}
+```
+
+상점 구매·새로고침·제거는 할 때마다 런을 저장한다. 상점에서 껐다가 이어하면 노드 시드 + 새로고침 횟수로 진열을 다시 만들고, 산 칸은 판매 완료로 보인다 (`01` D-62).
 
 ### RelicSaveDTO
 

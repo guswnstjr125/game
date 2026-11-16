@@ -91,7 +91,7 @@ public class ConsumableData : ScriptableObject
 | ID | 효과 | 사용 시점 |
 |----|------|-----------|
 | CON_HP_SMALL | PlayerHp +15 (MaxHp 초과 불가) | 맵 노드 (전투 전) |
-| CON_PURIFY | 부정적 상태 1스택 제거 (런 디버프 MVP 없으면 Poison 대신 "저주 카드 1장 제거"로 대체 가능) |
+| CON_PURIFY | 덱의 저주 카드 1장을 골라 제거 (Removable=N 저주 제외, `01` D-62) | 맵 노드 (전투 전) |
 
 ### 3.3 인벤토리
 
@@ -102,7 +102,8 @@ public class RunInventory
 }
 ```
 
-- 상점 구매 → 인벤토리 추가
+- 데이터 정본: `06_콘텐츠_마스터.xlsx` **Consumables** (`01` D-62)
+- 상점 구매 → 인벤토리 추가. 3칸이 차 있으면 구매 불가
 - 전투 중 사용 **MVP 불가** (맵 UI에서만)
 - Save: `SaveData.Consumables`
 
