@@ -9,6 +9,8 @@ namespace DarkLegion.Core
         public System.Func<RuntimeEnemy, BattleContext, bool> Condition { get; }
         /// <summary>조건이 참일 때 고를 확률 (기본 1).</summary>
         public double Chance { get; }
+        /// <summary>이 선택지가 가리키는 행동 정의 (EnemyActionDef 등).</summary>
+        public object Tag { get; set; }
 
         public bool IsConditional => Condition != null || Chance < 1.0;
 
