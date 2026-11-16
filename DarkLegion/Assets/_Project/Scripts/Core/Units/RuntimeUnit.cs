@@ -125,6 +125,10 @@ namespace DarkLegion.Core
         /// <summary>희생이 예약되어 SacrificeAction을 기다리는 중. 같은 유닛을 두 번 희생하지 못하게 한다. 유닛은 그동안 필드에 있다.</summary>
         public bool SacrificeReserved { get; internal set; }
         public bool IsSoulbound => Tags.Contains("Soulbound");
+        /// <summary>이번 턴 추가 행동 횟수 (신속한 지휘). 턴 시작에 0.</summary>
+        public int ExtraActionsThisTurn { get; set; }
+        /// <summary>누적형 효과의 쌓인 횟수 (망령 전사 등, 상한 판정용). 전투 동안 유지.</summary>
+        public int GrowthStacks { get; set; }
 
         public RuntimeMonster(string unitId, string dataId, int maxHp, int attack, int defense, RuntimeCard sourceCard, bool isToken = false)
             : base(unitId, dataId, TeamType.Player, maxHp, attack, defense)

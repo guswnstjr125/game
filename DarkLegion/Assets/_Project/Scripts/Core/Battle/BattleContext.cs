@@ -35,6 +35,9 @@ namespace DarkLegion.Core
 
         public RuntimePlayer Player { get; set; }
         public BattleField Field { get; } = new BattleField();
+        public TriggerBus Triggers { get; } = new TriggerBus();
+        /// <summary>카드 정의 (임포터가 채운다). 없으면 카드를 쓸 수 없다.</summary>
+        public CardCatalog Cards { get; set; }
         /// <summary>이번 턴 희생 횟수. 피의 잔·REL_BOSS_1F의 "턴당 첫 희생" 판정에 쓴다 (D-04·D-15).</summary>
         public int SacrificesThisTurn { get; internal set; }
         /// <summary>턴의 첫 희생에만 더하는 Crystal. 피의 잔 +1, REL_BOSS_1F +1 (D-04·D-15). 유물을 얻을 때 유물 시스템이 정한다.</summary>
@@ -48,6 +51,44 @@ namespace DarkLegion.Core
         {
             Random = new BattleRandom(seed);
             Queue = new QueueProcessor(this);
+            MonsterEffects.Attach(this);
+            Triggers.UnitDied += FireDeathDrawWatchers;
+        }
+
+        public void Log(string message) => Queue.WriteLog(message);
+
+        /// <summary>
+        /// 카드 사용 (`04` §4, `10`). 검사에 통과하면 비용을 내고 카드를 옮긴 뒤 효과를 큐에 넣는다. 큐 처리는 호출하는 쪽이 한다.
+        /// target: 대상 유닛, position: 몬스터 소환 칸·이동 칸, chosenCard: 카드를 고르는 효과의 선택.
+        /// </summary>
+        public PlayResult PlayCard(RuntimeCard card, RuntimeUnit target, SlotPosition? position = null, RuntimeCard chosenCard = null)
+        {
+            return CardPlayer.Play(this, new CardPlay { Card = card, Target = target, Position = position, ChosenCard = chosenCard });
+        }
+
+        /// <summary>회복: 최대 HP를 넘지 않는다. CannotHeal이면 무시.</summary>
+        public void Heal(RuntimeUnit unit, int amount)
+        {
+            if (unit == null || unit.IsDead || unit.Flags.CannotHeal || amount <= 0) return;
+            unit.CurrentHP = System.Math.Min(unit.MaxHP.FinalValue, unit.CurrentHP + amount);
+        }
+
+        private readonly System.Collections.Generic.List<(RuntimeUnit unit, int draw, int turn)> _deathDrawWatchers =
+            new System.Collections.Generic.List<(RuntimeUnit, int, int)>();
+
+        /// <summary>영혼 추출 (D-42): 이번 턴 그 유닛이 죽으면(희생 포함) draw장 드로우.</summary>
+        internal void WatchDeathDraw(RuntimeUnit unit, int draw) => _deathDrawWatchers.Add((unit, draw, Turn));
+
+        private void FireDeathDrawWatchers(BattleContext c, RuntimeUnit dead, bool isSacrifice)
+        {
+            foreach (var w in _deathDrawWatchers.ToArray())
+            {
+                if (w.unit == dead && w.turn == Turn)
+                {
+                    _deathDrawWatchers.Remove(w);
+                    Queue.EnqueueTrigger(new EffectAction(BattleActionType.Draw, "SoulExtractDraw", x => x.Player.Deck.Draw(w.draw)));
+                }
+            }
         }
 
         /// <summary>살아 있고 타겟 가능한 유닛 (팀 필터). 사망 처리 대기 중(IsDead)인 유닛은 빠진다.</summary>
@@ -123,6 +164,8 @@ namespace DarkLegion.Core
         {
             Turn++;
             SacrificesThisTurn = 0;
+            _deathDrawWatchers.RemoveAll(w => w.turn < Turn);
+            foreach (var a in Allies) a.ExtraActionsThisTurn = 0;
             State = BattleState.PlayerPhase;
         }
 
