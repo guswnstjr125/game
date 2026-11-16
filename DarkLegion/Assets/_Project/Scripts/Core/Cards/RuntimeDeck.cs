@@ -122,10 +122,10 @@ namespace DarkLegion.Core
             if (card != null && _field.Contains(card)) Move(card, CardZone.DiscardPile);
         }
 
-        /// <summary>버린 더미의 카드를 손패로 (묘지 도굴). 손패가 10장이면 버린 더미에 그대로 둔다.</summary>
+        /// <summary>버린 더미의 카드를 손패로 (묘지 도굴, `17`: "DiscardPile에서"). 손패가 10장이면 버린 더미에 그대로 둔다.</summary>
         public void ReturnToHand(RuntimeCard card)
         {
-            if (card.Zone == CardZone.DiscardPile || card.Zone == CardZone.ExhaustPile) AddToHand(card);
+            if (card.Zone == CardZone.DiscardPile) AddToHand(card);
         }
 
         /// <summary>손패를 모두 버린 더미로. 버린 장 수를 돌려준다.</summary>

@@ -27,15 +27,15 @@ namespace DarkLegion.Tests.EditMode
 
         private RuntimeCard InHand(string cardId, bool upgraded = false)
         {
-            var def = _ctx.Cards.Get(cardId);
-            var card = new RuntimeCard(++_nextId, cardId, def.Cost, def.Ethereal, def.Exhaust) { Upgraded = upgraded };
+            // 카드 인스턴스는 정의에서 만든다 (Exhaust·Ethereal·비용은 데이터가 정본)
+            var card = _ctx.Cards.Get(cardId).CreateCard(++_nextId, upgraded);
             _ctx.Player.Deck.AddToHand(card);
             return card;
         }
 
-        private RuntimeMonster Ally(string cardId, SlotPosition pos, int hp = 10)
+        private RuntimeMonster Ally(string cardId, SlotPosition pos, int hp = 10, bool upgraded = false)
         {
-            var card = InHand(cardId);
+            var card = InHand(cardId, upgraded);
             _ctx.Player.CurrentCrystal += card.Cost;
             Assert.AreEqual(PlayResult.Ok, _ctx.PlayCard(card, null, pos), cardId);
             _ctx.Queue.Process();
@@ -272,10 +272,15 @@ namespace DarkLegion.Tests.EditMode
             _ctx.Player.Deck.EndTurn();
             var keep = new RuntimeCard(900, "FILLER", 0);
             _ctx.Player.Deck.AddToHand(keep);
-            Assert.AreEqual(PlayResult.Ok, _ctx.PlayCard(InHand("NEU_ACT_001"), null, chosenCard: keep));
+            Assert.AreEqual(PlayResult.Ok, _ctx.PlayCard(InHand("NEU_ACT_001"), null));
             _ctx.Queue.Process();
-            Assert.AreEqual(2, _ctx.Player.Deck.Hand.Count, "1 + 2 드로우 − 1 버림");
-            Assert.AreEqual(CardZone.DiscardPile, keep.Zone);
+            Assert.AreEqual(3, _ctx.Player.Deck.Hand.Count, "1 + 2 드로우");
+            Assert.AreEqual(BattleState.WaitingDiscard, _ctx.State, "드로우 뒤에 버릴 카드를 고른다 (D-63)");
+            var drawn = _ctx.Player.Deck.Hand.First(c => c != keep);
+            Assert.IsTrue(_ctx.ResolveDiscard(drawn), "방금 뽑은 카드도 고를 수 있다");
+            Assert.AreEqual(CardZone.DiscardPile, drawn.Zone);
+            Assert.AreEqual(2, _ctx.Player.Deck.Hand.Count);
+            Assert.AreEqual(BattleState.PlayerPhase, _ctx.State);
         }
 
         [Test]
@@ -360,6 +365,82 @@ namespace DarkLegion.Tests.EditMode
             Assert.IsTrue(fodder.IsDead);
             Assert.AreEqual(2, _ctx.Player.Deck.Hand.Count);
             Assert.AreEqual(3 - 2 + 1, _ctx.Player.CurrentCrystal, "비용 2, 파편 희생 +1");
+        }
+
+        // ---------- 데이터·강화 (리뷰 반영) ----------
+
+        [Test]
+        public void CARD_04_ExhaustAndEtherealComeFromDefinition()
+        {
+            foreach (var id in new[] { "NEC_ACT_001", "NEC_ACT_002", "NEC_ACT_003", "NEC_ACT_004" })
+            {
+                Assert.IsTrue(_ctx.Cards.Get(id).CreateCard(1, false).ExhaustOnUse, id + " D-24");
+            }
+            Assert.IsTrue(_ctx.Cards.Get("NEU_ACT_001").CreateCard(1, false).IsEthereal);
+            // 카드 인스턴스의 플래그가 빠져 있어도 사용 시에는 정의를 따른다
+            var bare = new RuntimeCard(77, "NEC_ACT_004", 3);
+            _ctx.Player.Deck.AddToHand(bare);
+            var e = Enemy(SlotPosition.Front);
+            _ctx.PlayCard(bare, e);
+            _ctx.Queue.Process();
+            Assert.AreEqual(CardZone.ExhaustPile, bare.Zone);
+        }
+
+        [Test]
+        public void Upgrade_MonsterStatsFromCardsUpgrade()
+        {
+            var m = Ally("NEC_MON_002", SlotPosition.Front, hp: 16, upgraded: true);
+            Assert.AreEqual(16, m.MaxHP.FinalValue, "Up_Params HP=16");
+        }
+
+        [Test]
+        public void Upgrade_CostMinus_SkillCostsZero()
+        {
+            var card = InHand("NEC_SKL_003", upgraded: true);
+            Assert.AreEqual(0, card.Cost);
+            _ctx.Player.CurrentCrystal = 0;
+            Assert.AreEqual(PlayResult.Ok, _ctx.PlayCard(card, Enemy(SlotPosition.Front)));
+        }
+
+        [Test]
+        public void Upgrade_SoulExtractDraws3_LifeDrain19_DeathWhirlTimes12()
+        {
+            for (int i = 0; i < 5; i++) _ctx.Player.Deck.AddToHand(new RuntimeCard(1100 + i, "FILLER", 0));
+            _ctx.Player.Deck.EndTurn();
+            var a = Ally("NEC_MON_001", SlotPosition.Front, hp: 10);
+            _ctx.PlayCard(InHand("NEC_SKL_001", upgraded: true), a);
+            _ctx.Queue.Process();
+            int hand = _ctx.Player.Deck.Hand.Count;
+            _ctx.Player.CurrentCrystal = 6;
+            var e = Enemy(SlotPosition.Front, hp: 60, def: 0);
+            _ctx.PlayCard(InHand("NEC_ACT_003", upgraded: true), null);
+            _ctx.Queue.Process();
+            // floor(10 × 1.2) = 12, Front 적 DEF 0 + 1 = 1 → 11
+            Assert.AreEqual(49, e.CurrentHP);
+            _ctx.PlayCard(InHand("NEC_ACT_004", upgraded: true), e);
+            _ctx.Queue.Process();
+            Assert.AreEqual(49 - (19 - 1), e.CurrentHP, "19 − Front DEF 1");
+            _ctx.Sacrifice(a);
+            _ctx.Queue.Process();
+            Assert.AreEqual(hand + 3, _ctx.Player.Deck.Hand.Count, "DeathThisTurnDraw=3");
+        }
+
+        [Test]
+        public void NEU_MON_008_Machine_OnSummonDraw1()
+        {
+            _ctx.Player.Deck.AddToHand(new RuntimeCard(1200, "FILLER", 0));
+            _ctx.Player.Deck.EndTurn();
+            Ally("NEU_MON_008", SlotPosition.Back);
+            Assert.AreEqual(1, _ctx.Player.Deck.Hand.Count);
+        }
+
+        [Test]
+        public void NEC_SKL_004_GraveRob_OnlyFromDiscardPile()
+        {
+            var exhausted = _ctx.Cards.Get("NEC_MON_001").CreateCard(1300, false);
+            _ctx.Player.Deck.AddToHand(exhausted);
+            _ctx.Player.Deck.ExhaustFromHand(exhausted);
+            Assert.AreEqual(PlayResult.InvalidTarget, _ctx.PlayCard(InHand("NEC_SKL_004"), null, chosenCard: exhausted));
         }
     }
 }

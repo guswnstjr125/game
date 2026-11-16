@@ -6,6 +6,8 @@ namespace DarkLegion.Core
         PlayerPhase,
         /// <summary>토큰 교체 대상 선택 대기 (`09` §3.2). Main Phase에서만 들어간다.</summary>
         WaitingReplace,
+        /// <summary>손패에서 버릴 카드 선택 대기 (기회 포착, D-63).</summary>
+        WaitingDiscard,
         CommandPhase,
         Resolving,
         EnemyPhase,
@@ -64,6 +66,29 @@ namespace DarkLegion.Core
         public PlayResult PlayCard(RuntimeCard card, RuntimeUnit target, SlotPosition? position = null, RuntimeCard chosenCard = null)
         {
             return CardPlayer.Play(this, new CardPlay { Card = card, Target = target, Position = position, ChosenCard = chosenCard });
+        }
+
+        public int PendingDiscards { get; private set; }
+
+        /// <summary>손패에서 n장을 골라 버리게 한다 (효과 실행 중에 부른다). 손패가 비면 아무것도 하지 않는다.</summary>
+        internal void RequestDiscard(int n)
+        {
+            if (Player.Deck.Hand.Count == 0 || n <= 0) return;
+            PendingDiscards = System.Math.Min(n, Player.Deck.Hand.Count);
+            State = BattleState.WaitingDiscard;
+        }
+
+        /// <summary>버릴 카드 선택. 손패의 카드만. 다 고르면 Player Phase로 돌아간다.</summary>
+        public bool ResolveDiscard(RuntimeCard card)
+        {
+            if (State != BattleState.WaitingDiscard || card == null || card.Zone != CardZone.Hand) return false;
+            Player.Deck.DiscardFromHand(card);
+            if (--PendingDiscards <= 0 || Player.Deck.Hand.Count == 0)
+            {
+                PendingDiscards = 0;
+                State = BattleState.PlayerPhase;
+            }
+            return true;
         }
 
         /// <summary>회복: 최대 HP를 넘지 않는다. CannotHeal이면 무시.</summary>

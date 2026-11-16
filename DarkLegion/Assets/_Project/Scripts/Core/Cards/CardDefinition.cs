@@ -28,12 +28,25 @@ namespace DarkLegion.Core
         public int Hp;
         public int Atk;
         public int Def;
+        /// <summary>강화 스탯 (`08` Cards_Upgrade Up_Params HP·ATK·DEF). 없으면 기본 스탯.</summary>
+        public int? UpHp;
+        public int? UpAtk;
+        public int? UpDef;
         public bool Soulbound;
         public int? SacrificeCrystal;
         public Dictionary<string, double> Params = new Dictionary<string, double>();
         public Dictionary<string, double> UpParams = new Dictionary<string, double>();
 
         public int CostFor(bool upgraded) => upgraded && UpCost.HasValue ? UpCost.Value : Cost;
+
+        /// <summary>
+        /// 이 정의로 카드 인스턴스를 만든다. 비용·Exhaust·Ethereal은 정의(데이터)를 따른다 (D-24).
+        /// 덱을 만드는 쪽(런 시작·보상·임포터)은 이 함수만 쓴다.
+        /// </summary>
+        public RuntimeCard CreateCard(int instanceId, bool upgraded)
+        {
+            return new RuntimeCard(instanceId, Id, CostFor(upgraded), Ethereal, Exhaust) { Upgraded = upgraded };
+        }
 
         /// <summary>강화 여부에 맞는 수치. 강화 값이 없으면 기본 값, 기본 값도 없으면 fallback.</summary>
         public double Param(string key, bool upgraded, double fallback = 0)

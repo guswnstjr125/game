@@ -73,9 +73,11 @@ namespace DarkLegion.Core
             if (!TargetOk(ctx, handler.Target, play.Target)) return PlayResult.InvalidTarget;
             if (handler.Validate != null && !handler.Validate(ctx, play)) return PlayResult.InvalidTarget;
 
+            // `04` §4: 비용 → 효과를 큐에 등록 → 카드 이동. Exhaust·Ethereal은 정의를 따른다 (D-24)
             ctx.Player.TrySpendCrystal(cost);
-            ctx.Player.Deck.MoveAfterUse(play.Card, isMonster: false);
             handler.Enqueue(ctx, play);
+            play.Card.ExhaustOnUse = play.Def.Exhaust;
+            ctx.Player.Deck.MoveAfterUse(play.Card, isMonster: false);
             return PlayResult.Ok;
         }
 
@@ -92,8 +94,8 @@ namespace DarkLegion.Core
             if (result != SummonResult.Placed) return PlayResult.InvalidTarget;
 
             ctx.Player.TrySpendCrystal(cost);
-            ctx.Player.Deck.MoveAfterUse(play.Card, isMonster: true);
             handler?.Enqueue?.Invoke(ctx, play);
+            ctx.Player.Deck.MoveAfterUse(play.Card, isMonster: true);
             return PlayResult.Ok;
         }
 
@@ -117,7 +119,11 @@ namespace DarkLegion.Core
 
         public static RuntimeMonster FromCard(BattleContext ctx, CardDefinition def, RuntimeCard card)
         {
-            var m = new RuntimeMonster($"M{++_seq}", def.Id, def.Hp, def.Atk, def.Def, card)
+            bool up = card != null && card.Upgraded;
+            int hp = up && def.UpHp.HasValue ? def.UpHp.Value : def.Hp;
+            int atk = up && def.UpAtk.HasValue ? def.UpAtk.Value : def.Atk;
+            int dfn = up && def.UpDef.HasValue ? def.UpDef.Value : def.Def;
+            var m = new RuntimeMonster($"M{++_seq}", def.Id, hp, atk, dfn, card)
             {
                 Level = def.Level,
                 SacrificeCrystalOverride = def.SacrificeCrystal

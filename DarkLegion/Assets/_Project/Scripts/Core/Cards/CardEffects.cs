@@ -16,7 +16,7 @@ namespace DarkLegion.Core
             {
                 // 영혼 추출: 지정 아군이 이번 턴 죽으면(희생 포함) Draw (D-42)
                 Target = CardTarget.SelectedAlly,
-                Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("SoulExtract", x => x.WatchDeathDraw(p.Target, (int)p.P("Draw", 2))))
+                Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("SoulExtract", x => x.WatchDeathDraw(p.Target, (int)p.P("DeathThisTurnDraw", 2))))
             },
             ["NEC_SKL_002"] = new CardHandler
             {
@@ -75,7 +75,7 @@ namespace DarkLegion.Core
                 Enqueue = (c, p) =>
                 {
                     c.Sacrifice((RuntimeMonster)p.Target);
-                    c.Queue.EnqueueMain(Fx("BloodRiteBonus", x => x.Player.CurrentCrystal += (int)p.P("BonusCrystal", 1)));
+                    c.Queue.EnqueueMain(Fx("BloodRiteBonus", x => x.Player.CurrentCrystal += (int)p.P("CrystalBonus", 1)));
                 }
             },
             ["NEC_ACT_002"] = new CardHandler
@@ -93,10 +93,11 @@ namespace DarkLegion.Core
             },
             ["NEC_ACT_003"] = new CardHandler
             {
-                // 죽음의 소용돌이: 아군 몬스터마다 자기 현재 HP(강화 ×1.2)만큼 정면의 적에게 카드 피해. 정면이 비면 적 앞줄 (D-63)
+                // 죽음의 소용돌이: 아군 몬스터마다 자기 현재 HP(강화 ×1.2)만큼 정면의 적에게 카드 피해. 정면이 비면 적 앞줄.
+                // 피해를 모두 더하면 "합산 HP"다 (`17` "해당 몬스터 전방의 적", `10` §4 Sum, D-63)
                 Enqueue = (c, p) =>
                 {
-                    double mult = p.P("HpMultiplier", 1.0);
+                    double mult = p.P("DamageMult", 1.0);
                     foreach (var a in c.Allies.Where(a => !a.IsDead).ToList())
                     {
                         var pos = c.Field.PositionOf(a);
@@ -123,12 +124,11 @@ namespace DarkLegion.Core
             },
             ["NEU_ACT_001"] = new CardHandler
             {
-                // 기회 포착: 2장(강화 3) 드로우 후 손패 1장을 골라 버린다 (D-63). Ethereal
-                Validate = (c, p) => p.ChosenCard != null && p.ChosenCard.Zone == CardZone.Hand && p.ChosenCard != p.Card,
+                // 기회 포착: 2장(강화 3) 드로우한 뒤 손패 1장을 골라 버린다. 방금 뽑은 카드도 고를 수 있다 (D-63). Ethereal
                 Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("Opportunity", x =>
                 {
                     x.Player.Deck.Draw((int)p.P("Draw", 2));
-                    x.Player.Deck.DiscardFromHand(p.ChosenCard);
+                    x.RequestDiscard(1);
                 }))
             },
             ["NEU_ACT_002"] = new CardHandler
@@ -180,11 +180,12 @@ namespace DarkLegion.Core
         {
             switch (m.DataId)
             {
-                case "NEC_MON_003": // 소환 시 무작위 적 1명에게 Poison 1
+                case "NEC_MON_003": // 소환 시 무작위 적 1명에게 Poison 1 (값은 Monster_Effects → Params "Value")
+                    int poison = Value(c, m, 1);
                     Trigger(c, "CursedSkeleton", x =>
                     {
                         var enemies = x.Enemies.Where(e => e.IsTargetable).ToList();
-                        if (enemies.Count > 0) enemies[x.Random.Next(0, enemies.Count)].Statuses.Apply(StatusType.Poison, 1, x);
+                        if (enemies.Count > 0) enemies[x.Random.Next(0, enemies.Count)].Statuses.Apply(StatusType.Poison, poison, x);
                     });
                     break;
                 case "NEU_MON_004": // 소환 시 Draw 1
@@ -199,10 +200,11 @@ namespace DarkLegion.Core
             if (!(dead is RuntimeMonster dm)) return;
             if (dm.DataId == "NEC_MON_002") // 죽을 때 무작위 아군 1명 HP 3 회복
             {
+                int heal = Value(c, dm, 3);
                 Trigger(c, "HungryGhoulDeath", x =>
                 {
                     var others = x.Allies.Where(a => a != dm && !a.IsDead).ToList();
-                    if (others.Count > 0) x.Heal(others[x.Random.Next(0, others.Count)], 3);
+                    if (others.Count > 0) x.Heal(others[x.Random.Next(0, others.Count)], heal);
                 });
             }
             foreach (var ally in c.Allies.Where(a => a != dm && !a.IsDead).ToList())
@@ -219,6 +221,12 @@ namespace DarkLegion.Core
                     });
                 }
             }
+        }
+
+        /// <summary>몬스터 효과 수치: 카드 정의 Params "Value"(임포터가 Monster_Effects Value에서 채움), 없으면 기본값.</summary>
+        private static int Value(BattleContext c, RuntimeMonster m, int fallback)
+        {
+            return (int)(c.Cards?.Get(m.DataId)?.Param("Value", m.SourceCard != null && m.SourceCard.Upgraded, fallback) ?? fallback);
         }
 
         private static void Trigger(BattleContext c, string label, System.Action<BattleContext> run)
