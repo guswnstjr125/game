@@ -29,6 +29,7 @@ namespace DarkLegion.Core
         // Enemy Phase·턴 종료 처리 중에 걸린 지속형 상태는 그 턴 종료에 줄이지 않는다.
         // 안 그러면 적이 건 Stun(1턴)이 같은 턴 종료에 사라져 효과가 없다 (`01` D-57).
         private readonly HashSet<StatusType> _skipNextExpiry = new HashSet<StatusType>();
+        private bool _shieldSurvivesTurnEnd;
 
         public StatusContainer(RuntimeUnit owner)
         {
@@ -57,6 +58,8 @@ namespace DarkLegion.Core
             {
                 case StatusType.Shield:
                     _owner.Shield = System.Math.Min(MaxShield, _owner.Shield + amount);
+                    // Enemy Phase에 얻은 Shield는 이번 턴 종료에 사라지지 않는다 (`01` D-64)
+                    if (context != null && context.State == BattleState.EnemyPhase) _shieldSurvivesTurnEnd = true;
                     return true;
                 case StatusType.Burn:
                 case StatusType.Poison:
@@ -87,7 +90,8 @@ namespace DarkLegion.Core
         internal void ExpireAtTurnEnd()
         {
             Decrement(StatusType.Burn);
-            _owner.Shield = 0;
+            if (_shieldSurvivesTurnEnd) _shieldSurvivesTurnEnd = false;
+            else _owner.Shield = 0;
             foreach (var type in Durations)
             {
                 if (_skipNextExpiry.Remove(type)) continue;

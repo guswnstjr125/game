@@ -44,8 +44,22 @@ namespace DarkLegion.Core
             }
         }
 
+        private int _prevRotationIndex;
+        private EnemyActionOption _prevLast;
+
+        /// <summary>
+        /// 확정한 행동을 실행하지 못했을 때(그 사이 Bind·Stun) 순환 위치와 직전 행동을 결정 전으로 되돌린다 (D-55 #4).
+        /// </summary>
+        public void UndoLastDecision()
+        {
+            _rotationIndex = _prevRotationIndex;
+            _last = _prevLast;
+        }
+
         public EnemyActionOption Decide(RuntimeEnemy self, BattleContext context)
         {
+            _prevRotationIndex = _rotationIndex;
+            _prevLast = _last;
             if (!self.Statuses.CanAct) return null;
 
             foreach (var o in _options)

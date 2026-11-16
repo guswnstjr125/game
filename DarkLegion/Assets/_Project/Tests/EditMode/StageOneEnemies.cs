@@ -22,6 +22,7 @@ namespace DarkLegion.Tests.EditMode
             k.Add("ENE_1F_GHO_002", A("VENOM_BITE", "AnyTarget.NoStatus(Poison)", 1, "Attack+Status", 0.5, "Poison", 2, "LowestHp"), A("BASIC", "", 1, "Attack", 1, "", 0, "LowestHp"));
             k.Add("ENE_1F_GHO_003", A("SELF_DESTRUCT", "Self.Hp<=3", 1, "AoE+SelfDeath", 3, "", 0, "All"), A("WEAKEN", "AnyTarget.NoStatus(Weak)", 1, "ApplyStatus", 0, "Weak", 2, "Back"), A("BASIC", "", 1, "Attack", 1, "", 0, "Back"));
             k.Add("ENE_1F_ELT_001", A("SUMMON", "Self.SummonCount<2", 1, "Summon", 0, "ENE_1F_GHO_001", 0, "EnemySlot"), A("DRAIN", "Self.HpPct<60", 1, "LifeSteal", 1, "", 0, "Back"), A("HEAVY", "", 1, "Attack", 1.5, "", 0, "Back"));
+            k.Add("ENE_1F_ELT_002", A("POISON", "", 1, "ApplyStatus", 0, "Poison", 2, "FrontLine"), A("WEAKEN", "", 1, "ApplyStatus", 0, "Weak", 2, "FrontLine"), A("BASIC", "", 1, "Attack", 1, "", 0, "FrontLine"));
             k.Add("ENE_2F_FIR_003", A("GUARD", "Self.NoShield", 1, "GainShield", 4, "", 0, "Self"), A("TAUNT", "Self.NoStatus(Taunt)", 1, "ApplyStatus", 0, "Taunt", 0, "Self"), A("BASIC", "", 1, "Attack", 1, "", 0, "FrontLine"));
             // 소환되는 굶주린 구울 기본 스탯 (`10` Enemies_Master)
             k.SetSpawnStats("ENE_1F_GHO_001", 14, 5, 1);

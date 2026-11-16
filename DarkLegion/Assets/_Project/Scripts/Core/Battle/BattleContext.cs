@@ -59,6 +59,9 @@ namespace DarkLegion.Core
         /// <summary>그 적의 이번 턴 의도 종류 (화면은 종류만 보여 준다, D-28).</summary>
         public IntentKind IntentOf(RuntimeEnemy e) => Intents.TryGetValue(e, out var d) ? EnemyAi.KindOf(d) : IntentKind.None;
 
+        private int _spawnIndex;
+        internal int NextSpawnIndex() => ++_spawnIndex;
+
         public void StartPlayerTurn() => TurnFlow.StartPlayerTurn(this);
 
         public BattleOutcome EndPlayerTurn() => TurnFlow.EndPlayerTurn(this);
@@ -74,7 +77,8 @@ namespace DarkLegion.Core
         /// <summary>공격 대상 변경 (D-27). 살아 있는 적만.</summary>
         public bool SetAttackTarget(RuntimeMonster m, RuntimeEnemy target)
         {
-            if (State != BattleState.PlayerPhase || m == null || !Allies.Contains(m) || target == null || !target.IsTargetable || !Enemies.Contains(target)) return false;
+            if (State != BattleState.PlayerPhase || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct
+                || target == null || !target.IsTargetable || !Enemies.Contains(target)) return false;
             m.Command = UnitCommand.Attack;
             m.AttackTarget = target;
             return true;

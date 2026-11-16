@@ -68,8 +68,16 @@ namespace DarkLegion.Core
         {
             return new EnemyBrain(defs.Select(d => new EnemyActionOption(
                 d.ActionId,
-                string.IsNullOrEmpty(d.Condition) ? null : (System.Func<RuntimeEnemy, BattleContext, bool>)((self, ctx) => Check(d.Condition, self, ctx)),
+                ConditionFor(d),
                 d.Chance) { Tag = d }));
+        }
+
+        /// <summary>행동표 조건 + 소환은 빈 적 칸이 있어야 참 (Enemy_Actions Note "칸이 없으면 조건 거짓").</summary>
+        private static System.Func<RuntimeEnemy, BattleContext, bool> ConditionFor(EnemyActionDef d)
+        {
+            bool summon = d.ActionType == "Summon";
+            if (string.IsNullOrEmpty(d.Condition) && !summon) return null;
+            return (self, ctx) => (!summon || ctx.Field.HasFreeEnemySlot) && (string.IsNullOrEmpty(d.Condition) || Check(d.Condition, self, ctx));
         }
 
         public static IntentKind KindOf(EnemyActionDef d)
@@ -77,9 +85,10 @@ namespace DarkLegion.Core
             switch (d.ActionType)
             {
                 case "Attack":
-                case "Attack+Status":
                 case "Execute":
                     return IntentKind.SingleAttack;
+                case "Attack+Status":
+                    return IntentKind.Special; // 피해 + 디버프, 두 칸에 걸치면 특수 (`21` §8, D-52)
                 case "AoE":
                 case "AoE+SelfDeath":
                     return IntentKind.AoE;
@@ -148,9 +157,17 @@ namespace DarkLegion.Core
 
         // ---------- 대상 ----------
 
-        public static RuntimeUnit SingleTarget(BattleContext ctx, string rule)
+        /// <summary>
+        /// 단일 대상. preferWithout이 있으면 그 상태가 없는 아군을 먼저 고른다 (`12` §7 상태이상 부여 대상 우선).
+        /// </summary>
+        public static RuntimeUnit SingleTarget(BattleContext ctx, string rule, StatusType? preferWithout = null)
         {
             var allies = ctx.Allies.Where(a => a.IsTargetable).ToList();
+            if (preferWithout.HasValue)
+            {
+                var without = allies.Where(a => !a.Statuses.Has(preferWithout.Value)).ToList();
+                if (without.Count > 0) allies = without;
+            }
             if (allies.Count == 0) return ctx.Player;
             var taunt = allies.FirstOrDefault(a => a.Statuses.Has(StatusType.Taunt));
             if (taunt != null) return taunt;
@@ -191,9 +208,12 @@ namespace DarkLegion.Core
                     break;
                 case "Attack+Status":
                 {
-                    var t = SingleTarget(ctx, d.Target);
+                    var t = SingleTarget(ctx, d.Target, Parse(d.Status));
                     Hit(ctx, self, t, d.Value);
-                    ctx.Queue.EnqueueMain(Fx("EnemyStatus", x => t.Statuses.Apply(Parse(d.Status), d.Duration, x)));
+                    ctx.Queue.EnqueueMain(Fx("EnemyStatus", x =>
+                    {
+                        if (!t.IsDead) t.Statuses.Apply(Parse(d.Status), d.Duration, x);
+                    }));
                     break;
                 }
                 case "AoE":
@@ -214,11 +234,11 @@ namespace DarkLegion.Core
                 {
                     var targets = d.Target == "Self" ? new List<RuntimeUnit> { self }
                         : d.Target == "All" ? AllTargets(ctx)
-                        : new List<RuntimeUnit> { SingleTarget(ctx, d.Target) };
+                        : new List<RuntimeUnit> { SingleTarget(ctx, d.Target, Parse(d.Status)) };
                     int amount = d.Duration > 0 ? d.Duration : 1;
                     ctx.Queue.EnqueueMain(Fx("EnemyApplyStatus", x =>
                     {
-                        foreach (var t in targets) t.Statuses.Apply(Parse(d.Status), amount, x);
+                        foreach (var t in targets.Where(u => !u.IsDead)) t.Statuses.Apply(Parse(d.Status), amount, x);
                     }));
                     break;
                 }
@@ -237,7 +257,7 @@ namespace DarkLegion.Core
                     {
                         var stats = x.EnemyKits?.SpawnStats(d.SpawnId);
                         if (stats == null) return;
-                        var e = new RuntimeEnemy($"S{++_seq}", d.SpawnId, stats.Value.hp, stats.Value.atk, stats.Value.def, false) { SummonedBy = self };
+                        var e = new RuntimeEnemy($"{self.UnitId}-S{x.NextSpawnIndex()}", d.SpawnId, stats.Value.hp, stats.Value.atk, stats.Value.def, false) { SummonedBy = self };
                         x.Field.PlaceEnemy(e, null, x);
                     }));
                     break;
@@ -246,8 +266,6 @@ namespace DarkLegion.Core
                     break;
             }
         }
-
-        private static int _seq;
 
         private static DamageAction Hit(BattleContext ctx, RuntimeEnemy self, RuntimeUnit target, double multiplier)
         {

@@ -264,5 +264,79 @@ namespace DarkLegion.Tests.EditMode
             }
             Assert.AreEqual(Run(5), Run(5), "seed 5");
         }
+
+        // ---------- 리뷰 반영 ----------
+
+        [Test]
+        public void ST_03_EnemyShieldFromEnemyPhase_LastsThroughNextPlayerTurn()
+        {
+            // D-64: Enemy Phase에 얻은 Shield는 그 턴 종료에 사라지지 않고 다음 턴 종료까지 남는다
+            var a = Ally(SlotPosition.Front, hp: 50, atk: 3);
+            var e = Enemy("ENE_2F_FIR_003", SlotPosition.Front, hp: 30, def: 0);
+            _ctx.StartPlayerTurn();
+            _ctx.SetCommand(a, UnitCommand.Defend);
+            _ctx.EndPlayerTurn();          // 적: Shield +4
+            Assert.AreEqual(4, e.Shield);
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();          // 아군 공격 3 − (DEF 0 + Front 1) = 2 → Shield 4 → 2
+            Assert.AreEqual(30, e.CurrentHP);
+            Assert.AreEqual(0, e.Shield, "다음 턴 종료에 소멸");
+        }
+
+        [Test]
+        public void INT_SummonIntent_FalseWhenEnemySlotsFull()
+        {
+            Ally(SlotPosition.Front, hp: 50);
+            var elite = Enemy("ENE_1F_ELT_001", SlotPosition.Front, hp: 30, atk: 7);
+            foreach (var pos in new[] { SlotPosition.Middle, SlotPosition.Back, SlotPosition.Extra1, SlotPosition.Extra2 })
+                Enemy("ENE_TEST_IDLE", pos);
+            _ctx.StartPlayerTurn();
+            Assert.AreNotEqual(IntentKind.Summon, _ctx.IntentOf(elite), "칸이 없으면 소환 조건 거짓 (Enemy_Actions Note)");
+        }
+
+        [Test]
+        public void INT_AttackPlusStatus_IsSpecialIcon()
+        {
+            Ally(SlotPosition.Front, hp: 20);
+            var e = Enemy("ENE_1F_GHO_002", SlotPosition.Front);
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(IntentKind.Special, _ctx.IntentOf(e), "D-52: 피해 + 디버프처럼 두 칸에 걸치면 특수");
+        }
+
+        [Test]
+        public void AI_StatusTargetPrefersUnitWithoutThatStatus()
+        {
+            var low = Ally(SlotPosition.Front, hp: 5, def: 0);
+            var other = Ally(SlotPosition.Back, hp: 20, def: 0);
+            low.Statuses.Apply(StatusType.Poison, 1, _ctx);
+            Enemy("ENE_1F_GHO_002", SlotPosition.Front, atk: 6);
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(2, other.Statuses.Stacks(StatusType.Poison), "독 없는 아군에게 독물기 (`12` §7 상태이상 대상 우선)");
+        }
+
+        [Test]
+        public void AI_StunnedAfterIntent_SkipsAndRotationUnchanged()
+        {
+            var a = Ally(SlotPosition.Front, hp: 50, atk: 0);
+            var e = Enemy("ENE_1F_ELT_002", SlotPosition.Front, hp: 50);
+            _ctx.StartPlayerTurn();                         // 의도: POISON (1순위)
+            e.Statuses.Apply(StatusType.Stun, 1, _ctx);    // 플레이어 턴 중 기절
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(0, a.Statuses.Stacks(StatusType.Poison));
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(2, a.Statuses.Stacks(StatusType.Poison), "D-55 #4: 순환 위치 그대로 → 다시 POISON");
+        }
+
+        [Test]
+        public void CMD_BoundAllyCannotChangeTarget()
+        {
+            var a = Ally(SlotPosition.Front);
+            var e = Enemy("ENE_TEST_IDLE", SlotPosition.Back);
+            _ctx.StartPlayerTurn();
+            a.Statuses.Apply(StatusType.Bind, 1, _ctx);
+            Assert.IsFalse(_ctx.SetAttackTarget(a, e));
+        }
     }
 }

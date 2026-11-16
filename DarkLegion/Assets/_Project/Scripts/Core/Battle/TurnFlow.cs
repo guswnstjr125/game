@@ -59,7 +59,11 @@ namespace DarkLegion.Core
             foreach (var e in EnemyOrder(ctx))
             {
                 if (e.IsDead || !ctx.Intents.TryGetValue(e, out var d)) continue;
-                if (!e.Statuses.CanAct) continue;
+                if (!e.Statuses.CanAct)
+                {
+                    ctx.BrainOf(e)?.UndoLastDecision();
+                    continue;
+                }
                 EnemyAi.Execute(ctx, e, d);
                 ctx.Queue.Process();
                 if (ctx.EvaluateOutcome() != BattleOutcome.None) return ctx.Outcome;
