@@ -24,9 +24,8 @@ namespace DarkLegion.Core
             ctx.Intents.Clear();
             foreach (var e in ctx.Enemies.Where(e => !e.IsDead).ToList())
             {
-                var brain = ctx.BrainOf(e);
-                var pick = brain?.Decide(e, ctx);
-                if (pick?.Tag is EnemyActionDef d) ctx.Intents[e] = d;
+                var actions = ctx.DecideIntent(e);
+                if (actions != null && actions.Count > 0) ctx.Intents[e] = actions;
             }
         }
 
@@ -58,15 +57,20 @@ namespace DarkLegion.Core
             ctx.State = BattleState.EnemyPhase;
             foreach (var e in EnemyOrder(ctx))
             {
-                if (e.IsDead || !ctx.Intents.TryGetValue(e, out var d)) continue;
+                if (e.IsDead || !ctx.Intents.TryGetValue(e, out var actions)) continue;
                 if (!e.Statuses.CanAct)
                 {
-                    ctx.BrainOf(e)?.UndoLastDecision();
+                    ctx.UndoIntent(e);
                     continue;
                 }
-                EnemyAi.Execute(ctx, e, d);
-                ctx.Queue.Process();
-                if (ctx.EvaluateOutcome() != BattleOutcome.None) return ctx.Outcome;
+                // 행동이 여럿이면 표 순서대로, 하나씩 처리한다 (보스 2회 공격은 매번 대상을 다시 고른다, `12` §6.3)
+                foreach (var d in actions)
+                {
+                    if (e.IsDead) break;
+                    EnemyAi.Execute(ctx, e, d);
+                    ctx.Queue.Process();
+                    if (ctx.EvaluateOutcome() != BattleOutcome.None) return ctx.Outcome;
+                }
             }
             return ctx.EndTurn();
         }

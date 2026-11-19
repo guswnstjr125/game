@@ -42,11 +42,18 @@ namespace DarkLegion.Core
         public CardCatalog Cards { get; set; }
         /// <summary>적 행동표 (임포터가 채운다, `10` Enemy_Actions).</summary>
         public EnemyKitCatalog EnemyKits { get; set; }
-        /// <summary>이번 턴 확정된 적 행동 (D-28). 플레이어 턴 시작에 정한다.</summary>
-        public System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyActionDef> Intents { get; } =
-            new System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyActionDef>();
+        /// <summary>보스 턴 사이클 (임포터가 채운다, `14` Boss_TurnCycle).</summary>
+        public BossPatternCatalog BossPatterns { get; set; }
+        /// <summary>이번 턴 확정된 적 행동 (D-28). 플레이어 턴 시작에 정한다. 보스는 한 턴에 여럿일 수 있다.</summary>
+        public System.Collections.Generic.Dictionary<RuntimeEnemy, System.Collections.Generic.IReadOnlyList<EnemyActionDef>> Intents { get; } =
+            new System.Collections.Generic.Dictionary<RuntimeEnemy, System.Collections.Generic.IReadOnlyList<EnemyActionDef>>();
         private readonly System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyBrain> _brains =
             new System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyBrain>();
+        private readonly System.Collections.Generic.Dictionary<RuntimeEnemy, BossBrain> _bossBrains =
+            new System.Collections.Generic.Dictionary<RuntimeEnemy, BossBrain>();
+
+        /// <summary>보스 페이즈가 바뀌었다 (연출·UI 페이즈 아이콘, `22` §2.4·`28` §4). 새 행동은 다음 턴부터 (D-28).</summary>
+        public event System.Action<RuntimeEnemy, int> BossPhaseChanged;
 
         internal EnemyBrain BrainOf(RuntimeEnemy e)
         {
@@ -56,7 +63,45 @@ namespace DarkLegion.Core
             return _brains[e] = EnemyAi.BuildBrain(kit);
         }
 
-        /// <summary>그 적의 이번 턴 의도 종류 (화면은 종류만 보여 준다, D-28).</summary>
+        private BossBrain BossBrainOf(RuntimeEnemy e)
+        {
+            if (!e.IsBoss) return null;
+            if (_bossBrains.TryGetValue(e, out var b)) return b;
+            var steps = BossPatterns?.Get(e.DataId);
+            if (steps == null) return null;
+            return _bossBrains[e] = new BossBrain(e.DataId, steps);
+        }
+
+        /// <summary>이번 턴 행동을 정한다 (D-28). 보스 패턴이 있으면 보스 사이클, 없으면 행동표.</summary>
+        internal System.Collections.Generic.IReadOnlyList<EnemyActionDef> DecideIntent(RuntimeEnemy e)
+        {
+            var boss = BossBrainOf(e);
+            if (boss != null)
+            {
+                var actions = boss.Decide(e, out var changed);
+                if (changed.HasValue)
+                {
+                    Log($"[BOSS] {e.UnitId} Phase {changed.Value}");
+                    BossPhaseChanged?.Invoke(e, changed.Value);
+                }
+                return actions;
+            }
+            var pick = BrainOf(e)?.Decide(e, this);
+            return pick?.Tag is EnemyActionDef d ? new[] { d } : null;
+        }
+
+        /// <summary>확정한 행동을 Bind·Stun으로 실행하지 못했을 때 결정을 되돌린다 (D-55 #4).</summary>
+        internal void UndoIntent(RuntimeEnemy e)
+        {
+            var boss = BossBrainOf(e);
+            if (boss != null) boss.UndoLastDecision();
+            else BrainOf(e)?.UndoLastDecision();
+        }
+
+        /// <summary>보스의 현재 페이즈 (1~3). 보스 패턴이 없으면 0.</summary>
+        public int BossPhaseOf(RuntimeEnemy e) => BossBrainOf(e)?.Phase ?? 0;
+
+        /// <summary>그 적의 이번 턴 의도 종류 (화면은 종류만 보여 준다, D-28). 행동이 여럿이면 D-52 규칙.</summary>
         public IntentKind IntentOf(RuntimeEnemy e) => Intents.TryGetValue(e, out var d) ? EnemyAi.KindOf(d) : IntentKind.None;
 
         private int _spawnIndex;
