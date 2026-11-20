@@ -502,6 +502,28 @@ def r16_data_completeness():
                   f"06/Relics_MVP/{r['Relic_ID']}", r["Trigger"], line.split("|")[2].strip())
     line = next((l for l in t24.splitlines() if l.startswith("| REL_RARE_001 |")), "")
     check("R16 revive relic excludes sacrifice", "!IsSacrifice" in line, "24 §1/REL_RARE_001", line[:60], "!IsSacrifice (D-38)")
+    # 구조화 동작 데이터 (D-61): 효과 문구가 있는 몬스터 카드, 보스가 아닌 적, 층별 전투 구성이 빠짐없이 표에 있는지
+    me = sheet("09_몬스터_바이블.xlsx", "Monster_Effects")
+    me_cards = {r["Card_ID"] for r in me}
+    need_m = {r["Card_ID"] for r in sheet("09_몬스터_바이블.xlsx", "Monsters_Master")
+              if r.get("Card_ID") and any(r.get(k) for k in ("OnSummon", "Passive", "OnDeath", "OnAttack", "Special"))}
+    check("R16 Monster_Effects covers monster cards with effects", me_cards == need_m, "09/Monster_Effects",
+          sorted(me_cards ^ need_m)[:5], [])
+    enemies = sheet("10_적_바이블.xlsx", "Enemies_Master")
+    ea = {r["ENE_ID"] for r in sheet("10_적_바이블.xlsx", "Enemy_Actions")}
+    need_e = {r["ENE_ID"] for r in enemies if "_BOS_" not in r["ENE_ID"]}
+    check("R16 Enemy_Actions covers non-boss enemies", ea == need_e, "10/Enemy_Actions", sorted(ea ^ need_e)[:5], [])
+    enc = sheet("06_콘텐츠_마스터.xlsx", "Encounters")
+    all_e = {r["ENE_ID"] for r in enemies}
+    check("R16 Encounters enemy ids exist", all(r["Enemy_ID"] in all_e for r in enc), "06/Encounters",
+          [r["Enemy_ID"] for r in enc if r["Enemy_ID"] not in all_e][:5], [])
+    for fl in range(1, 6):
+        nodes = {r["Node"] for r in enc if r["Floor"] == fl}
+        check("R16 Encounters nodes per floor", nodes == {1, 2, 4, 5, 7, 9}, f"06/Encounters floor {fl}", sorted(nodes), [1, 2, 4, 5, 7, 9])
+    used = {r["Enemy_ID"] for r in enc}
+    spawned = {r["Value"] for r in sheet("10_적_바이블.xlsx", "Enemy_Actions") if r["ActionType"] == "Summon"}
+    check("R16 every enemy appears in an encounter or summon", all_e <= used | spawned | {"ENE_1F_GHO_001"},
+          "06/Encounters + 10/Enemy_Actions Summon", sorted(all_e - used - spawned)[:5], [])
     # 화면 문구 (D-58): Skill·Action 전부 Cards_Text에, 유물 전부 Text_KO에, 문구에 설계 표기가 섞이지 않게
     ct = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Text")}
     need = {r["ID"] for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master") if r["타입"] in ("Skill", "Action")}
