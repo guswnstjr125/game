@@ -83,6 +83,12 @@ namespace DarkLegion.Core
 
         public int CurrentCrystal { get; set; }
         public int MaxCrystal { get; set; } = DefaultMaxCrystal;
+
+        /// <summary>융합 충전 (D-03): 런 시작 0, 최대 3, 층 이동 시 유지. 노드 3·6·9 클리어 시 +1 (런 계층이 <see cref="GainFusionCharge"/>).</summary>
+        public int FusionCharge { get; set; }
+
+        /// <summary>충전 추가. 최대 3을 넘지 않는다.</summary>
+        public void GainFusionCharge(int amount) => FusionCharge = System.Math.Min(FusionSystem.MaxCharge, FusionCharge + amount);
         public RuntimeDeck Deck { get; }
 
         /// <summary>플레이어 DEF는 0 (D-01). Shield만 적용된다.</summary>

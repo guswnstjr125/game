@@ -42,6 +42,14 @@ namespace DarkLegion.Core
         public CardCatalog Cards { get; set; }
         /// <summary>적 행동표 (임포터가 채운다, `10` Enemy_Actions).</summary>
         public EnemyKitCatalog EnemyKits { get; set; }
+        /// <summary>융합 레시피·랜덤 풀 (임포터가 채운다, `09` Fusion_Recipes·Fusion_RandomPool).</summary>
+        public FusionCatalog Fusion { get; set; }
+        /// <summary>이번 전투의 융합 기록. 런 계층이 전투 뒤 런 덱에 반영한다.</summary>
+        public System.Collections.Generic.List<FusionRecord> FusionHistory { get; } = new System.Collections.Generic.List<FusionRecord>();
+
+        /// <summary>융합 요청 (`13` §4 RequestFusion). 검사에 실패하면 아무것도 바꾸지 않고 이유를 돌려준다.</summary>
+        public FusionOutcome Fuse(RuntimeCard a, RuntimeCard b) => FusionSystem.Fuse(this, a, b);
+
         /// <summary>보스 턴 사이클 (임포터가 채운다, `14` Boss_TurnCycle).</summary>
         public BossPatternCatalog BossPatterns { get; set; }
         /// <summary>이번 턴 확정된 적 행동 (D-28). 플레이어 턴 시작에 정한다. 보스는 한 턴에 여럿일 수 있다.</summary>
