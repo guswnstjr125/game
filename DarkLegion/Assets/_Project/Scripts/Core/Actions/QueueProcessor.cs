@@ -21,6 +21,8 @@ namespace DarkLegion.Core
 
         public int TotalEnqueued { get; private set; }
 
+        internal void WriteLog(string message) => Log?.Invoke(message);
+
         public QueueProcessor(BattleContext context)
         {
             _context = context;

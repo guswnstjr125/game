@@ -20,6 +20,8 @@ namespace DarkLegion.Core
         public int Cost { get; set; }
         public bool IsEthereal { get; set; }
         public bool ExhaustOnUse { get; set; }
+        /// <summary>강화된 카드 (휴식·이벤트, D-31). 수치는 CardDefinition.UpParams.</summary>
+        public bool Upgraded { get; set; }
         public CardZone Zone { get; internal set; }
 
         public RuntimeCard(int instanceId, string cardId, int cost, bool ethereal = false, bool exhaustOnUse = false)
@@ -118,6 +120,30 @@ namespace DarkLegion.Core
         public void ReturnFromField(RuntimeCard card)
         {
             if (card != null && _field.Contains(card)) Move(card, CardZone.DiscardPile);
+        }
+
+        /// <summary>버린 더미의 카드를 손패로 (묘지 도굴, `17`: "DiscardPile에서"). 손패가 10장이면 버린 더미에 그대로 둔다.</summary>
+        public void ReturnToHand(RuntimeCard card)
+        {
+            if (card.Zone == CardZone.DiscardPile) AddToHand(card);
+        }
+
+        /// <summary>손패를 모두 버린 더미로. 버린 장 수를 돌려준다.</summary>
+        public int DiscardHand()
+        {
+            int n = _hand.Count;
+            foreach (var c in _hand.ToArray()) Move(c, CardZone.DiscardPile);
+            return n;
+        }
+
+        public void DiscardFromHand(RuntimeCard card)
+        {
+            if (card.Zone == CardZone.Hand) Move(card, CardZone.DiscardPile);
+        }
+
+        public void ExhaustFromHand(RuntimeCard card)
+        {
+            if (card.Zone == CardZone.Hand) Move(card, CardZone.ExhaustPile);
         }
 
         /// <summary>턴 종료: Ethereal은 소멸, 나머지 손패는 전부 버린 더미 (`04` §4, `06` §13.1).</summary>

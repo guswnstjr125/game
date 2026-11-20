@@ -140,6 +140,25 @@ namespace DarkLegion.Core
             return true;
         }
 
+        /// <summary>아군을 인접한 빈 칸으로 옮길 수 있는지 (`09` §4: 인접 빈 칸만).</summary>
+        public bool CanMoveAlly(RuntimeUnit unit, SlotPosition to)
+        {
+            var from = PositionOf(unit);
+            int t = (int)to;
+            return from.HasValue && unit.Team == TeamType.Player && t < AllySlotCount
+                && System.Math.Abs(t - (int)from.Value) == 1 && IsAllyFree(t);
+        }
+
+        /// <summary>위치 변경. MoveUnit 효과(액션)에서만 부른다.</summary>
+        internal void MoveAlly(RuntimeUnit unit, SlotPosition to)
+        {
+            if (!CanMoveAlly(unit, to)) return;
+            int from = (int)PositionOf(unit).Value;
+            _allies[from] = null;
+            _allies[(int)to] = unit;
+            unit.PositionDefBonus = to == SlotPosition.Front ? FrontDefBonus : 0;
+        }
+
         /// <summary>SummonAction이 부른다: 예약한 칸에 유닛을 놓는다.</summary>
         internal void Put(int index, RuntimeUnit unit, BattleContext context)
         {

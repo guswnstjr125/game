@@ -27,6 +27,7 @@ namespace DarkLegion.Core
         public override void Execute(BattleContext context)
         {
             context.Field.Put((int)Position, Unit, context);
+            if (Unit is RuntimeMonster m) context.Triggers.RaiseAllySummoned(context, m);
         }
 
         public override string ToString() => $"Summon {Unit?.UnitId} → {Position}";

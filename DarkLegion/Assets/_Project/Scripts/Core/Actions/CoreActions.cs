@@ -57,6 +57,7 @@ namespace DarkLegion.Core
 
         public override void Execute(BattleContext context)
         {
+            context.Triggers.RaiseUnitDied(context, Unit, IsSacrifice); // 칸에서 빠지기 전 (`09` §5)
             context.RemoveUnit(Unit);
             if (Unit is RuntimeMonster m && context.Player != null)
             {
