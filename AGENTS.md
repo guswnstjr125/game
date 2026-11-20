@@ -12,6 +12,7 @@
 | 주제별 정본 MD·Excel 위치 | `docs/design/00_문서_인덱스.md` §2 |
 | 결정 로그 (D 번호) | `docs/design/01_MVP_설계_동결_선언.md` §7 — 다른 문서와 충돌하면 이것이 이긴다 |
 | 처리한 설계 문제 기록 (J 번호) | `docs/design/36_설계_수정_필요_목록.md` |
+| 작업 순서 — 다음에 무엇을 할지 고를 때 | [이슈 #76 작업 지도](https://github.com/guswnstjr125/game/issues/76) — 앞 단계가 끝나야 시작하는 일은 건너뛰지 않는다 |
 
 ## 기본 스킬 플러그인 (mattpocock/skills)
 
