@@ -27,6 +27,12 @@ namespace DarkLegion.Tests.EditMode
             Mon("NEU_MON_001", 0, 1, 5, 0, 0, 7, 0, 0, sac: 1);
             Mon("NEU_MON_004", 1, 1, 15, 0, 2, 17, 0, 2, soulbound: true);
             Mon("NEU_MON_008", 2, 2, 18, 6, 2, 20, 6, 2);
+            // 융합 재료·결과 (#43, D-26)
+            Mon("NEC_MON_006", 1, 1, 5, 3, 3, 7, 3, 3);
+            Mon("NEC_MON_013", 2, 2, 18, 5, 1, 20, 5, 1);
+            Mon("NEC_MON_014", 2, 2, 14, 6, 3, 14, 7, 3);
+            Mon("NEU_MON_006", 1, 1, 9, 3, 2, 11, 3, 2);
+            Mon("NEU_MON_007", 2, 2, 25, 4, 4, 27, 4, 4);
 
             Card("NEC_SKL_001", CardType.Skill, 0, false, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 2 }, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 3 });
             Card("NEC_SKL_002", CardType.Skill, 1, false, new Dictionary<string, double> { ["Shield"] = 3, ["FrontBonus"] = 2 }, upCost: 0);
