@@ -29,6 +29,7 @@ public class SaveData
     public SettlementPendingDTO Settlement;
     public PlayerSaveDTO Player;
     public DeckSaveDTO Deck;
+    public long NextCardInstanceId; // 새 카드에만 발급. 저장·재개 후 재사용 금지
     public MapSaveDTO Map;
     public List<RelicSaveDTO> Relics;
     public MetaSaveDTO Meta;
@@ -98,11 +99,14 @@ public class DeckSaveDTO
 
 public class CardSaveDTO
 {
+    public long InstanceId;     // 런 안에서 카드 개체마다 고유. 재개 후에도 동일
     public string CardId;        // CardData.Id
     public int UpgradeLevel;     // 0 = 기본, 1 = 강화 (`25` §2, `01` D-31)
     public bool FromFusion;      // 융합으로 만든 카드 (REL_BOSS_3F, `01` D-38)
 }
 ```
+
+런 덱의 카드 개체 ID는 전투에 들어갈 때 보존한다. 융합의 재료 두 카드와 결과를 개체 ID로 연결한다. 전투 승리 시 두 재료 개체를 제거하고 결과 개체를 `FromFusion=true`로 보상 대기 저장에 포함한다. 저장 전 종료하면 전투 진입 기록으로, 저장 후 종료하면 수정된 덱으로 복원한다. 전투 중 Exhaust는 런 덱 제거로 기록하지 않는다.
 
 ### MapSaveDTO
 
@@ -188,7 +192,7 @@ public class BattleSnapshotDTO
 |---|---|---|
 | 맵 | 새 런 생성 또는 노드 완료 시 런과 다음 위치 저장 | 저장된 맵을 연다 |
 | 전투 진입 | 전투를 열기 전에 노드·진입 상태 저장. 이벤트 강제 전투는 선택 및 진입 전 효과까지 함께 저장 | 해당 전투를 같은 상태와 노드 시드로 처음부터 시작 |
-| 보상 대기 | 승리 후 런 상태, 노드 ID, 고정된 후보, 선택 단계와 현재 선택, 미지급 내역을 저장한 뒤 화면 표시 | 같은 보상 화면과 선택 상태 복구 |
+| 보상 대기 | 승리 후 런 상태, 최종 보스라면 승리 판정, 노드 ID, 고정된 후보, 선택 단계와 현재 선택, 미지급 내역을 저장한 뒤 화면 표시 | 같은 보상 화면과 선택 상태 복구 |
 | 정산 대기 | 최종 보상 확정, 패배 또는 포기 시 결과와 층별 지급 내역·통계·업적 판정 입력을 저장 | 런 ID로 정산을 재개하고 결과 화면을 복구 |
 
 - 골드·자동 유물·선택 유물·카드의 지급은 보상 화면의 마지막 확인에서 확정한다. 카드 건너뛰기도 선택으로 저장한다. 지급과 다음 위치 또는 정산 대기를 같은 런 파일 교체로 확정한다. 화면에서 같은 확인 입력이 다시 와도 보상 대기 상태가 이미 끝났으면 처리하지 않는다.
