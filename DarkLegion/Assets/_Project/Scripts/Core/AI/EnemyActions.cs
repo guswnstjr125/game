@@ -80,6 +80,19 @@ namespace DarkLegion.Core
             return (self, ctx) => (!summon || ctx.Field.HasFreeEnemySlot) && (string.IsNullOrEmpty(d.Condition) || Check(d.Condition, self, ctx));
         }
 
+        /// <summary>
+        /// 한 턴 행동 묶음의 아이콘 (D-52): 하나면 그 행동의 아이콘, 여럿이면 피해가 있는 행동 우선(광역 > 단일), 피해가 없으면 첫 행동.
+        /// </summary>
+        public static IntentKind KindOf(IReadOnlyList<EnemyActionDef> actions)
+        {
+            if (actions == null || actions.Count == 0) return IntentKind.None;
+            if (actions.Count == 1) return KindOf(actions[0]);
+            var kinds = actions.Select(KindOf).ToList();
+            if (kinds.Contains(IntentKind.AoE)) return IntentKind.AoE;
+            if (kinds.Contains(IntentKind.SingleAttack)) return IntentKind.SingleAttack;
+            return kinds[0];
+        }
+
         public static IntentKind KindOf(EnemyActionDef d)
         {
             switch (d.ActionType)
@@ -101,6 +114,8 @@ namespace DarkLegion.Core
                 case "ApplyStatus":
                     return d.Target == "Self" ? IntentKind.Buff : IntentKind.Debuff;
                 case "CrystalDrain":
+                case "RemoveShield":
+                case "AddCurseCard":
                     return IntentKind.Debuff; // D-48
                 case "Summon":
                     return IntentKind.Summon;
