@@ -40,6 +40,49 @@ namespace DarkLegion.Core
         public TriggerBus Triggers { get; } = new TriggerBus();
         /// <summary>카드 정의 (임포터가 채운다). 없으면 카드를 쓸 수 없다.</summary>
         public CardCatalog Cards { get; set; }
+        /// <summary>적 행동표 (임포터가 채운다, `10` Enemy_Actions).</summary>
+        public EnemyKitCatalog EnemyKits { get; set; }
+        /// <summary>이번 턴 확정된 적 행동 (D-28). 플레이어 턴 시작에 정한다.</summary>
+        public System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyActionDef> Intents { get; } =
+            new System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyActionDef>();
+        private readonly System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyBrain> _brains =
+            new System.Collections.Generic.Dictionary<RuntimeEnemy, EnemyBrain>();
+
+        internal EnemyBrain BrainOf(RuntimeEnemy e)
+        {
+            if (_brains.TryGetValue(e, out var b)) return b;
+            var kit = EnemyKits?.Get(e.DataId);
+            if (kit == null) return null;
+            return _brains[e] = EnemyAi.BuildBrain(kit);
+        }
+
+        /// <summary>그 적의 이번 턴 의도 종류 (화면은 종류만 보여 준다, D-28).</summary>
+        public IntentKind IntentOf(RuntimeEnemy e) => Intents.TryGetValue(e, out var d) ? EnemyAi.KindOf(d) : IntentKind.None;
+
+        private int _spawnIndex;
+        internal int NextSpawnIndex() => ++_spawnIndex;
+
+        public void StartPlayerTurn() => TurnFlow.StartPlayerTurn(this);
+
+        public BattleOutcome EndPlayerTurn() => TurnFlow.EndPlayerTurn(this);
+
+        /// <summary>커맨드 변경 (D-27). Player Phase에서만, Bind·Stun이면 불가.</summary>
+        public bool SetCommand(RuntimeMonster m, UnitCommand cmd)
+        {
+            if (State != BattleState.PlayerPhase || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct) return false;
+            m.Command = cmd;
+            return true;
+        }
+
+        /// <summary>공격 대상 변경 (D-27). 살아 있는 적만.</summary>
+        public bool SetAttackTarget(RuntimeMonster m, RuntimeEnemy target)
+        {
+            if (State != BattleState.PlayerPhase || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct
+                || target == null || !target.IsTargetable || !Enemies.Contains(target)) return false;
+            m.Command = UnitCommand.Attack;
+            m.AttackTarget = target;
+            return true;
+        }
         /// <summary>이번 턴 희생 횟수. 피의 잔·REL_BOSS_1F의 "턴당 첫 희생" 판정에 쓴다 (D-04·D-15).</summary>
         public int SacrificesThisTurn { get; internal set; }
         /// <summary>턴의 첫 희생에만 더하는 Crystal. 피의 잔 +1, REL_BOSS_1F +1 (D-04·D-15). 유물을 얻을 때 유물 시스템이 정한다.</summary>

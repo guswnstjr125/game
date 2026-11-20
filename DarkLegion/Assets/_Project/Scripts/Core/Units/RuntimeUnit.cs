@@ -2,6 +2,13 @@ using System.Collections.Generic;
 
 namespace DarkLegion.Core
 {
+    /// <summary>몬스터 커맨드 (D-27). 스킬 커맨드는 Post-MVP.</summary>
+    public enum UnitCommand
+    {
+        Attack,
+        Defend
+    }
+
     public enum TeamType
     {
         Player,
@@ -104,6 +111,8 @@ namespace DarkLegion.Core
     public sealed class RuntimeEnemy : RuntimeUnit
     {
         public bool IsBoss { get; }
+        /// <summary>이 적을 소환한 적 (Self.SummonCount 조건용).</summary>
+        public RuntimeEnemy SummonedBy { get; set; }
 
         public RuntimeEnemy(string unitId, string dataId, int maxHp, int attack, int defense, bool isBoss)
             : base(unitId, dataId, TeamType.Enemy, maxHp, attack, defense)
@@ -125,6 +134,10 @@ namespace DarkLegion.Core
         /// <summary>희생이 예약되어 SacrificeAction을 기다리는 중. 같은 유닛을 두 번 희생하지 못하게 한다. 유닛은 그동안 필드에 있다.</summary>
         public bool SacrificeReserved { get; internal set; }
         public bool IsSoulbound => Tags.Contains("Soulbound");
+        /// <summary>커맨드 (D-27). 턴 시작에 공격으로 돌아간다.</summary>
+        public UnitCommand Command { get; set; } = UnitCommand.Attack;
+        /// <summary>플레이어가 고른 공격 대상. 없거나 죽었으면 기본 대상 (Taunt 적 → 적 앞줄).</summary>
+        public RuntimeEnemy AttackTarget { get; set; }
         /// <summary>이번 턴 추가 행동 횟수 (신속한 지휘). 턴 시작에 0.</summary>
         public int ExtraActionsThisTurn { get; set; }
         /// <summary>누적형 효과의 쌓인 횟수 (망령 전사 등, 상한 판정용). 전투 동안 유지.</summary>

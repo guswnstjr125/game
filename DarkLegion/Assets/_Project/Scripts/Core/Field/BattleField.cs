@@ -61,6 +61,8 @@ namespace DarkLegion.Core
             return null;
         }
 
+        public bool HasFreeEnemySlot => System.Array.IndexOf(_enemies, null) >= 0;
+
         /// <summary>앞줄 = 살아 있는 유닛이 있는 첫 칸 Front → Middle → Back (`09` §7).</summary>
         public RuntimeUnit FrontLine(TeamType team)
         {
