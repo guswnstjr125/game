@@ -49,6 +49,8 @@ SHEETS = [
     ("Events_MVP", F06, "Events_MVP"),
     ("Event_FloorPool", F06, "Event_FloorPool"),
     ("Encounters", F06, "Encounters"),
+    ("Shop_Prices", F06, "Shop_Prices"),
+    ("Consumables", F06, "Consumables"),
     ("Reward_BattleTable", F06, "Reward_BattleTable"),
     ("Reward_EliteRelic", F06, "Reward_EliteRelic"),
     ("RestNode_Rules", F06, "RestNode_Rules"),

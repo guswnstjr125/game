@@ -524,6 +524,14 @@ def r16_data_completeness():
     spawned = {r["Value"] for r in sheet("10_적_바이블.xlsx", "Enemy_Actions") if r["ActionType"] == "Summon"}
     check("R16 every enemy appears in an encounter or summon", all_e <= used | spawned | {"ENE_1F_GHO_001"},
           "06/Encounters + 10/Enemy_Actions Summon", sorted(all_e - used - spawned)[:5], [])
+    # 상점·소모품 (D-62): 가격표가 24 §3과 같고, 소모품 가격이 상점 가격과 같다
+    sp = {r["Item_ID"]: r["Price"] for r in sheet("06_콘텐츠_마스터.xlsx", "Shop_Prices")}
+    t24 = md("24_콘텐츠_런타임_상세.md")
+    for k, label in (("SHOP_CARD_C", "Common 카드"), ("SHOP_CARD_U", "Uncommon 카드"), ("SHOP_CARD_R", "Rare 카드"),
+                     ("SHOP_CARD_L", "Legendary 카드"), ("SHOP_RELIC", "유물"), ("SHOP_CONSUMABLE", "소모품(회복/정화)")):
+        check("R16 shop price = 24 §3", f"| {label} | {sp.get(k)} |" in t24, f"06/Shop_Prices {k}", sp.get(k), f"24 §3 {label}")
+    for r in sheet("06_콘텐츠_마스터.xlsx", "Consumables"):
+        check("R16 consumable price = shop", r["Price"] == sp.get("SHOP_CONSUMABLE"), f"06/Consumables {r['CON_ID']}", r["Price"], sp.get("SHOP_CONSUMABLE"))
     # 화면 문구 (D-58): Skill·Action 전부 Cards_Text에, 유물 전부 Text_KO에, 문구에 설계 표기가 섞이지 않게
     ct = {r["Card_ID"]: r for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Text")}
     need = {r["ID"] for r in sheet("08_카드_데이터베이스.xlsx", "Cards_Master") if r["타입"] in ("Skill", "Action")}
