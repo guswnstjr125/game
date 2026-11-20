@@ -14,6 +14,8 @@ namespace DarkLegion.Core
         public bool IgnoreShield;
         /// <summary>Burn·Poison 틱이면 true: 스택 값 그대로, DEF·Weak·Vulnerable 무시 (D-01).</summary>
         public bool IsStatusTick;
+        /// <summary>행동 배율 (적 강타 ×1.5, 독물기 ×0.5). 0이면 1.</summary>
+        public double Multiplier;
 
         public int LastDealt { get; private set; }
 
@@ -27,6 +29,7 @@ namespace DarkLegion.Core
                 : DamageCalculator.AttackDamage(new DamageRequest
                 {
                     BaseDamage = BaseDamage,
+                    Multiplier = Multiplier,
                     IsCritical = IsCritical,
                     // Weak는 유닛 공격에만 (D-01: 플레이어 카드 피해에는 적용 안 함)
                     AttackerWeak = Source != null && !(Source is RuntimePlayer) && Source.Statuses.Has(StatusType.Weak),
@@ -57,6 +60,7 @@ namespace DarkLegion.Core
 
         public override void Execute(BattleContext context)
         {
+            context.Triggers.RaiseUnitDied(context, Unit, IsSacrifice); // 칸에서 빠지기 전 (`09` §5)
             context.RemoveUnit(Unit);
             if (Unit is RuntimeMonster m && context.Player != null)
             {
