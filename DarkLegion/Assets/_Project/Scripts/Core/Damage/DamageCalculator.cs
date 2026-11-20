@@ -6,6 +6,8 @@ namespace DarkLegion.Core
         /// <summary>유닛 공격 = 공격자 FinalAtk, 카드 피해 = 카드 Value.</summary>
         public int BaseDamage;
         public bool IsCritical;
+        /// <summary>행동 배율 (강타 ×1.5 등). 치명과 같은 단계, DEF 차감 전 (D-61). 기본 1.</summary>
+        public double Multiplier;
         /// <summary>공격자(유닛)가 Weak. 플레이어 카드 피해에는 false로 넘긴다.</summary>
         public bool AttackerWeak;
         /// <summary>대상 FinalDef (Front 보너스 +1 포함). 플레이어는 0.</summary>
@@ -31,6 +33,7 @@ namespace DarkLegion.Core
         public static int AttackDamage(DamageRequest r)
         {
             double damage = r.BaseDamage;
+            if (r.Multiplier > 0) damage *= r.Multiplier;
             if (r.IsCritical) damage *= CriticalMultiplier;
             if (r.AttackerWeak) damage *= WeakMultiplier;
 
