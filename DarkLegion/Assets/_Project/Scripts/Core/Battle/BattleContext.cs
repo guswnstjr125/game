@@ -150,23 +150,37 @@ namespace DarkLegion.Core
 
         public BattleOutcome EndPlayerTurn() => TurnFlow.EndPlayerTurn(this);
 
-        /// <summary>커맨드 변경 (D-27). Player Phase에서만, Bind·Stun이면 불가.</summary>
+        /// <summary>커맨드 변경 (D-27, `37` §2.1). Main(Player Phase)과 Command Phase에서만, Bind·Stun이면 불가.</summary>
         public bool SetCommand(RuntimeMonster m, UnitCommand cmd)
         {
-            if (State != BattleState.PlayerPhase || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct) return false;
+            if (!AcceptsCommandInput || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct) return false;
             m.Command = cmd;
             return true;
         }
 
-        /// <summary>공격 대상 변경 (D-27). 살아 있는 적만.</summary>
+        /// <summary>공격 대상 변경 (D-27, `37` §2.1). 살아 있는 적만. 고르면 커맨드는 공격이 된다.</summary>
         public bool SetAttackTarget(RuntimeMonster m, RuntimeEnemy target)
         {
-            if (State != BattleState.PlayerPhase || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct
+            if (!AcceptsCommandInput || m == null || m.IsDead || !Allies.Contains(m) || !m.Statuses.CanAct
                 || target == null || !target.IsTargetable || !Enemies.Contains(target)) return false;
             m.Command = UnitCommand.Attack;
             m.AttackTarget = target;
             return true;
         }
+
+        /// <summary>
+        /// 아군을 인접한 빈 칸으로 옮긴다 (`04` §3, `06` §13.1, `09` §4). Main Phase에서만.
+        /// 추가 행동·Crystal 비용은 없다. 그 효과는 신속한 지휘(NEU_SKL_001)만 가진다.
+        /// </summary>
+        public bool TryMoveAlly(RuntimeMonster unit, SlotPosition to)
+        {
+            if (State != BattleState.PlayerPhase || unit == null || !Field.CanMoveAlly(unit, to)) return false;
+            Queue.EnqueueMain(new EffectAction(BattleActionType.Trigger, "MoveAlly", c => c.Field.MoveAlly(unit, to)));
+            return true;
+        }
+
+        bool AcceptsCommandInput => State == BattleState.PlayerPhase || State == BattleState.CommandPhase;
+
         /// <summary>이번 턴 희생 횟수. 피의 잔·REL_BOSS_1F의 "턴당 첫 희생" 판정에 쓴다 (D-04·D-15).</summary>
         public int SacrificesThisTurn { get; internal set; }
         /// <summary>턴의 첫 희생에만 더하는 Crystal. 피의 잔 +1, REL_BOSS_1F +1 (D-04·D-15). 유물을 얻을 때 유물 시스템이 정한다.</summary>
