@@ -74,6 +74,27 @@ namespace DarkLegion.Core
             return null;
         }
 
+        /// <summary>칸을 지정하지 않은 소환이 놓일 칸: Back → Middle → Front 첫 빈 칸 (`09` §2.1). 다 찼으면 null.</summary>
+        public SlotPosition? AutoAllySlot()
+        {
+            for (int i = AllySlotCount - 1; i >= 0; i--)
+            {
+                if (IsAllyFree(i)) return (SlotPosition)i;
+            }
+            return null;
+        }
+
+        /// <summary>그 칸의 옆 칸(슬롯 번호 ±1)에 있는 살아 있는 아군 (D-70 모방 슬라임).</summary>
+        public System.Collections.Generic.List<RuntimeMonster> AdjacentAllies(SlotPosition pos)
+        {
+            var list = new System.Collections.Generic.List<RuntimeMonster>();
+            foreach (int i in new[] { (int)pos - 1, (int)pos + 1 })
+            {
+                if (i >= 0 && i < AllySlotCount && _allies[i] is RuntimeMonster m && !m.IsDead) list.Add(m);
+            }
+            return list;
+        }
+
         /// <summary>
         /// 아군 소환 요청. 칸을 고르고(지정이 없으면 Back → Middle → Front 첫 빈 칸, `09` §2.1) 예약한 뒤 SummonAction을 Main 큐에 넣는다.
         /// 3칸이 다 차면 몬스터 카드는 거부, 토큰은 Player Phase에서만 교체 대기로 들어간다 (`09` §3·§3.2).
@@ -89,15 +110,8 @@ namespace DarkLegion.Core
             }
             else
             {
-                index = -1;
-                for (int i = AllySlotCount - 1; i >= 0; i--)
-                {
-                    if (IsAllyFree(i))
-                    {
-                        index = i;
-                        break;
-                    }
-                }
+                var auto = AutoAllySlot();
+                index = auto.HasValue ? (int)auto.Value : -1;
                 if (index < 0)
                 {
                     if (!monster.IsToken || context.State != BattleState.PlayerPhase) return SummonResult.RejectedFullField;

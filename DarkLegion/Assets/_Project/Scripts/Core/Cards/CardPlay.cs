@@ -22,7 +22,9 @@ namespace DarkLegion.Core
         SelectedEnemy,
         SelectedAlly,
         /// <summary>몬스터 카드: 아군 1마리를 고를 수도 있다(피의 사제). 안 고르면 null.</summary>
-        OptionalAlly
+        OptionalAlly,
+        /// <summary>몬스터 카드: 소환 칸 옆의 아군 1마리 (모방 슬라임, D-70). 둘일 때만 반드시 고른다. 검사는 카드의 Validate.</summary>
+        AdjacentAlly
     }
 
     /// <summary>카드 사용 요청 하나 (누가·무엇을·어디에).</summary>
@@ -34,6 +36,8 @@ namespace DarkLegion.Core
         public SlotPosition? Position;
         /// <summary>카드를 고르는 효과(묘지 도굴, 기회 포착, 연금술)가 고른 카드.</summary>
         public RuntimeCard ChosenCard;
+        /// <summary>몬스터 카드로 소환한 유닛 (소환 요청 뒤 채운다).</summary>
+        public RuntimeMonster Summoned;
         public bool Upgraded => Card.Upgraded;
         public double P(string key, double fallback = 0) => Def.Param(key, Card.Upgraded, fallback);
     }
@@ -85,8 +89,12 @@ namespace DarkLegion.Core
         {
             var handler = CardEffects.For(play.Def.Id);
             var targetRule = handler?.Target ?? CardTarget.None;
-            if (play.Target != null && targetRule != CardTarget.OptionalAlly) return PlayResult.InvalidTarget;
+            bool takesAlly = targetRule == CardTarget.OptionalAlly || targetRule == CardTarget.AdjacentAlly;
+            if (play.Target != null && !takesAlly) return PlayResult.InvalidTarget;
             if (play.Target != null && !TargetOk(ctx, CardTarget.SelectedAlly, play.Target)) return PlayResult.InvalidTarget;
+            // 효과가 소환 칸을 알아야 하므로(모방 슬라임) 자동 배치 칸을 먼저 정한다. 같은 칸을 지정한 것과 같다
+            if (!play.Position.HasValue) play.Position = ctx.Field.AutoAllySlot();
+            if (play.Position.HasValue && handler?.Validate != null && !handler.Validate(ctx, play)) return PlayResult.InvalidTarget;
 
             var monster = MonsterFactory.FromCard(ctx, play.Def, play.Card);
             var result = ctx.Field.TrySummonAlly(monster, play.Position, ctx);
@@ -94,6 +102,7 @@ namespace DarkLegion.Core
             if (result != SummonResult.Placed) return PlayResult.InvalidTarget;
 
             ctx.Player.TrySpendCrystal(cost);
+            play.Summoned = monster;
             handler?.Enqueue?.Invoke(ctx, play);
             ctx.Player.Deck.MoveAfterUse(play.Card, isMonster: true);
             return PlayResult.Ok;

@@ -2,7 +2,7 @@ namespace DarkLegion.Core
 {
     /// <summary>
     /// 피해 액션 (`06` §11). D-01 계산 → Shield → HP → HP ≤ 0이면 IsDead + Death Queue.
-    /// 트리거(Before/OnDamageTaken/After)는 TriggerBus(#36 후속)에서 붙인다.
+    /// 피해 감소(수정 골렘)는 틱이 아닐 때 D-01 계산 안에서 뺀다 (D-70). 아군 커맨드 공격이면 처리 뒤 AllyAttacked를 알린다.
     /// </summary>
     public sealed class DamageAction : BattleAction
     {
@@ -16,6 +16,8 @@ namespace DarkLegion.Core
         public bool IsStatusTick;
         /// <summary>행동 배율 (적 강타 ×1.5, 독물기 ×0.5). 0이면 1.</summary>
         public double Multiplier;
+        /// <summary>아군 몬스터의 커맨드 공격(D-27)이면 true. 처리 뒤 공격 시 효과(OnAttack)를 알린다 (D-70).</summary>
+        public bool IsAttack;
 
         public int LastDealt { get; private set; }
 
@@ -35,16 +37,19 @@ namespace DarkLegion.Core
                     AttackerWeak = Source != null && !(Source is RuntimePlayer) && Source.Statuses.Has(StatusType.Weak),
                     TargetDef = Target.EffectiveDefense,
                     TargetVulnerable = Target.Statuses.Has(StatusType.Vulnerable),
-                    IgnoreDefense = IgnoreDefense
+                    IgnoreDefense = IgnoreDefense,
+                    FlatReduction = MonsterEffects.DamageReductionFor(context, Target)
                 });
             var (shield, hp) = DamageCalculator.ApplyToShieldAndHp(damage, Target.Shield, Target.CurrentHP, IgnoreShield);
             LastDealt = Target.CurrentHP - hp;
             Target.Shield = shield;
             Target.CurrentHP = hp;
-            if (Target.CurrentHP <= 0 && Target.MarkDead())
+            bool killed = Target.CurrentHP <= 0 && Target.MarkDead();
+            if (killed)
             {
                 context.Queue.EnqueueDeath(new DeathAction { Unit = Target });
             }
+            if (IsAttack && Source is RuntimeMonster attacker) context.Triggers.RaiseAllyAttacked(context, attacker, Target, killed);
         }
 
         public override string ToString() => $"Damage {BaseDamage} → {Target?.UnitId}";

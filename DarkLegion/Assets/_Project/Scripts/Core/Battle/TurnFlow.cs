@@ -48,7 +48,7 @@ namespace DarkLegion.Core
                     if (m.IsDead || !m.Statuses.CanAct) break;
                     var target = m.AttackTarget != null && m.AttackTarget.IsTargetable ? m.AttackTarget : DefaultAllyTarget(ctx);
                     if (target == null) break;
-                    ctx.Queue.EnqueueMain(new DamageAction { Source = m, Target = target, BaseDamage = m.Attack.FinalValue });
+                    ctx.Queue.EnqueueMain(new DamageAction { Source = m, Target = target, BaseDamage = m.Attack.FinalValue, IsAttack = true });
                     ctx.Queue.Process();
                 }
             }
