@@ -265,6 +265,34 @@ namespace DarkLegion.Tests.EditMode
             Assert.IsTrue(r.Errors.Any(e => e.Contains("ENE_MISSING")));
         }
 
+        // ---------- 전투 편성 ----------
+
+        [Test]
+        public void Encounters_GroupByNodeVariantWave_ErrorsForUnknownEnemyAndZeroCount()
+        {
+            var data = new GameData(
+                S("Enemies_Master", R(("ENE_ID", "ENE_A"), ("HP", 10), ("ATK", 1), ("DEF", 0)), R(("ENE_ID", "ENE_B"), ("HP", 12), ("ATK", 2), ("DEF", 1))),
+                S("Encounters",
+                    R(("Floor", 1), ("Node", 5), ("NodeType", "Elite"), ("Variant", "B"), ("Wave", 1), ("Enemy_ID", "ENE_B"), ("Count", 2)),
+                    R(("Floor", 1), ("Node", 5), ("NodeType", "Elite"), ("Variant", "A"), ("Wave", 1), ("Enemy_ID", "ENE_A"), ("Count", 1)),
+                    R(("Floor", 1), ("Node", 5), ("NodeType", "Elite"), ("Variant", "A"), ("Wave", 1), ("Enemy_ID", "ENE_B"), ("Count", 1)),
+                    R(("Floor", 1), ("Node", 7), ("NodeType", "Battle"), ("Variant", "A"), ("Wave", 2), ("Enemy_ID", "ENE_A"), ("Count", 3)),
+                    R(("Floor", 1), ("Node", 7), ("NodeType", "Battle"), ("Variant", "A"), ("Wave", 1), ("Enemy_ID", "ENE_B"), ("Count", 1)),
+                    R(("Floor", 2), ("Node", 1), ("NodeType", "Battle"), ("Variant", "A"), ("Wave", 1), ("Enemy_ID", "ENE_NOPE"), ("Count", 1)),
+                    R(("Floor", 2), ("Node", 2), ("NodeType", "Battle"), ("Variant", "A"), ("Wave", 1), ("Enemy_ID", "ENE_A"), ("Count", 0))));
+
+            var r = GameDataLoader.Load(data);
+            var elite = r.Encounters.Variants(1, 5);
+            CollectionAssert.AreEqual(new[] { "A", "B" }, elite.Select(e => e.Variant).ToArray(), "A, B 순서");
+            CollectionAssert.AreEqual(new[] { ("ENE_A", 1), ("ENE_B", 1) }, elite[0].Waves[1].ToArray(), "행 순서 유지");
+            var n7 = r.Encounters.Variants(1, 7).Single();
+            CollectionAssert.AreEqual(new[] { 1, 2 }, n7.Waves.Keys.ToArray(), "Wave 번호 순");
+            Assert.AreEqual(("ENE_A", 3), n7.Waves[2].Single());
+            Assert.IsTrue(r.Errors.Any(e => e.Contains("ENE_NOPE")), string.Join(" | ", r.Errors));
+            Assert.IsTrue(r.Errors.Any(e => e.Contains("F2-N2") && e.Contains("Count")));
+            Assert.AreEqual(0, r.Encounters.Variants(2, 1).Count + r.Encounters.Variants(2, 2).Count, "오류 행은 넣지 않는다");
+        }
+
         [Test]
         public void GameData_FromJsonTexts()
         {
