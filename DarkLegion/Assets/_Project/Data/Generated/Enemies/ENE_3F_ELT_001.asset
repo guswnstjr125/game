@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e4c88ef82ad094b86d616b71a7c07f, type: 3}
+  m_Name: ENE_3F_ELT_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EnemyData
+  enemyId: ENE_3F_ELT_001
+  displayName: "\uD53C\uC758 \uAD6C\uC6B8"
+  category: Undead
+  role: Bruiser
+  ai: Aggressive
+  hp: 30
+  atk: 9
+  def: 2
+  drop: 
+  actions:
+  - id: HEAVY
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1.5
+    status: 
+    duration: 0
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: BASIC
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1
+    status: 
+    duration: 0
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: FEAST
+    condition: Passive:OnKill
+    chance: 1
+    type: Heal
+    value: 8
+    status: 
+    duration: 0
+    target: Self
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 

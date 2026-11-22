@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e4c88ef82ad094b86d616b71a7c07f, type: 3}
+  m_Name: ENE_1F_ELT_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EnemyData
+  enemyId: ENE_1F_ELT_002
+  displayName: "\uC5ED\uBCD1 \uC218\uB3C4\uC0AC"
+  category: Cultist
+  role: Controller
+  ai: Control
+  hp: 15
+  atk: 4
+  def: 2
+  drop: "Poison \uCE74\uB4DC"
+  actions:
+  - id: POISON
+    condition: 
+    chance: 1
+    type: ApplyStatus
+    value: 0
+    status: Poison
+    duration: 2
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 2
+  - id: WEAKEN
+    condition: 
+    chance: 1
+    type: ApplyStatus
+    value: 0
+    status: Weak
+    duration: 2
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 2
+  - id: BASIC
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1
+    status: 
+    duration: 0
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
