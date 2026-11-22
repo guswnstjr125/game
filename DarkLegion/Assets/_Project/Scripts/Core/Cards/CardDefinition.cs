@@ -63,6 +63,9 @@ namespace DarkLegion.Core
 
         public void Add(CardDefinition def) => _defs[def.Id] = def;
 
+        /// <summary>등록된 카드 ID (등록 순서).</summary>
+        public IEnumerable<string> Ids => _defs.Keys;
+
         public CardDefinition Get(string id) => id != null && _defs.TryGetValue(id, out var d) ? d : null;
     }
 }

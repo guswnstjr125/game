@@ -4,7 +4,7 @@ namespace DarkLegion.Core
 {
     /// <summary>
     /// 전투 이벤트 알림 (`07`, `06` §10의 최소 구현). 구독자는 상태를 바로 바꾸지 않고 액션을 Trigger 큐에 넣는다.
-    /// 지금은 카드·몬스터 효과에 필요한 사망·소환만 있다. 유물·OnAttack 등은 해당 이슈에서 늘린다.
+    /// 지금은 카드·몬스터 효과에 필요한 사망·소환·아군 공격만 있다. 유물 등은 해당 이슈에서 늘린다.
     /// </summary>
     public sealed class TriggerBus
     {
@@ -13,6 +13,14 @@ namespace DarkLegion.Core
 
         /// <summary>아군 몬스터가 칸에 놓인 뒤.</summary>
         public event System.Action<BattleContext, RuntimeMonster> AllySummoned;
+
+        /// <summary>
+        /// 아군 몬스터의 커맨드 공격 1회가 처리된 뒤 (D-70). killed = 이 공격 피해로 대상이 죽음.
+        /// 구독자는 Trigger 큐에 넣으므로 공격 피해 다음에 실행된다.
+        /// </summary>
+        public event System.Action<BattleContext, RuntimeMonster, RuntimeUnit, bool> AllyAttacked;
+
+        internal void RaiseAllyAttacked(BattleContext ctx, RuntimeMonster attacker, RuntimeUnit target, bool killed) => AllyAttacked?.Invoke(ctx, attacker, target, killed);
 
         internal void RaiseUnitDied(BattleContext ctx, RuntimeUnit unit, bool isSacrifice) => UnitDied?.Invoke(ctx, unit, isSacrifice);
 

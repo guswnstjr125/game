@@ -128,7 +128,7 @@ namespace DarkLegion.Core
                 Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("Opportunity", x =>
                 {
                     x.Player.Deck.Draw((int)p.P("Draw", 2));
-                    x.RequestDiscard(1);
+                    x.RequestDiscard((int)p.P("Discard", 1));
                 }))
             },
             ["NEU_ACT_002"] = new CardHandler
@@ -151,8 +151,33 @@ namespace DarkLegion.Core
                 {
                     if (p.Target is RuntimeMonster victim && c.Sacrifice(victim) == SacrificeResult.Ok)
                     {
-                        c.Queue.EnqueueMain(Fx("BloodPriestDraw", x => x.Player.Deck.Draw((int)p.P("Draw", 2))));
+                        c.Queue.EnqueueMain(Fx("BloodPriestDraw", x => x.Player.Deck.Draw((int)p.P("Value", 2)))); // Monster_Effects Value (D-71)
                     }
+                }
+            },
+            ["NEU_MON_002"] = new CardHandler
+            {
+                // 모방 슬라임: 옆 칸 아군 하나의 기본 HP/ATK/DEF로 바뀐다. 둘이면 대상으로 골라야 한다, 없으면 효과 없음 (D-61·D-70)
+                Target = CardTarget.AdjacentAlly,
+                Validate = (c, p) =>
+                {
+                    var near = c.Field.AdjacentAllies(p.Position.Value);
+                    return p.Target != null ? near.Contains(p.Target) : near.Count <= 1;
+                },
+                Enqueue = (c, p) =>
+                {
+                    var source = (p.Target as RuntimeMonster) ?? c.Field.AdjacentAllies(p.Position.Value).FirstOrDefault();
+                    var self = p.Summoned;
+                    if (source == null) return;
+                    c.Queue.EnqueueMain(Fx("MimicCopy", x =>
+                    {
+                        if (source.IsDead || self.IsDead) return;
+                        // 기본 스탯만 (강화 반영, 보정치 제외). 레벨·Soulbound·희생 Crystal은 그대로 (D-70)
+                        self.MaxHP.BaseValue = source.MaxHP.BaseValue;
+                        self.Attack.BaseValue = source.Attack.BaseValue;
+                        self.Defense.BaseValue = source.Defense.BaseValue;
+                        self.CurrentHP = self.MaxHP.FinalValue;
+                    }));
                 }
             },
         };
@@ -165,8 +190,8 @@ namespace DarkLegion.Core
     }
 
     /// <summary>
-    /// 몬스터의 소환·사망·아군 사망 효과 (`09` Monster_Effects, 1단계분). TriggerBus를 구독하고 효과를 Trigger 큐에 넣는다.
-    /// OnAttack 계열은 커맨드 공격(D-27) 구현 때 더한다.
+    /// 몬스터의 소환·사망·아군 사망·공격 시 효과와 피해 감소 (`09` Monster_Effects, 1단계분, D-61·D-70).
+    /// TriggerBus를 구독하고 효과를 Trigger 큐에 넣는다. 카드를 낼 때 고르는 효과(피의 사제·모방 슬라임)는 CardEffects에 있다.
     /// </summary>
     public static class MonsterEffects
     {
@@ -174,6 +199,47 @@ namespace DarkLegion.Core
         {
             ctx.Triggers.AllySummoned += OnSummoned;
             ctx.Triggers.UnitDied += OnDied;
+            ctx.Triggers.AllyAttacked += OnAllyAttacked;
+        }
+
+        /// <summary>
+        /// 아군 몬스터가 받는 피해의 고정 감소 (D-61·D-70). 수정 골렘이 Front 칸에 살아 있으면 아군 몬스터 전체(자기 포함) −Value.
+        /// 플레이어·적은 0. 틱에는 DamageAction이 이 값을 쓰지 않는다.
+        /// </summary>
+        public static int DamageReductionFor(BattleContext c, RuntimeUnit target)
+        {
+            if (!(target is RuntimeMonster) || !c.Allies.Contains((RuntimeMonster)target)) return 0;
+            int total = 0;
+            if (c.Field.At(TeamType.Player, SlotPosition.Front) is RuntimeMonster front && !front.IsDead && front.DataId == "NEU_MON_007")
+            {
+                total += Value(c, front, 1);
+            }
+            return total;
+        }
+
+        /// <summary>커맨드 공격 1회마다 (D-70). 공격 피해가 처리된 뒤 실행된다.</summary>
+        private static void OnAllyAttacked(BattleContext c, RuntimeMonster m, RuntimeUnit target, bool killed)
+        {
+            switch (m.DataId)
+            {
+                case "NEC_MON_004": // 역병 쥐: 공격 대상 Poison 1
+                case "NEC_MON_014": // 저주 기사: 공격 대상 Poison 1
+                    int poison = Value(c, m, 1);
+                    Trigger(c, "AttackPoison", x =>
+                    {
+                        if (!target.IsDead) target.Statuses.Apply(StatusType.Poison, poison, x); // 이 공격으로 죽은 대상에는 걸지 않는다
+                    });
+                    break;
+                case "NEC_MON_013": // 식인 구울: 자신 HP 2 회복
+                    int heal = Value(c, m, 2);
+                    Trigger(c, "CannibalHeal", x => x.Heal(m, heal));
+                    break;
+                case "NEC_MON_010": // 부패한 기사: 공격으로 처치하면 Crystal 1, 다음 턴 시작에 (D-70)
+                    if (!killed) break;
+                    int gain = Value(c, m, 1);
+                    Trigger(c, "RottenKnightKill", x => x.Player.NextTurnCrystal += gain);
+                    break;
+            }
         }
 
         private static void OnSummoned(BattleContext c, RuntimeMonster m)
@@ -186,6 +252,18 @@ namespace DarkLegion.Core
                     {
                         var enemies = x.Enemies.Where(e => e.IsTargetable).ToList();
                         if (enemies.Count > 0) enemies[x.Random.Next(0, enemies.Count)].Statuses.Apply(StatusType.Poison, poison, x);
+                    });
+                    break;
+                case "NEC_MON_009": // 시체 포식자: 소멸 더미의 Monster 카드 중 무작위 1장 → 손패, 10장이면 버린 더미로 (D-30)
+                    int count = Value(c, m, 1);
+                    Trigger(c, "CorpseEater", x =>
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            var monsters = x.Player.Deck.ExhaustPile.Where(card => x.Cards?.Get(card.CardId)?.Type == CardType.Monster).ToList();
+                            if (monsters.Count == 0) break;
+                            x.Player.Deck.AddToHand(monsters[x.Random.Next(0, monsters.Count)]);
+                        }
                     });
                     break;
                 case "NEU_MON_004": // 소환 시 Draw 1

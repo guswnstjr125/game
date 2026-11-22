@@ -1,0 +1,155 @@
+{
+  "source": "14_보스_패턴.xlsx/Boss_Phase",
+  "rows": [
+    {
+      "Boss_ID": "BOS_1F_001",
+      "Phase": 1,
+      "HP_Pct_Min": 50,
+      "HP_Pct_Max": 100,
+      "Summary": "단일·Weak",
+      "TurnCycle_T0": "단일 공격 (ATK 8, Front)",
+      "TurnCycle_T1": "Weak 2턴 (Back)",
+      "TurnCycle_T2": "단일 공격"
+    },
+    {
+      "Boss_ID": "BOS_1F_001",
+      "Phase": 2,
+      "HP_Pct_Min": 20,
+      "HP_Pct_Max": 50,
+      "Summary": "소환·흡혈·광역",
+      "TurnCycle_T0": "소환 구울 ×1",
+      "TurnCycle_T1": "흡혈 (ATK 8, 회복50%)",
+      "TurnCycle_T2": "광역 6"
+    },
+    {
+      "Boss_ID": "BOS_1F_001",
+      "Phase": 3,
+      "HP_Pct_Min": 0,
+      "HP_Pct_Max": 20,
+      "Summary": "2회 공격",
+      "TurnCycle_T0": "단일 공격 ×2 (ATK 8 ×2)",
+      "TurnCycle_T1": null,
+      "TurnCycle_T2": null
+    },
+    {
+      "Boss_ID": "BOS_2F_001",
+      "Phase": 1,
+      "HP_Pct_Min": 50,
+      "HP_Pct_Max": 100,
+      "Summary": "전장 Burn",
+      "TurnCycle_T0": "전장 Burn+2",
+      "TurnCycle_T1": "단일 공격",
+      "TurnCycle_T2": "광역 4"
+    },
+    {
+      "Boss_ID": "BOS_2F_001",
+      "Phase": 2,
+      "HP_Pct_Min": 20,
+      "HP_Pct_Max": 50,
+      "Summary": "Burn 강화",
+      "TurnCycle_T0": "Burn+3 전장",
+      "TurnCycle_T1": "단일 ×2",
+      "TurnCycle_T2": "광역 8"
+    },
+    {
+      "Boss_ID": "BOS_2F_001",
+      "Phase": 3,
+      "HP_Pct_Min": 0,
+      "HP_Pct_Max": 20,
+      "Summary": "Burn+공격",
+      "TurnCycle_T0": "Burn+1 전장 + 단일 공격",
+      "TurnCycle_T1": null,
+      "TurnCycle_T2": null
+    },
+    {
+      "Boss_ID": "BOS_3F_001",
+      "Phase": 1,
+      "HP_Pct_Min": 50,
+      "HP_Pct_Max": 100,
+      "Summary": "단일·Weak·흡혈",
+      "TurnCycle_T0": "단일 공격",
+      "TurnCycle_T1": "Weak 전장(희생 유도)",
+      "TurnCycle_T2": "흡혈 50%"
+    },
+    {
+      "Boss_ID": "BOS_3F_001",
+      "Phase": 2,
+      "HP_Pct_Min": 20,
+      "HP_Pct_Max": 50,
+      "Summary": "분열·광역",
+      "TurnCycle_T0": "P2 진입 시 FLS_003 분열 소환 ×1. 광역 6",
+      "TurnCycle_T1": "흡혈",
+      "TurnCycle_T2": null
+    },
+    {
+      "Boss_ID": "BOS_3F_001",
+      "Phase": 3,
+      "HP_Pct_Min": 0,
+      "HP_Pct_Max": 20,
+      "Summary": "2회+자힐",
+      "TurnCycle_T0": "2회 공격 + 자힐 6",
+      "TurnCycle_T1": null,
+      "TurnCycle_T2": null
+    },
+    {
+      "Boss_ID": "BOS_4F_001",
+      "Phase": 1,
+      "HP_Pct_Min": 50,
+      "HP_Pct_Max": 100,
+      "Summary": "단일·Bind·Execute",
+      "TurnCycle_T0": "단일 공격",
+      "TurnCycle_T1": "Bind 1턴 (Front)",
+      "TurnCycle_T2": "Execute 판정 (HP≤30%)"
+    },
+    {
+      "Boss_ID": "BOS_4F_001",
+      "Phase": 2,
+      "HP_Pct_Min": 20,
+      "HP_Pct_Max": 50,
+      "Summary": "Execute 상향",
+      "TurnCycle_T0": "Execute 임계 25%로 상향 오라 2턴",
+      "TurnCycle_T1": "광역 7",
+      "TurnCycle_T2": "Shield 제거"
+    },
+    {
+      "Boss_ID": "BOS_4F_001",
+      "Phase": 3,
+      "HP_Pct_Min": 0,
+      "HP_Pct_Max": 20,
+      "Summary": "2회+Vuln",
+      "TurnCycle_T0": "2회 공격 + Vulnerable 2턴(전장)",
+      "TurnCycle_T1": null,
+      "TurnCycle_T2": null
+    },
+    {
+      "Boss_ID": "BOS_5F_001",
+      "Phase": 1,
+      "HP_Pct_Min": 50,
+      "HP_Pct_Max": 100,
+      "Summary": "Crystal·저주",
+      "TurnCycle_T0": "Crystal -1",
+      "TurnCycle_T1": "단일 공격",
+      "TurnCycle_T2": "허무 저주 카드 1장 추가"
+    },
+    {
+      "Boss_ID": "BOS_5F_001",
+      "Phase": 2,
+      "HP_Pct_Min": 20,
+      "HP_Pct_Max": 50,
+      "Summary": "소환·Crystal",
+      "TurnCycle_T0": "ABY_002 소환",
+      "TurnCycle_T1": "광역 6",
+      "TurnCycle_T2": "Crystal -2"
+    },
+    {
+      "Boss_ID": "BOS_5F_001",
+      "Phase": 3,
+      "HP_Pct_Min": 0,
+      "HP_Pct_Max": 20,
+      "Summary": "Crystal+2회",
+      "TurnCycle_T0": "Crystal -1 + 2회 공격",
+      "TurnCycle_T1": null,
+      "TurnCycle_T2": null
+    }
+  ]
+}

@@ -1,0 +1,887 @@
+{
+  "source": "08_카드_데이터베이스.xlsx/Cards_FloorUnlock",
+  "rows": [
+    {
+      "Card_ID": "NEC_MON_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_003",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_004",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_005",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_006",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_007",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_008",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_009",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_010",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_011",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_012",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_SKL_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_SKL_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_SKL_003",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_SKL_004",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_ACT_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_ACT_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_ACT_003",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_ACT_004",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "ELE_MON_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "1층 ELE Lv1 일부",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "1층 ELE Lv1 일부",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_003",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_004",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_005",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_006",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_007",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_008",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_009",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_010",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_011",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_MON_012",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_SKL_001",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_SKL_002",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_SKL_003",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_SKL_004",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_ACT_001",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_ACT_002",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_ACT_003",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "ELE_ACT_004",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 ELE Lv1~2 스킬·액션",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_001",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 BEA Lv1 4장",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_002",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 BEA Lv1 4장",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_003",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 BEA Lv1 4장",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_004",
+      "UnlockFloor": 2,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "2층 BEA Lv1 4장",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_005",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_006",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_007",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_008",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_009",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_010",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_011",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_MON_012",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_SKL_001",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_SKL_002",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_SKL_003",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_SKL_004",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_ACT_001",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_ACT_002",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_ACT_003",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "BEA_ACT_004",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_001",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_002",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_003",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_004",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_005",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_006",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_007",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_008",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_009",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_010",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_011",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_MON_012",
+      "UnlockFloor": 5,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": "5층 Lv3",
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_SKL_001",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_SKL_002",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_SKL_003",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_SKL_004",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_ACT_001",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_ACT_002",
+      "UnlockFloor": 3,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_ACT_003",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "HOL_ACT_004",
+      "UnlockFloor": 4,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": 1
+    },
+    {
+      "Card_ID": "NEU_MON_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_003",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_004",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_005",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_006",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_007",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_MON_008",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_SKL_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_SKL_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_ACT_001",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEU_ACT_002",
+      "UnlockFloor": 1,
+      "DropPool_Normal": true,
+      "DropPool_Elite": true,
+      "DropPool_Boss": true,
+      "Note": null,
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_013",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_014",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "NEC_MON_015",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "ELE_MON_013",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "BEA_MON_013",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    },
+    {
+      "Card_ID": "HOL_MON_013",
+      "UnlockFloor": null,
+      "DropPool_Normal": false,
+      "DropPool_Elite": false,
+      "DropPool_Boss": false,
+      "Note": "융합 전용. 드롭 풀 제외",
+      "UnlockFloor_IfStartClass": null
+    }
+  ]
+}

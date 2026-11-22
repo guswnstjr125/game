@@ -83,6 +83,8 @@ namespace DarkLegion.Core
 
         public int CurrentCrystal { get; set; }
         public int MaxCrystal { get; set; } = DefaultMaxCrystal;
+        /// <summary>다음 플레이어 턴 시작(리셋 직후)에 더할 Crystal (부패한 기사, D-70). 전투가 끝나면 0.</summary>
+        public int NextTurnCrystal { get; set; }
 
         /// <summary>융합 충전 (D-03): 런 시작 0, 최대 3, 층 이동 시 유지. 노드 3·6·9 클리어 시 +1 (런 계층이 <see cref="GainFusionCharge"/>).</summary>
         public int FusionCharge { get; set; }
@@ -100,10 +102,11 @@ namespace DarkLegion.Core
             Deck = deck;
         }
 
-        /// <summary>턴 시작: MaxCrystal로 리셋, 이월 없음. 턴 중 상한은 없다 (D-30).</summary>
+        /// <summary>턴 시작: MaxCrystal로 리셋, 이월 없음. 턴 중 상한은 없다 (D-30). 그다음 예약된 NextTurnCrystal을 더한다 (D-70).</summary>
         public void ResetCrystalForTurn()
         {
-            CurrentCrystal = MaxCrystal;
+            CurrentCrystal = MaxCrystal + NextTurnCrystal;
+            NextTurnCrystal = 0;
         }
 
         public bool TrySpendCrystal(int cost)

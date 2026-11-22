@@ -1,0 +1,555 @@
+{
+  "source": "09_몬스터_바이블.xlsx/Fusion_RandomPool",
+  "rows": [
+    {
+      "Pool_ID": "POOL_NEC_L1_001",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEC",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_005",
+      "Weight": 40,
+      "Note": "식인 구울"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_002",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEC",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_006",
+      "Weight": 40,
+      "Note": "저주 기사"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_003",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEC",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_007",
+      "Weight": 0,
+      "Note": "영혼 수확자 | MVP 제외: 카드 없음 (D-21)"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_004",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEC",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_008",
+      "Weight": 0,
+      "Note": "역병 전파자 | MVP 제외: 카드 없음 (D-21)"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_005",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 15,
+      "Note": "20% NEU"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_006",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 5,
+      "Note": "20% NEU"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L1_007",
+      "InputClass": "NEC",
+      "InputLevel": 1,
+      "OutputClass": "MUT",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_009",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_NEC_L2_001",
+      "InputClass": "NEC",
+      "InputLevel": 2,
+      "OutputClass": "NEC",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_NEC_L3_001",
+      "Weight": 35,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_NEC_L2_002",
+      "InputClass": "NEC",
+      "InputLevel": 2,
+      "OutputClass": "NEC",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_NEC_L3_002",
+      "Weight": 36,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_NEC_L2_003",
+      "InputClass": "NEC",
+      "InputLevel": 2,
+      "OutputClass": "NEC",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_NEC_L3_003",
+      "Weight": 29,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_NEC_L2_005",
+      "InputClass": "NEC",
+      "InputLevel": 2,
+      "OutputClass": "MUT",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_NEC_L3_004",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_001",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "ELE",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_001",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_002",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "ELE",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_002",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_003",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "ELE",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_003",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_004",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "ELE",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_004",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_005",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 15,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_006",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 5,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L1_007",
+      "InputClass": "ELE",
+      "InputLevel": 1,
+      "OutputClass": "MUT",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_005",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_ELE_L2_001",
+      "InputClass": "ELE",
+      "InputLevel": 2,
+      "OutputClass": "ELE",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_ELE_L3_001",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L2_002",
+      "InputClass": "ELE",
+      "InputLevel": 2,
+      "OutputClass": "ELE",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_ELE_L3_002",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_ELE_L2_003",
+      "InputClass": "ELE",
+      "InputLevel": 2,
+      "OutputClass": "ELE",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_ELE_L3_003",
+      "Weight": 0,
+      "Note": "MVP 제외: 카드 없음 (D-21)"
+    },
+    {
+      "Pool_ID": "POOL_ELE_L2_005",
+      "InputClass": "ELE",
+      "InputLevel": 2,
+      "OutputClass": "MUT",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_ELE_L3_004",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_001",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "BEA",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_001",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_002",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "BEA",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_002",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_003",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "BEA",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_003",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_004",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "BEA",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_004",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_005",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 15,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_006",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 5,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L1_007",
+      "InputClass": "BEA",
+      "InputLevel": 1,
+      "OutputClass": "MUT",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_005",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_BEA_L2_001",
+      "InputClass": "BEA",
+      "InputLevel": 2,
+      "OutputClass": "BEA",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_BEA_L3_001",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L2_002",
+      "InputClass": "BEA",
+      "InputLevel": 2,
+      "OutputClass": "BEA",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_BEA_L3_002",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_BEA_L2_003",
+      "InputClass": "BEA",
+      "InputLevel": 2,
+      "OutputClass": "BEA",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_BEA_L3_003",
+      "Weight": 0,
+      "Note": "MVP 제외: 카드 없음 (D-21)"
+    },
+    {
+      "Pool_ID": "POOL_BEA_L2_005",
+      "InputClass": "BEA",
+      "InputLevel": 2,
+      "OutputClass": "MUT",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_BEA_L3_004",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_001",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "HOL",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_001",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_002",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "HOL",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_002",
+      "Weight": 23,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_003",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "HOL",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_003",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_004",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "HOL",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_004",
+      "Weight": 17,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_005",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 15,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_006",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 5,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L1_007",
+      "InputClass": "HOL",
+      "InputLevel": 1,
+      "OutputClass": "MUT",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_005",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_HOL_L2_001",
+      "InputClass": "HOL",
+      "InputLevel": 2,
+      "OutputClass": "HOL",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_HOL_L3_001",
+      "Weight": 35,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L2_002",
+      "InputClass": "HOL",
+      "InputLevel": 2,
+      "OutputClass": "HOL",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_HOL_L3_002",
+      "Weight": 36,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L2_003",
+      "InputClass": "HOL",
+      "InputLevel": 2,
+      "OutputClass": "HOL",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_HOL_L3_002",
+      "Weight": 29,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_HOL_L2_005",
+      "InputClass": "HOL",
+      "InputLevel": 2,
+      "OutputClass": "MUT",
+      "OutputLevel": 3,
+      "ResultMON_ID": "MON_HOL_L3_001",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_NEU_L1_001",
+      "InputClass": "NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_NEU_L1_002",
+      "InputClass": "NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 50,
+      "Note": null
+    },
+    {
+      "Pool_ID": "POOL_NEU_L1_003",
+      "InputClass": "NEU",
+      "InputLevel": 1,
+      "OutputClass": "MUT",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_002",
+      "Weight": 0,
+      "Note": "Mutation MVP 비활성 (D-03, D-21)"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_NEC_01",
+      "InputClass": "NEC+NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEC",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEC_L2_001",
+      "Weight": 50,
+      "Note": "50% class up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_NEC_02",
+      "InputClass": "NEC+NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 50,
+      "Note": "50% NEU up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_ELE_01",
+      "InputClass": "ELE+NEU",
+      "InputLevel": 1,
+      "OutputClass": "ELE",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_ELE_L2_001",
+      "Weight": 50,
+      "Note": "50% class up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_ELE_02",
+      "InputClass": "ELE+NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 50,
+      "Note": "50% NEU up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_BEA_01",
+      "InputClass": "BEA+NEU",
+      "InputLevel": 1,
+      "OutputClass": "BEA",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_BEA_L2_001",
+      "Weight": 50,
+      "Note": "50% class up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_BEA_02",
+      "InputClass": "BEA+NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 50,
+      "Note": "50% NEU up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_HOL_01",
+      "InputClass": "HOL+NEU",
+      "InputLevel": 1,
+      "OutputClass": "HOL",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_HOL_L2_001",
+      "Weight": 50,
+      "Note": "50% class up"
+    },
+    {
+      "Pool_ID": "POOL_NEU_X_HOL_02",
+      "InputClass": "HOL+NEU",
+      "InputLevel": 1,
+      "OutputClass": "NEU",
+      "OutputLevel": 2,
+      "ResultMON_ID": "MON_NEU_L2_001",
+      "Weight": 50,
+      "Note": "50% NEU up"
+    }
+  ]
+}
