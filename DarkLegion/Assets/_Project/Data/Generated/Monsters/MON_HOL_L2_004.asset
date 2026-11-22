@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_HOL_L2_004
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_HOL_L2_004
+  displayName: "\uBE5B\uC758 \uCC3D\uBCD1"
+  monsterClass: HOL
+  level: 2
+  cardId: HOL_MON_010
+  hp: 16
+  atk: 6
+  def: 1
+  crystal: 2
+  onSummon: 
+  passive: "\uC774 \uBAAC\uC2A4\uD130\uC758 \uACF5\uACA9 \uB300\uC0C1\uC5D0\uAC8C
+    Shield\uAC00 \uC788\uB2E4\uBA74 Shield\uB97C \uBB34\uC2DC\uD558\uACE0 \uD53C\uD574\uB97C
+    \uC785\uD78C\uB2E4."
+  onDeath: 
+  onAttack: 
+  special: 
+  effects:
+  - slot: Passive
+    trigger: AttackModifier
+    condition: 
+    effect: IgnoreShield
+    target: AttackTarget
+    hasValue: 0
+    value: 0
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

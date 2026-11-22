@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_NEC_L2_005
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_NEC_L2_005
+  displayName: "\uC2DD\uC778 \uAD6C\uC6B8"
+  monsterClass: NEC
+  level: 2
+  cardId: NEC_MON_013
+  hp: 18
+  atk: 5
+  def: 1
+  crystal: 2
+  onSummon: 
+  passive: 
+  onDeath: 
+  onAttack: "\uACF5\uACA9\uD560 \uB54C\uB9C8\uB2E4 \uC790\uC2E0\uC758 HP\uB97C 2
+    \uD68C\uBCF5\uD55C\uB2E4."
+  special: 
+  effects:
+  - slot: OnAttack
+    trigger: OnAttack
+    condition: 
+    effect: Heal
+    target: Self
+    hasValue: 1
+    value: 2
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

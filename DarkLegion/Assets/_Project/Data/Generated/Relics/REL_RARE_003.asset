@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb589a3979e18f744bc89bb386f78633, type: 3}
+  m_Name: REL_RARE_003
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.RelicData
+  relicId: REL_RARE_003
+  displayName: "\uACF5\uD5C8\uC758 \uBA54\uC544\uB9AC"
+  rarity: Rare
+  trigger: OnDraw
+  effect: "Exhaust \uCE74\uB4DC \uB4DC\uB85C\uC6B0 \uC2DC Crystal+1 (\uD134\uB2F9
+    2\uD68C)"
+  text: "Exhaust \uCE74\uB4DC\uB97C \uB4DC\uB85C\uC6B0\uD558\uBA74 Crystal\uC744
+    1 \uC5BB\uB294\uB2E4. \uD134\uB9C8\uB2E4 \uB450 \uBC88\uAE4C\uC9C0."

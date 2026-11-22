@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18be54549fe030d4cb191d4c2dfff633, type: 3}
+  m_Name: EVT_SOUL_PRISON
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EventData
+  eventId: EVT_SOUL_PRISON
+  displayName: "\uC601\uD63C \uAC10\uC625"
+  floor1: 0.14
+  floor2: 0.14
+  floor3: 0.14
+  floor4: 0.14
+  floor5: 0.14
+  options:
+  - option: 1
+    condition: 
+    result: "\uCD94\uCCA8 1\uD68C: 50% \uC77C\uBC18 \uCE74\uB4DC 3\uD0DD1 / 50% \uD574\uB2F9
+      \uCE35 \uB178\uB4DC 1 A/Wave 1 \uAC15\uC81C \uC804\uD22C, \uC2B9\uB9AC \uC2DC
+      \uC77C\uBC18 \uBCF4\uC0C1"
+  - option: 2
+    condition: 
+    result: "\uD761\uC218 \u2192 HP \uD68C\uBCF5"
+  - option: 3
+    condition: 
+    result: "\uB5A0\uB09C\uB2E4"

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18be54549fe030d4cb191d4c2dfff633, type: 3}
+  m_Name: EVT_GRAVE_WHISPER
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EventData
+  eventId: EVT_GRAVE_WHISPER
+  displayName: "\uBB18\uC9C0\uC758 \uC18D\uC0AD\uC784"
+  floor1: 0
+  floor2: 0
+  floor3: 0.22
+  floor4: 0.22
+  floor5: 0
+  options:
+  - option: 1
+    condition: 
+    result: "\uC800\uC8FC 1\uC7A5 \u2192 \uCE74\uB4DC 3\uD0DD1 (D-49\xB7D-45)"
+  - option: 2
+    condition: 
+    result: "HP 8 \uD68C\uBCF5"
+  - option: 3
+    condition: 
+    result: "\uB5A0\uB09C\uB2E4"

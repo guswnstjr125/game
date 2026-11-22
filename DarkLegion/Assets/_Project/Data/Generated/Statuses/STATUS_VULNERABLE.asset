@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e61f9b630df60348aa88903c96c7c7d, type: 3}
+  m_Name: STATUS_VULNERABLE
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.StatusData
+  statusId: STATUS_VULNERABLE
+  displayName: Vulnerable
+  stackType: Duration
+  tickTiming: 
+  effect: "\uBC1B\uB294 \uD53C\uD574 \xD71.25"
+  hasMaxStack: 0
+  maxStack: 0
+  hasDuration: 1
+  durationTurns: 2
+  durationUnspecified: 0
