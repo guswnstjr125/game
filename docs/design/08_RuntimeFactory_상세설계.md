@@ -214,7 +214,7 @@ public static class ActionFactory
 |------|------|
 | Save | Runtime → DTO: `DataId`, `UnitId`, `CurrentHP`, Status 스냅샷 |
 | Load | DTO → `CreateEnemy`/`CreateMonster` **금지** 전투 중 — `BattleSnapshot` 전용 복원 메서드 `RestoreUnitFromSnapshot` |
-| 런 덱 | `DeckSaveDTO`는 CardData.Id + UpgradeLevel만 — Factory.CreateCard로 재구성 |
+| 런 덱 | `SaveData.Deck`의 순서와 `CardSaveDTO` 개체 ID·카드 ID·강화 단계·융합 여부를 복구한다. 전투 카드 생성 시에도 런의 개체 ID를 전달한다 (`14` §2, D-73). |
 
 ---
 
