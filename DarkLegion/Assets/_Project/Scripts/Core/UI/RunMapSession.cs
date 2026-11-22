@@ -19,7 +19,7 @@ namespace DarkLegion.Core
         public NodeKind Kind;
         public string KindLabel;
         public MapNodeState State;
-        /// <summary>현재 노드이고 이 화면에서 들어갈 수 있는 전투 노드(전투·엘리트·보스)다.</summary>
+        /// <summary>현재 노드이고 화면이 연결되어 있다.</summary>
         public bool Enterable;
     }
 
@@ -62,12 +62,13 @@ namespace DarkLegion.Core
     /// <summary>
     /// 18노드 맵 → 전투 → 결과·보상 선택 → 맵 (`37` §1·§2, D-37·D-66·D-67). 규칙은 <see cref="RunFlow"/>·<see cref="RunBattle"/>·
     /// <see cref="RewardFlow"/>를 그대로 부른다. 승리하면 보상 후보를 보여 주고, <see cref="ConfirmReward"/>가 마지막 확인(D-67)과
-    /// 노드 완료를 한 번만 한다. 이벤트·휴식·상점 노드는 화면이 생길 때까지 들어갈 수 없다.
+    /// 노드 완료를 한 번만 한다. 이벤트와 휴식은 각 화면의 계속 콜백에서 진행한다.
     /// </summary>
     public sealed class RunMapSession
     {
         readonly GameDataLoadResult _data;
         BattleScreenSession _active;
+        bool _nodeScreenOpen;
         int _hpBefore;
         NodeKind _activeKind;
         string _activeNodeId;
@@ -96,6 +97,7 @@ namespace DarkLegion.Core
             bool tutorial = Run.TutorialEnabled;
             Run = NewRun(seed, tutorial);
             _active = null;
+            _nodeScreenOpen = false;
             _reward = null;
         }
 
@@ -115,8 +117,10 @@ namespace DarkLegion.Core
             }
         }
 
-        bool CanEnterCurrent => Run.Outcome == RunOutcome.InProgress && _active == null
-            && IsBattleKind(RunMap.KindOf(Run.Floor, Run.Node, Run.Stage1Build));
+        NodeKind CurrentKind => RunMap.KindOf(Run.Floor, Run.Node, Run.Stage1Build);
+
+        bool CanEnterCurrent => Run.Outcome == RunOutcome.InProgress && _active == null && !_nodeScreenOpen
+            && (IsBattleKind(CurrentKind) || CurrentKind == NodeKind.Rest || (CurrentKind == NodeKind.Event && Run.Floor <= 2));
 
         public bool CanEnter(int floor, int node) => CanEnterCurrent && floor == Run.Floor && node == Run.Node;
 
@@ -163,16 +167,68 @@ namespace DarkLegion.Core
         /// <summary>현재 노드의 전투를 시작한다. 전투 화면은 이 세션을 그대로 쓴다.</summary>
         public BattleScreenSession EnterBattle()
         {
-            if (!CanEnterCurrent) throw new InvalidOperationException($"{Run.CurrentNodeId}에는 들어갈 수 없다");
-            _hpBefore = Run.CurrentHp;
-            _activeKind = RunMap.KindOf(Run.Floor, Run.Node, Run.Stage1Build);
-            _activeNodeId = Run.CurrentNodeId;
-            _reward = null;
-            _active = BattleScreenSession.Start(Run, _data);
-            return _active;
+            if (!CanEnterCurrent || !IsBattleKind(CurrentKind))
+                throw new InvalidOperationException($"{Run.CurrentNodeId}에는 전투로 들어갈 수 없다");
+            return StartBattle(CurrentKind, forced: false);
         }
 
-        /// <summary>끝난 전투의 결과. 아직 안 끝났으면 예외. 노드는 <see cref="Continue"/> 전까지 넘기지 않는다.</summary>
+        public EventScreenSession EnterEvent(Action<BattleScreenSession> onComplete, Func<string, string> nameOf = null)
+        {
+            if (!CanEnterCurrent || CurrentKind != NodeKind.Event)
+                throw new InvalidOperationException($"{Run.CurrentNodeId}에는 이벤트로 들어갈 수 없다");
+
+            var run = Run;
+            if (onComplete == null) throw new ArgumentNullException(nameof(onComplete));
+            string eventId = EventFlow.Enter(run, _data);
+            var session = new EventScreenSession(run.Floor, eventId, run, _data, result =>
+            {
+                if (!IsCurrentScreen(run, result.NodeId)) return;
+                BattleScreenSession forced = null;
+                if (run.Outcome == RunOutcome.InProgress)
+                {
+                    if (result.ForcedBattle) forced = StartBattle(NodeKind.Battle, forced: true);
+                    else RunFlow.CompleteNode(run);
+                }
+                _nodeScreenOpen = false;
+                onComplete(forced);
+            }, nameOf);
+            _nodeScreenOpen = true;
+            return session;
+        }
+
+        public RestScreenSession EnterRest(Action onComplete = null, Func<string, string> nameOf = null)
+        {
+            if (!CanEnterCurrent || CurrentKind != NodeKind.Rest)
+                throw new InvalidOperationException($"{Run.CurrentNodeId}에는 휴식으로 들어갈 수 없다");
+
+            var run = Run;
+            var session = new RestScreenSession(run, _data, result =>
+            {
+                if (!IsCurrentScreen(run, result.NodeId) || run.Outcome != RunOutcome.InProgress) return;
+                RunFlow.CompleteNode(run);
+                _nodeScreenOpen = false;
+                onComplete?.Invoke();
+            }, nameOf);
+            _nodeScreenOpen = true;
+            return session;
+        }
+
+        bool IsCurrentScreen(RunState run, string nodeId) =>
+            _nodeScreenOpen && ReferenceEquals(run, Run) && nodeId == Run.CurrentNodeId;
+
+        BattleScreenSession StartBattle(NodeKind rewardKind, bool forced)
+        {
+            int hpBefore = Run.CurrentHp;
+            var session = forced ? BattleScreenSession.StartForced(Run, _data) : BattleScreenSession.Start(Run, _data);
+            _hpBefore = hpBefore;
+            _activeKind = rewardKind;
+            _activeNodeId = Run.CurrentNodeId;
+            _reward = null;
+            _active = session;
+            return session;
+        }
+
+        /// <summary>끝난 전투의 결과. 아직 안 끝났으면 예외. 노드는 <see cref="ConfirmReward"/> 전까지 넘기지 않는다.</summary>
         public BattleResultView Result()
         {
             if (_active == null) throw new InvalidOperationException("전투 중이 아니다");

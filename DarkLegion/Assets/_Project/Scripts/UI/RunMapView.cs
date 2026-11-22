@@ -10,7 +10,7 @@ namespace DarkLegion.UI
 {
     /// <summary>
     /// 18노드 맵과 전투 결과 화면 (`37` §1·§2). 규칙은 <see cref="RunMapSession"/>만 부르고,
-    /// 전투는 <see cref="BattleScreenView"/>가 같은 런 상태로 진행한다. 타이틀·보상 선택·휴식·이벤트·저장은 이번 범위 밖이다.
+    /// 전투는 <see cref="BattleScreenView"/>가 같은 런 상태로 진행한다. 이벤트·휴식은 기존 화면을 같은 런 세션에 연결한다.
     /// </summary>
     public sealed class RunMapView : MonoBehaviour
     {
@@ -24,6 +24,7 @@ namespace DarkLegion.UI
         GameObject _canvasGo;
         GameObject _eventsGo;
         GameObject _battleGo;
+        GameObject _nodeGo;
         RectTransform _mapRoot;
         RectTransform _nodesRoot;
         RectTransform _resultRoot;
@@ -47,7 +48,9 @@ namespace DarkLegion.UI
             try
             {
                 _data = BattleScreenView.LoadData();
+                foreach (var row in _data.Rows("Cards_Master")) _names[row.Str("ID")] = row.Str("카드명");
                 foreach (var row in _data.Rows("Cards_Text")) _names[row.Str("Card_ID")] = row.Str("Name_KO");
+                foreach (var row in _data.Rows("Curse_Cards")) _names[row.Str("Curse_ID")] = row.Str("Name_KO");
                 foreach (var row in _data.Rows("Relics_MVP")) _names[row.Str("Relic_ID")] = row.Str("Name_KO");
                 var loaded = GameDataLoader.Load(_data);
                 _map = RunMapSession.NewNecRun(loaded, DateTime.UtcNow.Ticks, tutorialEnabled: true);
@@ -62,6 +65,7 @@ namespace DarkLegion.UI
         void OnDestroy()
         {
             if (_battleGo != null) Destroy(_battleGo);
+            if (_nodeGo != null) Destroy(_nodeGo);
             if (_canvasGo != null) Destroy(_canvasGo);
             if (_eventsGo != null) Destroy(_eventsGo);
         }
@@ -96,7 +100,7 @@ namespace DarkLegion.UI
             {
                 var current = snap.Nodes.First(n => n.State == MapNodeState.Current);
                 _hint.text = current.Enterable
-                    ? current.Id + " " + current.KindLabel + ": 노드를 눌러 전투에 들어갑니다."
+                    ? current.Id + " " + current.KindLabel + ": 노드를 눌러 " + current.KindLabel + (current.Kind == NodeKind.Event || current.Kind == NodeKind.Rest ? " 화면을 엽니다." : "에 들어갑니다.")
                     : current.Id + " " + current.KindLabel + ": 이 노드의 화면은 아직 없습니다.";
             }
         }
@@ -104,11 +108,60 @@ namespace DarkLegion.UI
         void ClickNode(MapNodeView node)
         {
             if (!node.Enterable || !_map.CanEnter(node.Floor, node.Node)) return;
-            var session = _map.EnterBattle();
+            switch (node.Kind)
+            {
+                case NodeKind.Event:
+                {
+                    var session = _map.EnterEvent(OnEventDone, NameOf);
+                    _mapRoot.gameObject.SetActive(false);
+                    _nodeGo = new GameObject("EventScreen");
+                    _nodeGo.AddComponent<EventScreenView>().Attach(session, NameOf);
+                    break;
+                }
+                case NodeKind.Rest:
+                {
+                    var session = _map.EnterRest(OnNodeScreenDone, NameOf);
+                    _mapRoot.gameObject.SetActive(false);
+                    _nodeGo = new GameObject("RestScreen");
+                    _nodeGo.AddComponent<RestScreenView>().Attach(session, NameOf);
+                    break;
+                }
+                default:
+                    ShowBattle(_map.EnterBattle());
+                    break;
+            }
+        }
+
+        void ShowBattle(BattleScreenSession session)
+        {
             _mapRoot.gameObject.SetActive(false);
             _battleGo = new GameObject("BattleScreen");
             var view = _battleGo.AddComponent<BattleScreenView>();
             view.Attach(session, _data, OnBattleDone);
+        }
+
+        void OnEventDone(BattleScreenSession forcedBattle)
+        {
+            if (forcedBattle == null)
+            {
+                OnNodeScreenDone();
+                return;
+            }
+            CloseNodeScreen();
+            ShowBattle(forcedBattle);
+        }
+
+        void CloseNodeScreen()
+        {
+            Destroy(_nodeGo);
+            _nodeGo = null;
+        }
+
+        void OnNodeScreenDone()
+        {
+            CloseNodeScreen();
+            if (_map.Run.Outcome == RunOutcome.Defeat) ShowRunEnd();
+            else RefreshMap();
         }
 
         void OnBattleDone()
@@ -195,7 +248,8 @@ namespace DarkLegion.UI
             _resultRoot.gameObject.SetActive(true);
             _mapRoot.gameObject.SetActive(false);
             var snap = _map.Capture();
-            _resultText.text = "런 승리\n2층 보스를 처치했습니다.\nHP " + snap.Hp + "/" + snap.MaxHp + "  골드 " + snap.Gold;
+            _resultText.text = (snap.Outcome == RunOutcome.Victory ? "런 승리\n2층 보스를 처치했습니다." : "패배 — 런 종료")
+                + "\nHP " + snap.Hp + "/" + snap.MaxHp + "  골드 " + snap.Gold;
             _result = null;
             RenderChoices();
             _restart.gameObject.SetActive(true);

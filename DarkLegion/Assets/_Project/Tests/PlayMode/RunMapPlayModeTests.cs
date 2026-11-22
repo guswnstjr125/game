@@ -35,7 +35,7 @@ namespace DarkLegion.Tests.PlayMode
         public void TearDown()
         {
             // 화면 정리는 RunMapView.OnDestroy와 BattleScreenView.OnDestroy가 한다. 남은 것이 있으면 이름으로 지운다.
-            foreach (var name in new[] { "BattleScreen", "MapCanvas", "BattleCanvas", "EventSystem" })
+            foreach (var name in new[] { "BattleScreen", "EventScreen", "RestScreen", "MapCanvas", "BattleCanvas", "EventCanvas", "RestCanvas", "EventSystem" })
             {
                 var go = GameObject.Find(name);
                 if (go != null) UnityEngine.Object.DestroyImmediate(go);
@@ -190,6 +190,143 @@ namespace DarkLegion.Tests.PlayMode
             CollectionAssert.AreEqual(new[] { "REL_BLOOD_CHALICE", "REL_COM_002" }, Map.Run.Relics);
             Assert.AreEqual(10, Map.Capture().DeckCount);
             Assert.AreEqual(RunOutcome.InProgress, Map.Capture().Outcome);
+        }
+
+        IEnumerator ShowNode(int floor, int node)
+        {
+            Map.Run.Floor = floor;
+            Map.Run.StageIndex = node - 1;
+            _view.GetType().GetMethod("RefreshMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(_view, null);
+            yield return null;
+        }
+
+        void UseSecondEventBranch(string eventId)
+        {
+            Map.Run.NodeEventIds[Map.Run.CurrentNodeId] = eventId;
+            for (long seed = 1; seed <= 40; seed++)
+            {
+                Map.Run.RngSeed = seed;
+                var rng = new BattleRandom(Map.Run.NodeSeed);
+                rng.NextFloat();
+                if (!rng.Chance(0.5)) return;
+            }
+            Assert.Fail("50% 두 번째 분기의 테스트 시드를 찾지 못했습니다");
+        }
+
+        static bool Named(Button button, string name) => button.gameObject.name == name;
+
+        [UnityTest]
+        public IEnumerator Event_ContinueReturnsToMapAndChargesOnce()
+        {
+            yield return ShowNode(1, 3);
+            yield return Press(b => TextOf(b).StartsWith("F1-N3"), "이벤트 노드");
+            Assert.NotNull(GameObject.Find("EventScreen"));
+            yield return Press(b => Named(b, "Option3"), "이벤트 세 번째 선택");
+            Assert.AreEqual(3, Map.Run.Node);
+
+            var next = Buttons.Single(b => Named(b, "Continue"));
+            next.onClick.Invoke();
+            next.onClick.Invoke();
+            yield return null;
+            Assert.IsNull(GameObject.Find("EventScreen"));
+            Assert.AreEqual((4, 1), (Map.Run.Node, Map.Run.FusionCharge));
+            yield return Press(b => TextOf(b).StartsWith("F1-N4"), "다음 전투 노드");
+            Assert.NotNull(GameObject.Find("BattleScreen"));
+        }
+
+        [UnityTest]
+        public IEnumerator ForcedEventVictory_ConfirmsNormalRewardAndReturnsToMap()
+        {
+            yield return ShowNode(1, 3);
+            UseSecondEventBranch("EVT_SOUL_PRISON");
+            yield return Press(b => TextOf(b).StartsWith("F1-N3"), "영혼 감옥 노드");
+            yield return Press(b => Named(b, "Option1"), "우리를 부순다");
+            yield return Press(b => Named(b, "Continue"), "강제 전투 시작");
+            Assert.IsNull(GameObject.Find("EventScreen"));
+            yield return EndBattle(BattleOutcome.Victory);
+            yield return Press(b => TextOf(b) == "결과 보기", "강제 전투 결과");
+            Assert.AreEqual((3, 0, 0), (Map.Run.Node, Map.Run.Gold, Map.Run.FusionCharge));
+            var result = Map.Result();
+            Assert.That(result.RewardGold, Is.InRange(5, 10));
+            Assert.IsFalse(result.NeedsRelicChoice);
+            Assert.AreEqual(3, result.CardChoices.Length);
+            yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", "강제 전투 보상 확정");
+            Assert.AreEqual((4, result.RewardGold, 1), (Map.Run.Node, Map.Run.Gold, Map.Run.FusionCharge));
+            Assert.IsFalse(Map.ConfirmReward(null, null));
+        }
+
+        [UnityTest]
+        public IEnumerator ForcedEventDefeat_EndsRunWithoutRewardOrNodeCompletion()
+        {
+            yield return ShowNode(1, 3);
+            UseSecondEventBranch("EVT_SOUL_PRISON");
+            yield return Press(b => TextOf(b).StartsWith("F1-N3"), "영혼 감옥 노드");
+            yield return Press(b => Named(b, "Option1"), "우리를 부순다");
+            yield return Press(b => Named(b, "Continue"), "강제 전투 시작");
+            yield return EndBattle(BattleOutcome.Defeat);
+            yield return Press(b => TextOf(b) == "결과 보기", "강제 전투 결과");
+            StringAssert.Contains("패배 — 런 종료", AllText());
+            Assert.AreEqual((RunOutcome.Defeat, 3, 0, 0), (Map.Run.Outcome, Map.Run.Node, Map.Run.Gold, Map.Run.FusionCharge));
+            Assert.IsFalse(Map.ConfirmReward(null, null));
+        }
+
+        [UnityTest]
+        public IEnumerator FatalEvent_OpensRunDefeatWithoutCompletingNode()
+        {
+            yield return ShowNode(2, 6);
+            Map.Run.CurrentHp = 12;
+            UseSecondEventBranch("EVT_DARK_WAGER");
+            yield return Press(b => TextOf(b).StartsWith("F2-N6"), "어둠의 내기 노드");
+            yield return Press(b => Named(b, "Option1"), "첫 내기");
+            yield return Press(b => Named(b, "Continue"), "이벤트 결과 계속");
+            Assert.IsNull(GameObject.Find("EventScreen"));
+            Assert.IsNull(GameObject.Find("BattleScreen"));
+            StringAssert.Contains("패배 — 런 종료", AllText());
+            Assert.AreEqual((RunOutcome.Defeat, 6, 0), (Map.Run.Outcome, Map.Run.Node, Map.Run.FusionCharge));
+            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "다시 시작"));
+        }
+
+        [UnityTest]
+        public IEnumerator RestHeal_ReturnsToMapAfterOneApplication()
+        {
+            yield return ShowNode(1, 8);
+            Map.Run.CurrentHp = 50;
+            yield return Press(b => TextOf(b).StartsWith("F1-N8"), "휴식 노드");
+            Assert.NotNull(GameObject.Find("RestScreen"));
+            yield return Press(b => Named(b, "Heal"), "회복");
+            yield return Press(b => Named(b, "Confirm"), "회복 확정");
+            Assert.AreEqual((8, 74), (Map.Run.Node, Map.Run.CurrentHp));
+            yield return Press(b => Named(b, "Continue"), "휴식 결과 계속");
+            Assert.IsNull(GameObject.Find("RestScreen"));
+            Assert.AreEqual((9, 74), (Map.Run.Node, Map.Run.CurrentHp));
+        }
+
+        [UnityTest]
+        public IEnumerator RestUpgrade_ReturnsToMapWithChosenCardUpgraded()
+        {
+            yield return ShowNode(1, 8);
+            int cardId = Map.Run.Deck.First(c => c.CardId == "NEC_MON_001").InstanceId;
+            yield return Press(b => TextOf(b).StartsWith("F1-N8"), "휴식 노드");
+            yield return Press(b => Named(b, "Upgrade"), "강화");
+            yield return Press(b => Named(b, "Card" + cardId), "뼈 병사");
+            yield return Press(b => Named(b, "Confirm"), "강화 확인");
+            Assert.AreEqual(8, Map.Run.Node);
+            yield return Press(b => Named(b, "Continue"), "휴식 결과 계속");
+            Assert.IsNull(GameObject.Find("RestScreen"));
+            Assert.AreEqual(9, Map.Run.Node);
+            Assert.AreEqual(cardId, Map.Run.Deck.Single(c => c.Upgraded).InstanceId);
+        }
+
+        [UnityTest]
+        public IEnumerator RestWithoutAvailableChoices_CanContinueToBoss()
+        {
+            yield return ShowNode(1, 8);
+            foreach (var card in Map.Run.Deck) card.Upgraded = true;
+            yield return Press(b => TextOf(b).StartsWith("F1-N8"), "휴식 노드");
+            yield return Press(b => Named(b, "Continue"), "휴식 건너뛰기");
+            Assert.IsNull(GameObject.Find("RestScreen"));
+            Assert.AreEqual((9, 80), (Map.Run.Node, Map.Run.CurrentHp));
+            Assert.IsTrue(Map.CanEnter(1, 9));
         }
 
         [UnityTest]
