@@ -463,7 +463,7 @@ namespace DarkLegion.Core
             }
         }
 
-        // ---------- 보스 (`14` Boss_List·Boss_TurnCycle, D-65) ----------
+        // ---------- 보스 (`14` Boss_List·Boss_TurnCycle, D-65·D-79) ----------
 
         private static void LoadBosses(GameData data, GameDataLoadResult r)
         {
@@ -493,7 +493,8 @@ namespace DarkLegion.Core
                     order.Add(ene);
                 }
                 list.Add(new BossStep(row.Int("Phase"), row.Int("TurnIndex"), row.Str("Action"), row.Int("Damage"),
-                    row.Str("StatusEffect"), row.Str("TargetRule"), row.Bool("EnqueueTwice"), row.Str("Note")));
+                    row.Str("StatusEffect"), row.Str("TargetRule"), row.Bool("EnqueueTwice"), row.Str("Note"),
+                    row.Bool("OnceOnPhaseEnter"), row.Int("ThresholdPct"), row.Str("CurseId")));
             }
             foreach (var ene in order) r.BossPatterns.Add(ene, groups[ene].ToArray());
         }
