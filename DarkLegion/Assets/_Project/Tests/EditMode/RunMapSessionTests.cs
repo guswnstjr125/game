@@ -56,20 +56,177 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
-        public void NodeWithoutScreen_IsCurrentButNotEnterable()
+        public void CurrentEvent_IsEnterable_ButCannotOpenAsBattle()
         {
             var map = NewMap();
-            map.Run.StageIndex = 2; // F1-N3 이벤트: 이벤트 화면은 이번 범위 밖
+            map.Run.StageIndex = 2; // F1-N3 이벤트
 
             var snap = map.Capture();
             Assert.AreEqual(MapNodeState.Current, snap.Nodes[2].State);
             Assert.AreEqual(NodeKind.Event, snap.Nodes[2].Kind);
-            Assert.IsFalse(snap.Nodes[2].Enterable);
-            Assert.IsFalse(map.CanEnter(1, 3));
+            Assert.IsTrue(snap.Nodes[2].Enterable);
+            Assert.IsTrue(map.CanEnter(1, 3));
             Assert.IsFalse(map.CanEnter(1, 4), "현재 노드가 아니면 들어갈 수 없다");
             Assert.Throws<System.InvalidOperationException>(() => map.EnterBattle());
             Assert.AreEqual(MapNodeState.Visited, snap.Nodes[0].State);
             Assert.AreEqual(MapNodeState.Visited, snap.Nodes[1].State);
+        }
+
+        [TestCase(3, 4)]
+        [TestCase(6, 7)]
+        public void EventContinue_CompletesNodeAndAddsChargeOnce(int node, int next)
+        {
+            var map = NewMap();
+            map.Run.StageIndex = node - 1;
+            int callbacks = 0;
+            var screen = map.EnterEvent(forced =>
+            {
+                Assert.IsNull(forced);
+                callbacks++;
+            });
+
+            Assert.AreEqual(map.Run.NodeEventIds[map.Run.CurrentNodeId], screen.EventId);
+            Assert.IsFalse(map.CanEnter(1, node));
+            Assert.Throws<System.InvalidOperationException>(() => map.EnterEvent(_ => { }));
+            Assert.IsTrue(screen.Choose(3));
+            Assert.AreEqual(node, map.Run.Node);
+            Assert.AreEqual(0, map.Run.FusionCharge);
+            Assert.IsTrue(screen.Continue());
+            Assert.IsFalse(screen.Continue());
+            Assert.AreEqual((next, 1, 1), (map.Run.Node, map.Run.FusionCharge, callbacks));
+            Assert.IsTrue(map.CanEnter(1, next));
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ForcedEventBattle_OnlyVictoryCanConfirmNormalReward(bool win)
+        {
+            var map = NewMap();
+            map.Run.StageIndex = 2;
+            SetEventLossBranch(map, "EVT_SOUL_PRISON");
+            BattleScreenSession battle = null;
+            var screen = map.EnterEvent(session => battle = session);
+            Assert.IsTrue(screen.Choose(1));
+            Assert.IsTrue(screen.Result.ForcedBattle);
+            Assert.IsTrue(screen.Continue());
+            Assert.IsFalse(screen.Continue());
+            Assert.NotNull(battle);
+            Assert.AreSame(map.Run, battle.Run);
+            Assert.IsFalse(battle.Context.IsTutorial);
+            Assert.AreEqual(2, battle.Context.Enemies.Count, "1층 노드 1 편성");
+            Assert.AreEqual((3, 0, 0), (map.Run.Node, map.Run.Gold, map.Run.FusionCharge));
+
+            if (!win) battle.Context.Player.CurrentHP = 0;
+            battle.Context.EvaluateOutcome(battle.Context.Player.CurrentHP, win ? 0 : 2);
+            var result = map.Result();
+            Assert.AreEqual("F1-N3", result.NodeId);
+            Assert.AreEqual(NodeKind.Battle, result.Kind);
+            Assert.AreEqual(win, result.CanConfirm);
+            Assert.AreEqual(win ? 3 : 0, result.CardChoices.Length);
+            Assert.IsFalse(result.NeedsRelicChoice);
+            if (win)
+            {
+                Assert.That(result.RewardGold, Is.InRange(5, 10));
+                Assert.IsTrue(map.ConfirmReward(0, null));
+                Assert.IsFalse(map.ConfirmReward(0, null));
+                Assert.AreEqual((4, result.RewardGold, 1, 11), (map.Run.Node, map.Run.Gold, map.Run.FusionCharge, map.Run.Deck.Count));
+            }
+            else
+            {
+                Assert.IsFalse(map.ConfirmReward(null, null));
+                Assert.AreEqual((RunOutcome.Defeat, 3, 0, 0), (map.Run.Outcome, map.Run.Node, map.Run.Gold, map.Run.FusionCharge));
+                CollectionAssert.IsEmpty(map.Run.VisitedNodeIds);
+            }
+        }
+
+        [Test]
+        public void ForcedBattle_LethalOpeningDraw_PreservesEntryHpInResult()
+        {
+            var map = NewMap();
+            map.Run.StageIndex = 2;
+            map.Run.CurrentHp = 3;
+            map.Run.Deck.Clear();
+            map.Run.AddCard("CUR_004");
+            SetEventLossBranch(map, "EVT_SOUL_PRISON");
+            BattleScreenSession battle = null;
+            var screen = map.EnterEvent(session => battle = session);
+
+            Assert.IsTrue(screen.Choose(1));
+            Assert.IsTrue(screen.Continue());
+            Assert.NotNull(battle);
+            var result = map.Result();
+            Assert.AreEqual((BattleOutcome.Defeat, 3, 0), (result.Battle, result.HpBefore, result.HpAfter));
+            Assert.AreEqual((3, 0), (map.Run.Node, map.Run.FusionCharge));
+        }
+
+        [Test]
+        public void FatalEvent_DoesNotCompleteNodeOrStartBattle()
+        {
+            var map = NewMap();
+            map.Run.Floor = 2;
+            map.Run.StageIndex = 5;
+            map.Run.CurrentHp = 12;
+            SetEventLossBranch(map, "EVT_DARK_WAGER");
+            int callbacks = 0;
+            var screen = map.EnterEvent(battle =>
+            {
+                Assert.IsNull(battle);
+                callbacks++;
+            });
+
+            Assert.IsTrue(screen.Choose(1));
+            Assert.IsTrue(screen.Continue());
+            Assert.IsFalse(screen.Continue());
+            Assert.AreEqual((RunOutcome.Defeat, 0, 6, 0, 1), (map.Run.Outcome, map.Run.CurrentHp, map.Run.Node, map.Run.FusionCharge, callbacks));
+            CollectionAssert.IsEmpty(map.Run.VisitedNodeIds);
+        }
+
+        [TestCase("heal")]
+        [TestCase("upgrade")]
+        [TestCase("continue")]
+        public void RestContinue_AdvancesOnce_AfterAvailableOption(string choice)
+        {
+            var map = NewMap();
+            map.Run.StageIndex = 7;
+            if (choice == "heal") map.Run.CurrentHp = 50;
+            if (choice == "continue")
+                foreach (var card in map.Run.Deck) card.Upgraded = true;
+            int callbacks = 0;
+            var screen = map.EnterRest(() => callbacks++);
+            Assert.IsFalse(map.CanEnter(1, 8));
+            Assert.Throws<System.InvalidOperationException>(() => map.EnterRest());
+            if (choice == "heal") Assert.IsTrue(screen.ChooseHeal());
+            if (choice == "upgrade")
+            {
+                Assert.IsTrue(screen.ChooseUpgrade());
+                Assert.IsTrue(screen.SelectUpgrade(screen.Capture().UpgradeCandidates[0].InstanceId));
+            }
+            if (choice != "continue")
+            {
+                Assert.IsTrue(screen.Confirm());
+                Assert.IsFalse(screen.Confirm());
+            }
+            else Assert.IsTrue(screen.Capture().ContinueOnly);
+            Assert.AreEqual(8, map.Run.Node);
+            Assert.IsTrue(screen.Continue());
+            Assert.IsFalse(screen.Continue());
+            Assert.AreEqual((9, 1), (map.Run.Node, callbacks));
+            Assert.AreEqual(choice == "heal" ? 74 : 80, map.Run.CurrentHp);
+            Assert.AreEqual(choice == "continue" ? 10 : choice == "upgrade" ? 1 : 0, map.Run.Deck.Count(c => c.Upgraded));
+            Assert.IsTrue(map.CanEnter(1, 9));
+        }
+
+        static void SetEventLossBranch(RunMapSession map, string eventId)
+        {
+            map.Run.NodeEventIds[map.Run.CurrentNodeId] = eventId;
+            for (long seed = 1; seed <= 40; seed++)
+            {
+                map.Run.RngSeed = seed;
+                var rng = new BattleRandom(map.Run.NodeSeed);
+                rng.NextFloat();
+                if (!rng.Chance(0.5)) return;
+            }
+            Assert.Fail("50% 두 번째 분기의 테스트 시드를 찾지 못했습니다");
         }
 
         [Test]

@@ -226,9 +226,20 @@ namespace DarkLegion.Core
 
         public static BattleScreenSession Start(RunState run, GameDataLoadResult data)
         {
+            return Start(run, data, forced: false);
+        }
+
+        public static BattleScreenSession StartForced(RunState run, GameDataLoadResult data)
+        {
+            return Start(run, data, forced: true);
+        }
+
+        static BattleScreenSession Start(RunState run, GameDataLoadResult data, bool forced)
+        {
             if (run == null) throw new ArgumentNullException(nameof(run));
             if (data == null) throw new ArgumentNullException(nameof(data));
-            var session = new BattleScreenSession(run, RunBattle.Start(run, data));
+            var context = forced ? RunBattle.StartForced(run, data) : RunBattle.Start(run, data);
+            var session = new BattleScreenSession(run, context);
             session.BeginPlayerTurn();
             return session;
         }
