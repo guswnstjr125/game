@@ -5,3 +5,16 @@ __pycache__/
 bin/
 obj/
 TestResults/
+# Unity local outputs
+/DarkLegion/[Ll]ibrary/
+/DarkLegion/[Tt]emp/
+/DarkLegion/[Oo]bj/
+/DarkLegion/[Ll]ogs/
+/DarkLegion/[Uu]serSettings/
+/DarkLegion/.vscode/
+/DarkLegion/ProjectSettings/PackageManager.policy
+/DarkLegion/[Bb]uild/
+/DarkLegion/[Bb]uilds/
+/DarkLegion/*.csproj
+/DarkLegion/*.sln
+/DarkLegion/*.slnx
