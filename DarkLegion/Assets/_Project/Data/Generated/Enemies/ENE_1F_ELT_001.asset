@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e4c88ef82ad094b86d616b71a7c07f, type: 3}
+  m_Name: ENE_1F_ELT_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EnemyData
+  enemyId: ENE_1F_ELT_001
+  displayName: "\uC2DD\uC778 \uC9D1\uD589\uC790"
+  category: Demon
+  role: Bruiser
+  ai: Summon
+  hp: 20
+  atk: 7
+  def: 2
+  drop: Uncommon+
+  actions:
+  - id: SUMMON
+    condition: Self.SummonCount<2
+    chance: 1
+    type: Summon
+    value: 0
+    status: 
+    duration: 0
+    target: EnemySlot
+    spawnId: ENE_1F_GHO_001
+    drainRatio: 0.5
+    durationSpec: 
+  - id: DRAIN
+    condition: Self.HpPct<60
+    chance: 1
+    type: LifeSteal
+    value: 1
+    status: 
+    duration: 0
+    target: Back
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: HEAVY
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1.5
+    status: 
+    duration: 0
+    target: Back
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 

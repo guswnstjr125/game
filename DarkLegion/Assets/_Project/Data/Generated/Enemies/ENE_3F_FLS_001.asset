@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e4c88ef82ad094b86d616b71a7c07f, type: 3}
+  m_Name: ENE_3F_FLS_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EnemyData
+  enemyId: ENE_3F_FLS_001
+  displayName: "\uC0B4\uB369\uC774 \uACE8\uB818"
+  category: Flesh
+  role: Tank
+  ai: Defensive
+  hp: 22
+  atk: 6
+  def: 2
+  drop: 
+  actions:
+  - id: GUARD
+    condition: 
+    chance: 1
+    type: GainShield
+    value: 5
+    status: 
+    duration: 0
+    target: Self
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: TAUNT
+    condition: 
+    chance: 1
+    type: ApplyStatus
+    value: 0
+    status: Taunt
+    duration: 0
+    target: Self
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: BASIC
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1
+    status: 
+    duration: 0
+    target: FrontLine
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 

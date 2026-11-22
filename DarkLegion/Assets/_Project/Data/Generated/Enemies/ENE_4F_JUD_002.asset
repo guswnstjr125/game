@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e4c88ef82ad094b86d616b71a7c07f, type: 3}
+  m_Name: ENE_4F_JUD_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EnemyData
+  enemyId: ENE_4F_JUD_002
+  displayName: "\uCC98\uD615 \uC9D1\uD589\uAD00"
+  category: Cultist
+  role: Assassin
+  ai: Aggressive
+  hp: 22
+  atk: 9
+  def: 1
+  drop: 
+  actions:
+  - id: EXECUTE
+    condition: AnyTarget.HpPct<=30
+    chance: 1
+    type: Execute
+    value: 30
+    status: 
+    duration: 0
+    target: LowestHpPct
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: BACKSTAB
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1
+    status: 
+    duration: 0
+    target: Back
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
+  - id: BASIC
+    condition: 
+    chance: 1
+    type: Attack
+    value: 1
+    status: 
+    duration: 0
+    target: LowestHpPct
+    spawnId: 
+    drainRatio: 0.5
+    durationSpec: 
