@@ -160,7 +160,7 @@
 
 **ENE_2F_FIR_003** — Defensive: Shield+4 / Taunt / 기본 ATK
 
-**ENE_2F_ELT_001** — Aggressive: 광역 Burn+2 / 강타 ATK×1.5 / 기본 ATK
+**ENE_2F_ELT_001** — Aggressive: 전장 Burn+2 / 강타 ATK×1.5 / 광역 4 (`10` Enemy_Actions, `01` D-81. Burn 스택과 광역 4는 #28 측정 전에 바꾸지 않는다)
 
 **ENE_2F_BOS_001** — [22_보스_패턴_설계.md §3.1] 전장 Burn 누적
 
