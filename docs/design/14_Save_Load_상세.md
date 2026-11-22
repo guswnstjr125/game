@@ -28,11 +28,10 @@ public class SaveData
     public RewardPendingDTO Reward;
     public SettlementPendingDTO Settlement;
     public PlayerSaveDTO Player;
-    public DeckSaveDTO Deck;
-    public long NextCardInstanceId; // 새 카드에만 발급. 저장·재개 후 재사용 금지
+    public List<CardSaveDTO> Deck;  // RunState.Deck의 순서 그대로
+    public int NextCardInstanceId; // 새 카드에만 발급. 저장·재개 후 재사용 금지
     public MapSaveDTO Map;
     public List<RelicSaveDTO> Relics;
-    public MetaSaveDTO Meta;
     public long RngSeed;
     public string StartClass;    // NEC/ELE/BEA/HOL/NEU — 카드 해금(D-07·D-17)·시작 유물(D-06) 기준
     public int Floor;
@@ -81,25 +80,15 @@ public class PlayerSaveDTO
 {
     public int CurrentHp;
     public int MaxHp;
-    public int CurrentCrystal;
-    public int MaxCrystal;
 }
 ```
 
-### DeckSaveDTO
+### 런 덱 카드 개체
 
 ```csharp
-public class DeckSaveDTO
-{
-    public List<CardSaveDTO> DrawPile;
-    public List<CardSaveDTO> Hand;
-    public List<CardSaveDTO> DiscardPile;
-    public List<CardSaveDTO> ExhaustPile;
-}
-
 public class CardSaveDTO
 {
-    public long InstanceId;     // 런 안에서 카드 개체마다 고유. 재개 후에도 동일
+    public int InstanceId;      // RunCard.InstanceId. 런 내 고유, 복구 후에도 동일
     public string CardId;        // CardData.Id
     public int UpgradeLevel;     // 0 = 기본, 1 = 강화 (`25` §2, `01` D-31)
     public bool FromFusion;      // 융합으로 만든 카드 (REL_BOSS_3F, `01` D-38)
@@ -119,6 +108,21 @@ public class MapSaveDTO
     // 분기 맵 간선(Edges)은 Post-MVP (`01` D-11). MVP는 층당 9노드 단일 경로라 저장하지 않는다
 }
 ```
+
+### 1단계 RunState 변환 (#47)
+
+| 런 상태 | 저장·복구 대응 |
+|---|---|
+| `RunId`, `RngSeed`, `StartClass`, `Floor`, `StageIndex`, `Gold`, `FusionCharge` | 같은 이름의 필드를 왕복한다. 노드 번호는 `StageIndex + 1`이다 (D-73). |
+| `CurrentHp`, `MaxHp` | `Player`에 저장한다. 전투 Crystal은 전투 생성 시 초기화한다. |
+| `Deck`, `NextCardInstanceId` | 카드 목록 순서와 각 개체 ID를 유지한다. `RunCard.Upgraded`는 `UpgradeLevel` 0·1로 왕복한다. 복구할 때 새 카드 ID를 발급하지 않는다. |
+| `Relics` | 소유 유물 ID는 `RelicSaveDTO.RelicId`에 저장한다. 유물별 사용 여부와 카운터는 해당 DTO 필드로 왕복한다. |
+| `VisitedNodeIds`, `NodeEventIds`, `CurrentNodeId` | `Map`에 저장한다. 현재 노드 ID는 층과 노드 인덱스에서 D-73 형식으로 계산한다. |
+| `Stage1Build`, `LastFloor` | 복구할 때 1단계 빌드의 설정(`true`, `2`)을 적용한다 (D-66). |
+
+`Map`과 `BattleEntry`로 복구한 런은 진행 중 상태다. `RewardPending`은 저장된 후보·선택을 열고, 보상을 확정할 때 지급과 다음 상태를 함께 반영한다. 최종 보스 처치 판정이 포함된 보상 대기도 같은 보상 화면을 연다. `SettlementPending`은 저장된 종료 결과로 §4의 정산을 재개한다.
+
+메타는 §5의 `meta.json`에서 별도로 읽고 쓴다. 런 파일에는 튜토리얼 복구에 필요한 `TutorialEnabled`와 `TutorialCompleted`를 기록한다 (D-67).
 
 ### MetaSaveDTO
 
@@ -180,8 +184,16 @@ public class BattleSnapshotDTO
     public long RngSeed;
     public List<UnitSnapshotDTO> Allies;
     public List<UnitSnapshotDTO> Enemies;
-    public DeckSaveDTO Deck;
+    public BattleDeckSnapshotDTO Deck;
     public List<string> MainQueueLog;   // 디버그
+}
+
+public class BattleDeckSnapshotDTO
+{
+    public List<CardSaveDTO> DrawPile;
+    public List<CardSaveDTO> Hand;
+    public List<CardSaveDTO> DiscardPile;
+    public List<CardSaveDTO> ExhaustPile;
 }
 ```
 

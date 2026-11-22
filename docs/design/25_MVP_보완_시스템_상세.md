@@ -52,7 +52,7 @@ public class RuntimeCard
 }
 ```
 
-Save: `DeckSaveDTO` 항목을 `{ "cardId", upgradeLevel }` 쌍으로 저장.
+Save: `SaveData.Deck`의 `CardSaveDTO.UpgradeLevel`에 0(기본) 또는 1(강화)을 기록한다. 같은 카드 ID를 가진 개체도 각자의 개체 ID와 강화 단계를 유지한다 (`14` §2).
 
 ### 2.2 강화 효과 기준
 
