@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: BEA_ACT_004
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: BEA_ACT_004
+  displayName: "\uD3EC\uC2DD"
+  cardClass: BEA
+  rarity: R
+  keyword: Exhaust
+  description: "\uC544\uAD70 \uBAAC\uC2A4\uD130 1\uB9C8\uB9AC\uAC00 \uC801 \uB2E8\uC77C
+    \uB300\uC0C1\uC5D0\uAC8C ATK\uC758 3\uBC30 \uD53C\uD574\uB97C \uC900\uB2E4. \uC774
+    \uACF5\uACA9\uC73C\uB85C \uB300\uC0C1\uC774 \uCC98\uCE58\uB418\uBA74 \uD574\uB2F9
+    \uBAAC\uC2A4\uD130\uC758 HP\uB97C \uC804\uB7C9 \uD68C\uBCF5\uD55C\uB2E4."
+  upgradedDescription: "\uC544\uAD70 \uBAAC\uC2A4\uD130 1\uB9C8\uB9AC\uAC00 \uC801
+    \uB2E8\uC77C \uB300\uC0C1\uC5D0\uAC8C ATK\uC758 3\uBC30 \uD53C\uD574\uB97C \uC900\uB2E4.
+    \uC774 \uACF5\uACA9\uC73C\uB85C \uB300\uC0C1\uC774 \uCC98\uCE58\uB418\uBA74 \uD574\uB2F9
+    \uBAAC\uC2A4\uD130\uC758 HP\uB97C \uC804\uB7C9 \uD68C\uBCF5\uD55C\uB2E4."
+  unlockFloor:
+    HasValue: 1
+    Value: 3
+  classUnlockFloor:
+    HasValue: 1
+    Value: 1
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 2
+  cost: 3
+  level: 1
+  hp: 0
+  atk: 0
+  def: 0
+  exhaust: 1
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 1
+    Value: 2
+  upHp:
+    HasValue: 0
+    Value: 0
+  upAtk:
+    HasValue: 0
+    Value: 0
+  upDef:
+    HasValue: 0
+    Value: 0
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters: []
+  upgradedParameters: []

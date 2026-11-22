@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: NEC_ACT_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: NEC_ACT_002
+  displayName: "\uB9DD\uC790\uC758 \uAD70\uB300"
+  cardClass: NEC
+  rarity: U
+  keyword: Exhaust
+  description: "Lv1 \uD574\uACE8 \uD1A0\uD070 3\uB9C8\uB9AC\uB97C \uC989\uC2DC \uC18C\uD658\uD55C\uB2E4.
+    (\uD1A0\uD070: HP4/ATK2/DEF0)"
+  upgradedDescription: "Lv1 \uD574\uACE8 \uD1A0\uD070 3\uB9C8\uB9AC\uB97C \uC989\uC2DC
+    \uC18C\uD658\uD55C\uB2E4. (\uD1A0\uD070: HP6/ATK2/DEF0)"
+  unlockFloor:
+    HasValue: 1
+    Value: 1
+  classUnlockFloor:
+    HasValue: 0
+    Value: 0
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 2
+  cost: 2
+  level: 1
+  hp: 0
+  atk: 0
+  def: 0
+  exhaust: 1
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 0
+    Value: 0
+  upHp:
+    HasValue: 0
+    Value: 0
+  upAtk:
+    HasValue: 0
+    Value: 0
+  upDef:
+    HasValue: 0
+    Value: 0
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters:
+  - Name: Tokens
+    Value: 3
+  - Name: TokenHp
+    Value: 4
+  - Name: TokenAtk
+    Value: 2
+  upgradedParameters:
+  - Name: TokenHp
+    Value: 6

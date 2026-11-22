@@ -85,6 +85,22 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void Parse_DuplicateKeyThrows_D74()
+        {
+            var e = Assert.Throws<System.FormatException>(() => Json.Parse("{\"HP\": 10, \"HP\": 12}"));
+            StringAssert.Contains("HP", e.Message);
+            Assert.DoesNotThrow(() => Json.Parse("[{\"HP\": 10}, {\"HP\": 12}]"), "다른 객체의 같은 키는 괜찮다");
+        }
+
+        [Test]
+        public void DataSheet_SourceMustBeStringOrNull_D74()
+        {
+            var e = Assert.Throws<System.FormatException>(() => DataSheet.FromJson("Cards_Master", "{\"source\": {}, \"rows\": []}"));
+            StringAssert.Contains("source", e.Message);
+            Assert.AreEqual("", DataSheet.FromJson("X", "{\"source\": null, \"rows\": []}").Source);
+        }
+
+        [Test]
         public void DataSheet_MissingRowsThrows()
         {
             Assert.Throws<System.FormatException>(() => DataSheet.FromJson("X", "{\"source\":\"x\"}"));

@@ -150,6 +150,7 @@
 | D-71 | 카드·몬스터 데이터를 Core 정의로 읽는 규칙: Cards_Effect Value 이름표, 망자의 군대 토큰 수치, 몬스터 효과 열 (사용자 위임) | 2026-11-22 | `38` §4.1, `10` §3·§4, `08` Cards_Effect, `09` Monster_Effects |
 | D-72 | Wave 전환 시점: 마지막 적 사망 → 턴 종료 그대로 → 다음 Wave 배치 → 다음 턴 시작 (사용자 위임) | 2026-11-22 | `03` §2, `04` §11, `09` §6, `32` CORE-03 |
 | D-73 | 런 골격 구현 빈곳: 노드 ID 형식, 전투 노드 난수 순서, 새 카드 개체 ID, 융합 기록 개체 ID, Treasure 폴백, 충전 노드 (사용자 위임) | 2026-11-22 | `14` §2·§3, `03` §2, `25` §4, D-03·D-38·D-61 |
+| D-74 | Unity 임포터의 JSON 읽기를 Core `Json`·`DataSheet`로 통일, Newtonsoft 제외 (D-40 개정, 사용자 위임) | 2026-11-22 | `38` §1, D-40 |
 
 ### D-01. 피해 공식
 
@@ -672,7 +673,7 @@ D-01 검증(1층 ATK8, Front DEF+1): 뼈 병사(HP10, DEF1+1) → max(1, 8−2)=
 | 항목 | 결정 |
 |---|---|
 | 경로 | Excel(정본) → `tools/export_game_data.py` → `DarkLegion/DesignData/<Sheet>.json` → Unity 임포터 → SO. D-39의 데이터 경로를 구체화한 것이고 개정이 아니다 |
-| JSON 읽기 | `com.unity.nuget.newtonsoft-json` (Unity 공식 패키지). xlsx를 Unity에서 직접 읽지 않는다 (ExcelDataReader·NPOI 쓰지 않음) |
+| JSON 읽기 | ~~`com.unity.nuget.newtonsoft-json` (Unity 공식 패키지)~~ → **D-74로 개정**: Core `Json`·`DataSheet`. xlsx를 Unity에서 직접 읽지 않는다 (ExcelDataReader·NPOI 쓰지 않음) |
 | 커밋 | JSON과 생성된 SO 모두 커밋한다. 둘 다 손으로 고치지 않는다 |
 | 매핑 | `38_데이터_임포트_매핑.md` §3 표가 정본. 1단계도 모든 행을 임포트하고 범위는 런타임 해금·드롭 풀로 제한 |
 | 강화값 | `08` Cards_Upgrade에 **Up_Params** 열 추가 (`38` §4). Before/After는 화면 문구. 빈 칸 문구 `ATKNone`·`DEFNone` 24칸을 0으로 정정 (Cards_Master 값과 같음) |
@@ -1233,6 +1234,20 @@ D-42와 §4의 "Claude가 단 댓글은 사용자 승인이 아니다"는 D-60�
 | 융합 반영 | 융합 기록은 재료·결과의 **카드 개체 ID**를 가진다. 승리 시 재료 두 개체를 런 덱에서 빼고 결과를 `FromFusion=true`로 넣는다. 패배·포기면 반영하지 않는다 |
 | Treasure 폴백 | MVP 템플릿은 Treasure·Mimic 노드를 만들지 않는다. 노드 종류 입력이 Mimic이면 Treasure로 바꾸고, Treasure는 보상 없이 노드를 완료한다 (`25` §4, Post-MVP 보상) |
 | 융합 충전 | 노드 3·6·9를 **완료**하면 노드 종류와 상관없이 +1, 최대 3 (D-03) |
+
+### D-74. Unity 임포터의 JSON 읽기 (D-40 개정, 사용자 위임)
+
+**결정 주체**: 사용자 위임 — 「카드 설계 데이터를 Unity 에셋으로 가져오기이거 일단 확인해줘 코덱스 토큰이 다 되었어」, 검수 보고 뒤 「네, 마무리해」, 그 전 「일단 나는 지금 선택을 못 하는 상태야 너가 전체적인 카드를 보고 작성을 해줘 나중에 전체 적으로 내가 작성을 할게」 (2026-11-22, [#35 근거 댓글](https://github.com/guswnstjr125/game/issues/35#issuecomment-7075420086)). Claude가 #86 마무리 중에 정했다.
+
+**배경**: D-40은 Unity가 JSON을 `com.unity.nuget.newtonsoft-json`으로 읽는다고 정했다. #84 이후 Core에 JSON 읽기(`Json`·`DataSheet`)가 생겨 같은 파일을 두 코드가 읽었다. dotnet 대조 테스트(`DesignDataParityTests`)는 Core 읽기로 검증하므로, Unity 임포터가 다른 파서로 읽으면 그 검증이 Unity가 실제로 읽는 값을 보장하지 않았다.
+
+**결정**
+
+| 항목 | 규칙 |
+|---|---|
+| JSON 읽기 | Unity 에디터 임포터도 Core `DataSheet.FromJson`으로 읽는다. `com.unity.nuget.newtonsoft-json` 패키지는 쓰지 않는다 |
+| 형식 검사 | Core 읽기가 같은 객체 안의 중복 키, 문자열이 아닌 `source`, 끝 뒤의 문자를 FormatException으로 거부한다 (Newtonsoft 쪽에 있던 검사를 옮김) |
+| 그대로인 것 | D-40의 경로(Excel → JSON → SO), xlsx를 직접 읽지 않음, JSON·SO 커밋 |
 
 ---
 
