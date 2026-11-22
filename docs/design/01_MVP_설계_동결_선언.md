@@ -147,6 +147,7 @@
 | D-68 | 이벤트 보상·대가와 1단계 골드 선택 보완 (사용자 위임) | 2026-11-20 | `06` Events_MVP, `03` §8, `23` §2, `24` §2, `32` §7·§11, `37` §2.3, `38` §3·§5, `40` |
 | D-69 | 1단계 런 계층 빈곳: 이벤트 노드 추첨·중복 제외, 휴식 회복 내림·선택지 없음, 1단계 유물 9종 (사용자 위임) | 2026-11-22 | `24` §2.9, `37` §2.4·§2.5, `03` §2, `14` §2, `38` §5, `32` §7·§10·§11 |
 | D-70 | 1단계 몬스터 효과 구현 해석 5건: 공격 시 효과·부패한 기사 Crystal·모방 슬라임·피해 감소 순서 (사용자 위임) | 2026-11-22 | `09` Monster_Effects, `17`, `13` §3.3, D-01·D-30·D-61 |
+| D-71 | 카드·몬스터 데이터를 Core 정의로 읽는 규칙: Cards_Effect Value 이름표, 망자의 군대 토큰 수치, 몬스터 효과 열 (사용자 위임) | 2026-11-22 | `38` §4.1, `10` §3·§4, `08` Cards_Effect, `09` Monster_Effects |
 
 ### D-01. 피해 공식
 
@@ -1172,6 +1173,30 @@ D-42와 §4의 "Claude가 단 댓글은 사용자 승인이 아니다"는 D-60�
 | 피해 감소(수정 골렘 등) 위치 | `max(1, floor((기본피해 × 치명 × Weak − DEF) × Vulnerable) − 피해 감소)`. Vulnerable을 곱하고 내림한 뒤 빼고, 그다음 최소 1을 적용한다 (D-61 "최소 1 적용 전" 보완). 수정 골렘은 Front 칸에 살아 있을 때만 아군 몬스터 전체(자기 포함)에 적용하고, 플레이어와 틱에는 적용하지 않는다 |
 
 예: 수정 골렘이 Front(DEF 4 + 1 = 5)에 있을 때 Middle 뼈 병사(DEF 1)가 ATK 8 공격을 받으면 8 − 1 = 7, 감소 1 → **6**. Vulnerable이면 floor(7 × 1.25) = 8, 감소 1 → **7**.
+
+
+### D-71. 카드·몬스터 데이터를 Core 정의로 읽는 규칙 (사용자 위임)
+
+**결정 주체**: 사용자 위임 — 「일단 나는 지금 선택을 못 하는 상태야 너가 전체적인 카드를 보고 작성을 해줘 나중에 전체 적으로 내가 작성을 할게」, 이번 작업 지시 「네, 시작해」(Core JSON 로더와 이 매핑 결정부터 시작하는 계획에 대한 답) (2026-11-22, [#35 근거 댓글](https://github.com/guswnstjr125/game/issues/35#issuecomment-7074878150)). Claude가 #76 1-2 Core 로더 구현 중에 정했다. 사용자가 나중에 전체를 검토해 고칠 예정이며, 고칠 때는 새 D 번호로 개정한다.
+
+**배경**: `08` Cards_Effect에는 `Value1~3`만 있고 각 칸이 어떤 수치인지 정한 곳이 없었다. 리졸버가 읽는 이름(`38` §4 Up_Params 키)과 `10` §3·§4 Params 칸의 이름이 4장(어둠의 방벽·망자의 군대·생명력 흡수·연금술)에서 달랐다. 망자의 군대 토큰의 HP 4·ATK 2는 문장(`17`, Cards_Upgrade Before)에만 있었다. 몬스터 카드의 효과 수치·희생 Crystal·Soulbound·융합 클래스 취급을 어느 열에서 읽는지도 정해지지 않았다.
+
+**결정**
+
+| 항목 | 규칙 |
+|---|---|
+| Skill·Action 수치 이름 | `38` §4.1 표대로 Cards_Effect `Value1~3`을 이름 붙은 수치로 읽는다. 표에 없는 칸은 읽지 않는다. 이름은 Up_Params 키와 같고, `10` §3·§4 Params 칸도 이 이름으로 쓴다 |
+| 백분율 | 생명력 흡수 Value2 `50`은 ÷100 → `HealRatio` 0.5 |
+| 망자의 군대 토큰 | Cards_Effect `NEC_ACT_002` Value2 = **4**(TokenHp), Value3 = **2**(TokenAtk)를 기입한다. 값은 `17`·Cards_Upgrade Before 문구 그대로 |
+| 죽음의 소용돌이 배율 | Value 칸을 쓰지 않는다. 기본 `DamageMult` = 1, 강화 Up_Params 1.2 |
+| 키워드 | Exhaust = Cards_Effect `Exhaust`. Ethereal = Cards_Text `Keyword`가 `Ethereal` |
+| 몬스터 카드 스탯 | Cards_Master HP·ATK·DEF·레벨·Crystal, 강화 스탯은 Up_Params `HP·ATK·DEF` |
+| 몬스터 효과 수치 | `09` Monster_Effects. Effect `SacrificeCrystal` 행의 Value = 희생 Crystal, Effect `FusionAsClass` 행 = 융합 클래스 취급(D-70), 그 밖의 첫 행 Value = 효과 수치 `Value`(피의 사제 Draw 2도 이 값). Cards_Effect의 몬스터 행(식인 구울·저주 기사)은 읽지 않는다 (D-61) |
+| Soulbound | `09` Monsters_Master `Special`에 `Soulbound` 키워드가 있으면 |
+| 융합 고정 레시피 | Fusion_Recipes `Type` = Fixed이고 Weight > 0인 행. Random 행은 설명용이고 풀은 Fusion_RandomPool. MON_ID는 Monsters_Master `Card_ID`로 바꾸고, 카드가 없거나 Weight 0인 결과는 넣지 않는다 |
+| 융합 Fallback | `13` §3.4 "Lv+1 랜덤 Common" = Cards_Master 희귀도 C, 레벨 L+1, 그 클래스의 몬스터 카드 |
+| 보스 패턴 | Boss_TurnCycle `Boss_ID` → Boss_List `ENE_ID`로 찾는다. 행동 순서는 행 순서 (D-65) |
+| 적 행동 | Enemy_Actions 행 순서. 빈 Chance = 1. Summon의 Value(적 ID) = 소환 적, Note "피해의 N% 회복" = 흡혈 비율. 소환 적 스탯은 Enemies_Master |
 
 ---
 

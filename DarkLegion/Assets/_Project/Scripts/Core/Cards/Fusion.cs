@@ -73,6 +73,10 @@ namespace DarkLegion.Core
         /// <summary>풀이 비었을 때 대체 결과: 재료 A 클래스 Lv+1 Common 카드 (`13` §3.4).</summary>
         public void SetCommonFallback(string cardClass, int resultLevel, params string[] cards) => _commons[(cardClass, resultLevel)] = cards.ToList();
 
+        /// <summary>등록된 고정 레시피 (검사·대조용).</summary>
+        public IEnumerable<(string recipe, string a, string b, string result)> FixedRecipes =>
+            _fixed.Select(kv => (kv.Value.recipe, kv.Key.Item1, kv.Key.Item2, kv.Value.result));
+
         public bool TryGetFixed(string cardA, string cardB, out string recipeId, out string result)
         {
             if (_fixed.TryGetValue(Key(cardA, cardB), out var r))

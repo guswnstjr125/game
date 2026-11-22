@@ -1,0 +1,173 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Events_MVP",
+  "rows": [
+    {
+      "Event_ID": "EVT_DEVIL_PACT",
+      "Name_KO": "악마 계약",
+      "Option": 1,
+      "Condition": "최대 HP > 20",
+      "Result": "최대 HP -10 (현재 HP는 새 상한까지) → 카드 3택1"
+    },
+    {
+      "Event_ID": "EVT_DEVIL_PACT",
+      "Name_KO": "악마 계약",
+      "Option": 2,
+      "Condition": "층별 미보유 유물 후보 ≥1",
+      "Result": "저주 1장 → 미보유 유물 최대 3택1"
+    },
+    {
+      "Event_ID": "EVT_DEVIL_PACT",
+      "Name_KO": "악마 계약",
+      "Option": 3,
+      "Condition": null,
+      "Result": "거절"
+    },
+    {
+      "Event_ID": "EVT_BLOOD_ALTAR",
+      "Name_KO": "피의 제단",
+      "Option": 1,
+      "Condition": "HP>20",
+      "Result": "HP-20 → 카드 강화"
+    },
+    {
+      "Event_ID": "EVT_BLOOD_ALTAR",
+      "Name_KO": "피의 제단",
+      "Option": 2,
+      "Condition": "맵 희생 가능, 제거 뒤 몬스터 3장 이상 및 강화 후보 있음",
+      "Result": "몬스터 카드 개체 1장 제거 → 남은 카드 무작위 강화 1장"
+    },
+    {
+      "Event_ID": "EVT_BLOOD_ALTAR",
+      "Name_KO": "피의 제단",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    },
+    {
+      "Event_ID": "EVT_CURSED_CHEST",
+      "Name_KO": "저주 상자",
+      "Option": 1,
+      "Condition": "층별 미보유 유물 후보 ≥1",
+      "Result": "미보유 유물 1개 + 40% 저주 CUR_003"
+    },
+    {
+      "Event_ID": "EVT_CURSED_CHEST",
+      "Name_KO": "저주 상자",
+      "Option": 2,
+      "Condition": null,
+      "Result": "1단계 HP +6 / 2단계 골드 +40"
+    },
+    {
+      "Event_ID": "EVT_CURSED_CHEST",
+      "Name_KO": "저주 상자",
+      "Option": 3,
+      "Condition": null,
+      "Result": "무시"
+    },
+    {
+      "Event_ID": "EVT_SOUL_PRISON",
+      "Name_KO": "영혼 감옥",
+      "Option": 1,
+      "Condition": null,
+      "Result": "추첨 1회: 50% 일반 카드 3택1 / 50% 해당 층 노드 1 A/Wave 1 강제 전투, 승리 시 일반 보상"
+    },
+    {
+      "Event_ID": "EVT_SOUL_PRISON",
+      "Name_KO": "영혼 감옥",
+      "Option": 2,
+      "Condition": null,
+      "Result": "흡수 → HP 회복"
+    },
+    {
+      "Event_ID": "EVT_SOUL_PRISON",
+      "Name_KO": "영혼 감옥",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    },
+    {
+      "Event_ID": "EVT_WANDER_MERCHANT",
+      "Name_KO": "방랑 상인",
+      "Option": 1,
+      "Condition": "Gold>=8",
+      "Result": "골드 8 → 카드 3택1 (D-49)"
+    },
+    {
+      "Event_ID": "EVT_WANDER_MERCHANT",
+      "Name_KO": "방랑 상인",
+      "Option": 2,
+      "Condition": "HP > 4",
+      "Result": "HP -4 → 무작위 카드 1장"
+    },
+    {
+      "Event_ID": "EVT_WANDER_MERCHANT",
+      "Name_KO": "방랑 상인",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    },
+    {
+      "Event_ID": "EVT_FORGOTTEN_SHRINE",
+      "Name_KO": "잊힌 제단",
+      "Option": 1,
+      "Condition": null,
+      "Result": "HP 15 회복"
+    },
+    {
+      "Event_ID": "EVT_FORGOTTEN_SHRINE",
+      "Name_KO": "잊힌 제단",
+      "Option": 2,
+      "Condition": "맵 희생 가능, 제거 뒤 몬스터 3장 이상 및 강화 후보 있음",
+      "Result": "몬스터 카드 개체 1장 제거 → 남은 카드 중 선택 강화 1장"
+    },
+    {
+      "Event_ID": "EVT_FORGOTTEN_SHRINE",
+      "Name_KO": "잊힌 제단",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    },
+    {
+      "Event_ID": "EVT_DARK_WAGER",
+      "Name_KO": "어둠의 내기",
+      "Option": 1,
+      "Condition": null,
+      "Result": "추첨 1회: 50% 승리(1단계 HP +18 / 2단계 골드 +25), 50% HP -12(HP ≤0이면 패배)"
+    },
+    {
+      "Event_ID": "EVT_DARK_WAGER",
+      "Name_KO": "어둠의 내기",
+      "Option": 2,
+      "Condition": null,
+      "Result": "50% 카드 1장 / 50% 저주 1 (D-49·D-45)"
+    },
+    {
+      "Event_ID": "EVT_DARK_WAGER",
+      "Name_KO": "어둠의 내기",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    },
+    {
+      "Event_ID": "EVT_GRAVE_WHISPER",
+      "Name_KO": "묘지의 속삭임",
+      "Option": 1,
+      "Condition": null,
+      "Result": "저주 1장 → 카드 3택1 (D-49·D-45)"
+    },
+    {
+      "Event_ID": "EVT_GRAVE_WHISPER",
+      "Name_KO": "묘지의 속삭임",
+      "Option": 2,
+      "Condition": null,
+      "Result": "HP 8 회복"
+    },
+    {
+      "Event_ID": "EVT_GRAVE_WHISPER",
+      "Name_KO": "묘지의 속삭임",
+      "Option": 3,
+      "Condition": null,
+      "Result": "떠난다"
+    }
+  ]
+}

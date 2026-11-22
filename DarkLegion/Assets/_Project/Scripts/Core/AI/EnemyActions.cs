@@ -50,6 +50,9 @@ namespace DarkLegion.Core
             _kits[enemyId] = actions.ToList();
         }
 
+        /// <summary>행동표가 있는 적 ID.</summary>
+        public IEnumerable<string> Ids => _kits.Keys;
+
         public IReadOnlyList<EnemyActionDef> Get(string enemyId) => _kits.TryGetValue(enemyId, out var k) ? k : null;
 
         public void SetSpawnStats(string enemyId, int hp, int atk, int def) => _spawn[enemyId] = (hp, atk, def);

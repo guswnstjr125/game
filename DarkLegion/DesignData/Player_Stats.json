@@ -1,0 +1,45 @@
+{
+  "source": "04_밸런스_테이블.xlsx/Player_Stats",
+  "rows": [
+    {
+      "Class": "NEC",
+      "StartHP": 80,
+      "MaxHP": 80,
+      "StartGold": 0,
+      "StartCrystal": 3,
+      "Note": "기본"
+    },
+    {
+      "Class": "ELE",
+      "StartHP": 80,
+      "MaxHP": 80,
+      "StartGold": 0,
+      "StartCrystal": 4,
+      "Note": "+1Crystal"
+    },
+    {
+      "Class": "BEA",
+      "StartHP": 80,
+      "MaxHP": 80,
+      "StartGold": 0,
+      "StartCrystal": 3,
+      "Note": "기본"
+    },
+    {
+      "Class": "HOL",
+      "StartHP": 85,
+      "MaxHP": 85,
+      "StartGold": 0,
+      "StartCrystal": 3,
+      "Note": "+5HP"
+    },
+    {
+      "Class": "NEU",
+      "StartHP": 80,
+      "MaxHP": 80,
+      "StartGold": 40,
+      "StartCrystal": 3,
+      "Note": "+40Gold"
+    }
+  ]
+}

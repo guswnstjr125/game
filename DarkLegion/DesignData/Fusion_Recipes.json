@@ -1,0 +1,131 @@
+{
+  "source": "09_몬스터_바이블.xlsx/Fusion_Recipes",
+  "rows": [
+    {
+      "Recipe_ID": "FUS_001",
+      "MaterialA": "MON_NEC_L1_002",
+      "MaterialB": "MON_NEC_L1_002",
+      "Result_MON_ID": "MON_NEC_L2_005",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "식인 구울 (06 MVP)"
+    },
+    {
+      "Recipe_ID": "FUS_002",
+      "MaterialA": "MON_NEC_L1_001",
+      "MaterialB": "MON_NEC_L1_009",
+      "Result_MON_ID": "MON_NEC_L2_006",
+      "Type": "Fixed",
+      "Weight": 0,
+      "Note": "저주 기사 | MVP 비활성: 재료 무덤지기(MON_NEC_L1_009) 카드 없음 (D-22)"
+    },
+    {
+      "Recipe_ID": "FUS_003",
+      "MaterialA": "MON_NEC_L1_002",
+      "MaterialB": "MON_NEC_L1_009",
+      "Result_MON_ID": "MON_NEC_L2_003",
+      "Type": "Fixed",
+      "Weight": 0,
+      "Note": "06 MVP: 구울+영혼토템→시체포식자. 무덤지기=토템 대리. 결과=NEC_MON_009 동일 | MVP 비활성: 재료 무덤지기(MON_NEC_L1_009) 카드 없음 (D-22)"
+    },
+    {
+      "Recipe_ID": "FUS_004",
+      "MaterialA": "MON_ELE_L1_001",
+      "MaterialB": "MON_ELE_L1_003",
+      "Result_MON_ID": "MON_ELE_L2_006",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "마그마 정령"
+    },
+    {
+      "Recipe_ID": "FUS_005",
+      "MaterialA": "MON_BEA_L1_001",
+      "MaterialB": "MON_BEA_L1_003",
+      "Result_MON_ID": "MON_BEA_L2_006",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "독니 늑대왕"
+    },
+    {
+      "Recipe_ID": "FUS_006",
+      "MaterialA": "MON_NEC_L2_001",
+      "MaterialB": "MON_NEC_L2_002",
+      "Result_MON_ID": "MON_NEC_L3_003",
+      "Type": "Random",
+      "Weight": 70,
+      "Note": "Lv2→Lv3 NEC 풀"
+    },
+    {
+      "Recipe_ID": "FUS_007",
+      "MaterialA": "MON_NEU_L1_006",
+      "MaterialB": "MON_NEC_L1_001",
+      "Result_MON_ID": "MON_NEC_L2_001",
+      "Type": "Random",
+      "Weight": 50,
+      "Note": "NEU+NEC 50/50"
+    },
+    {
+      "Recipe_ID": "FUS_008",
+      "MaterialA": "MON_NEU_L1_006",
+      "MaterialB": "MON_ELE_L1_001",
+      "Result_MON_ID": "MON_ELE_L2_001",
+      "Type": "Random",
+      "Weight": 50,
+      "Note": "NEU+ELE 50/50"
+    },
+    {
+      "Recipe_ID": "FUS_009",
+      "MaterialA": "MON_NEC_L1_001",
+      "MaterialB": "MON_NEC_L1_007",
+      "Result_MON_ID": "MON_NEC_L2_006",
+      "Type": "Fixed",
+      "Weight": 0,
+      "Note": "MVP 비활성 (D-03). 토큰은 카드가 아님. 동일 결과는 FUS_014(NEC_MON_014)."
+    },
+    {
+      "Recipe_ID": "FUS_010",
+      "MaterialA": "MON_HOL_L1_002",
+      "MaterialB": "MON_HOL_L1_003",
+      "Result_MON_ID": "MON_HOL_L2_005",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "신성 수도사+견습사제→성역기사"
+    },
+    {
+      "Recipe_ID": "FUS_011",
+      "MaterialA": "MON_HOL_L1_005",
+      "MaterialB": "MON_HOL_L1_006",
+      "Result_MON_ID": "MON_HOL_L2_002",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "방패병+성소수호자→축복받은 성기사"
+    },
+    {
+      "Recipe_ID": "FUS_012",
+      "MaterialA": "MON_HOL_L2_001",
+      "MaterialB": "MON_HOL_L2_003",
+      "Result_MON_ID": "MON_HOL_L3_002",
+      "Type": "Random",
+      "Weight": 70,
+      "Note": "HOL Lv2→대천사"
+    },
+    {
+      "Recipe_ID": "FUS_013",
+      "MaterialA": "MON_HOL_L2_002",
+      "MaterialB": "MON_HOL_L2_004",
+      "Result_MON_ID": "MON_HOL_L3_001",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "성기사+빛창병→발키리"
+    },
+    {
+      "Recipe_ID": "FUS_014",
+      "MaterialA": "MON_NEC_L1_001",
+      "MaterialB": "MON_NEC_L1_006",
+      "Result_MON_ID": "MON_NEC_L2_006",
+      "Type": "Fixed",
+      "Weight": 100,
+      "Note": "뼈 병사+뼈 창병→저주 기사. FUS_002/009 대체 (D-22)"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "source": "04_밸런스_테이블.xlsx/Position_Bonus",
+  "rows": [
+    {
+      "Position": "Front",
+      "Bonus_Type": "DEF_Flat",
+      "Value": "+1",
+      "Apply_To": "All units in Front",
+      "Notes": "전방 방어 +1"
+    },
+    {
+      "Position": "Back",
+      "Bonus_Type": "Skill_Amp",
+      "Value": "+10%",
+      "Apply_To": "Skill/Action effect",
+      "Notes": "스킬 10% 증폭"
+    },
+    {
+      "Position": "Middle",
+      "Bonus_Type": null,
+      "Value": "없음",
+      "Apply_To": null,
+      "Notes": "보너스 없음"
+    }
+  ]
+}

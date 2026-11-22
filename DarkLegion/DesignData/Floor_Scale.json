@@ -1,0 +1,105 @@
+{
+  "source": "04_밸런스_테이블.xlsx/Floor_Scale",
+  "rows": [
+    {
+      "Floor": 1,
+      "Stage": "1-1",
+      "HP": 14,
+      "ATK": 5,
+      "DEF": 1,
+      "PP": 8.4,
+      "BossHP": null,
+      "BossATK": null
+    },
+    {
+      "Floor": 1,
+      "Stage": "1-9",
+      "HP": 17,
+      "ATK": 6,
+      "DEF": 1,
+      "PP": 10.4,
+      "BossHP": 47,
+      "BossATK": 8
+    },
+    {
+      "Floor": 2,
+      "Stage": "2-1",
+      "HP": 18,
+      "ATK": 6,
+      "DEF": 1,
+      "PP": 11.6,
+      "BossHP": null,
+      "BossATK": null
+    },
+    {
+      "Floor": 2,
+      "Stage": "2-9",
+      "HP": 21,
+      "ATK": 7,
+      "DEF": 1,
+      "PP": 13.2,
+      "BossHP": 59,
+      "BossATK": 9
+    },
+    {
+      "Floor": 3,
+      "Stage": "3-1",
+      "HP": 22,
+      "ATK": 7,
+      "DEF": 1,
+      "PP": 13.2,
+      "BossHP": null,
+      "BossATK": null
+    },
+    {
+      "Floor": 3,
+      "Stage": "3-9",
+      "HP": 26,
+      "ATK": 8,
+      "DEF": 2,
+      "PP": 16,
+      "BossHP": 73,
+      "BossATK": 11
+    },
+    {
+      "Floor": 4,
+      "Stage": "4-1",
+      "HP": 26,
+      "ATK": 8,
+      "DEF": 2,
+      "PP": 16,
+      "BossHP": null,
+      "BossATK": null
+    },
+    {
+      "Floor": 4,
+      "Stage": "4-9",
+      "HP": 31,
+      "ATK": 9,
+      "DEF": 2,
+      "PP": 18.4,
+      "BossHP": 87,
+      "BossATK": 14
+    },
+    {
+      "Floor": 5,
+      "Stage": "5-1",
+      "HP": 30,
+      "ATK": 9,
+      "DEF": 2,
+      "PP": 18.8,
+      "BossHP": null,
+      "BossATK": null
+    },
+    {
+      "Floor": 5,
+      "Stage": "5-9",
+      "HP": 36,
+      "ATK": 11,
+      "DEF": 2,
+      "PP": 22,
+      "BossHP": 101,
+      "BossATK": 16
+    }
+  ]
+}

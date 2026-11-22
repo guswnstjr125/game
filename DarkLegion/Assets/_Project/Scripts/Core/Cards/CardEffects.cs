@@ -128,7 +128,7 @@ namespace DarkLegion.Core
                 Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("Opportunity", x =>
                 {
                     x.Player.Deck.Draw((int)p.P("Draw", 2));
-                    x.RequestDiscard(1);
+                    x.RequestDiscard((int)p.P("Discard", 1));
                 }))
             },
             ["NEU_ACT_002"] = new CardHandler
@@ -151,7 +151,7 @@ namespace DarkLegion.Core
                 {
                     if (p.Target is RuntimeMonster victim && c.Sacrifice(victim) == SacrificeResult.Ok)
                     {
-                        c.Queue.EnqueueMain(Fx("BloodPriestDraw", x => x.Player.Deck.Draw((int)p.P("Draw", 2))));
+                        c.Queue.EnqueueMain(Fx("BloodPriestDraw", x => x.Player.Deck.Draw((int)p.P("Value", 2)))); // Monster_Effects Value (D-71)
                     }
                 }
             },

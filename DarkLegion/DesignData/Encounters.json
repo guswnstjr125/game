@@ -1,0 +1,735 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Encounters",
+  "rows": [
+    {
+      "Floor": 1,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_001",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_1F_GHO_001",
+      "Count": 1,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_ELT_001",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_001",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_ELT_002",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_002",
+      "Count": 2,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_002",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_GHO_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 1,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_1F_GHO_001",
+      "Count": 2,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 1,
+      "Node": 9,
+      "NodeType": "Boss",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_1F_BOS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_001",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_2F_FIR_001",
+      "Count": 1,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 2,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_ELT_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_001",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_FIR_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 2,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_2F_FIR_002",
+      "Count": 2,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 2,
+      "Node": 9,
+      "NodeType": "Boss",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_2F_BOS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_3F_FLS_001",
+      "Count": 1,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_ELT_001",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_002",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_ELT_002",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_001",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_002",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_FLS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_3F_FLS_003",
+      "Count": 2,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 3,
+      "Node": 9,
+      "NodeType": "Boss",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_3F_BOS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_001",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_4F_JUD_001",
+      "Count": 1,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 4,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_ELT_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_002",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_JUD_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 4,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_4F_JUD_001",
+      "Count": 2,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 4,
+      "Node": 9,
+      "NodeType": "Boss",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_4F_BOS_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 1,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 2,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_5F_ABY_001",
+      "Count": 1,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_001",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_002",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 4,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ELT_001",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_002",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ELT_002",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 5,
+      "NodeType": "Elite",
+      "Variant": "B",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_003",
+      "Count": 1,
+      "Note": "A·B 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_002",
+      "Count": 2,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_ABY_003",
+      "Count": 1,
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Node": 7,
+      "NodeType": "Battle",
+      "Variant": "A",
+      "Wave": 2,
+      "Enemy_ID": "ENE_5F_ABY_001",
+      "Count": 2,
+      "Note": "Wave 2는 50% (노드 시드, D-61)"
+    },
+    {
+      "Floor": 5,
+      "Node": 9,
+      "NodeType": "Boss",
+      "Variant": "A",
+      "Wave": 1,
+      "Enemy_ID": "ENE_5F_BOS_001",
+      "Count": 1,
+      "Note": null
+    }
+  ]
+}

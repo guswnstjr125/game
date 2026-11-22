@@ -1,0 +1,170 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Reward_BattleTable",
+  "rows": [
+    {
+      "BattleType": "Normal",
+      "Floor": 1,
+      "GoldMin": 5,
+      "GoldMax": 10,
+      "Drop_Common": 0.6,
+      "Drop_Uncommon": 0.28,
+      "Drop_Rare": 0.1,
+      "Drop_Legendary": 0.02,
+      "Note": "03 §8 일반 · 카드 3택1 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Elite",
+      "Floor": 1,
+      "GoldMin": 15,
+      "GoldMax": 25,
+      "Drop_Common": 0.45,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.2,
+      "Drop_Legendary": 0.05,
+      "Note": "03 §8 엘리트 · 유물 3택1 · 23 §5 Rare×2 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Boss",
+      "Floor": 1,
+      "GoldMin": 25,
+      "GoldMax": 40,
+      "Drop_Common": 0.36,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.28,
+      "Drop_Legendary": 0.06,
+      "Note": "03 §8 보스 · Boss Relic 별도(REL_BOSS_*, D-16) · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Normal",
+      "Floor": 2,
+      "GoldMin": 10,
+      "GoldMax": 20,
+      "Drop_Common": 0.55,
+      "Drop_Uncommon": 0.28,
+      "Drop_Rare": 0.15,
+      "Drop_Legendary": 0.02,
+      "Note": "03 §8 일반 · 카드 3택1 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Elite",
+      "Floor": 2,
+      "GoldMin": 30,
+      "GoldMax": 50,
+      "Drop_Common": 0.35,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.3,
+      "Drop_Legendary": 0.05,
+      "Note": "03 §8 엘리트 · 유물 3택1 · 23 §5 Rare×2 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Boss",
+      "Floor": 2,
+      "GoldMin": 50,
+      "GoldMax": 80,
+      "Drop_Common": 0.31,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.33,
+      "Drop_Legendary": 0.06,
+      "Note": "03 §8 보스 · Boss Relic 별도(REL_BOSS_*, D-16) · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Normal",
+      "Floor": 3,
+      "GoldMin": 15,
+      "GoldMax": 30,
+      "Drop_Common": 0.49,
+      "Drop_Uncommon": 0.28,
+      "Drop_Rare": 0.2,
+      "Drop_Legendary": 0.03,
+      "Note": "03 §8 일반 · 카드 3택1 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Elite",
+      "Floor": 3,
+      "GoldMin": 45,
+      "GoldMax": 75,
+      "Drop_Common": 0.24,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.4,
+      "Drop_Legendary": 0.06,
+      "Note": "03 §8 엘리트 · 유물 3택1 · 23 §5 Rare×2 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Boss",
+      "Floor": 3,
+      "GoldMin": 75,
+      "GoldMax": 120,
+      "Drop_Common": 0.25,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.38,
+      "Drop_Legendary": 0.07,
+      "Note": "03 §8 보스 · Boss Relic 별도(REL_BOSS_*, D-16) · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Normal",
+      "Floor": 4,
+      "GoldMin": 20,
+      "GoldMax": 40,
+      "Drop_Common": 0.44,
+      "Drop_Uncommon": 0.28,
+      "Drop_Rare": 0.25,
+      "Drop_Legendary": 0.03,
+      "Note": "03 §8 일반 · 카드 3택1 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Elite",
+      "Floor": 4,
+      "GoldMin": 60,
+      "GoldMax": 100,
+      "Drop_Common": 0.14,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.5,
+      "Drop_Legendary": 0.06,
+      "Note": "03 §8 엘리트 · 유물 3택1 · 23 §5 Rare×2 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Boss",
+      "Floor": 4,
+      "GoldMin": 100,
+      "GoldMax": 160,
+      "Drop_Common": 0.2,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.43,
+      "Drop_Legendary": 0.07,
+      "Note": "03 §8 보스 · Boss Relic 별도(REL_BOSS_*, D-16) · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Normal",
+      "Floor": 5,
+      "GoldMin": 25,
+      "GoldMax": 50,
+      "Drop_Common": 0.39,
+      "Drop_Uncommon": 0.28,
+      "Drop_Rare": 0.3,
+      "Drop_Legendary": 0.03,
+      "Note": "03 §8 일반 · 카드 3택1 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Elite",
+      "Floor": 5,
+      "GoldMin": 75,
+      "GoldMax": 125,
+      "Drop_Common": 0.14,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.5,
+      "Drop_Legendary": 0.06,
+      "Note": "03 §8 엘리트 · 유물 3택1 · 23 §5 Rare×2 · Common = 1 − 나머지 (D-35)"
+    },
+    {
+      "BattleType": "Boss",
+      "Floor": 5,
+      "GoldMin": 125,
+      "GoldMax": 200,
+      "Drop_Common": 0.15,
+      "Drop_Uncommon": 0.3,
+      "Drop_Rare": 0.48,
+      "Drop_Legendary": 0.07,
+      "Note": "03 §8 보스 · Boss Relic 별도(REL_BOSS_*, D-16) · Common = 1 − 나머지 (D-35)"
+    }
+  ]
+}

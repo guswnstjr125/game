@@ -1,0 +1,61 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Shop_Prices",
+  "rows": [
+    {
+      "Item_ID": "SHOP_CARD_C",
+      "ItemType": "Card",
+      "Rarity": "C",
+      "Price": 35,
+      "Note": "24 §3"
+    },
+    {
+      "Item_ID": "SHOP_CARD_U",
+      "ItemType": "Card",
+      "Rarity": "U",
+      "Price": 55,
+      "Note": null
+    },
+    {
+      "Item_ID": "SHOP_CARD_R",
+      "ItemType": "Card",
+      "Rarity": "R",
+      "Price": 85,
+      "Note": null
+    },
+    {
+      "Item_ID": "SHOP_CARD_L",
+      "ItemType": "Card",
+      "Rarity": "L",
+      "Price": 140,
+      "Note": null
+    },
+    {
+      "Item_ID": "SHOP_RELIC",
+      "ItemType": "Relic",
+      "Rarity": null,
+      "Price": 120,
+      "Note": "희귀도와 관계없이 같은 값"
+    },
+    {
+      "Item_ID": "SHOP_CONSUMABLE",
+      "ItemType": "Consumable",
+      "Rarity": null,
+      "Price": 25,
+      "Note": "Consumables.Price와 같다"
+    },
+    {
+      "Item_ID": "SHOP_REFRESH",
+      "ItemType": "Refresh",
+      "Rarity": null,
+      "Price": 15,
+      "Note": "방문마다 첫 1회 무료, 이후 15"
+    },
+    {
+      "Item_ID": "SHOP_REMOVE",
+      "ItemType": "Remove",
+      "Rarity": null,
+      "Price": 80,
+      "Note": "일반 카드. 저주는 Curse_Cards.Remove_Cost. 런당 2회 (D-62)"
+    }
+  ]
+}

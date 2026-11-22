@@ -103,6 +103,9 @@ namespace DarkLegion.Core
 
         public void Add(string bossEnemyId, params BossStep[] steps) => _steps[bossEnemyId] = steps.ToList();
 
+        /// <summary>턴 사이클이 있는 보스의 적 ID.</summary>
+        public IEnumerable<string> Ids => _steps.Keys;
+
         public IReadOnlyList<BossStep> Get(string bossEnemyId) => _steps.TryGetValue(bossEnemyId, out var s) ? s : null;
     }
 
