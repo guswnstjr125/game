@@ -264,6 +264,7 @@ namespace DarkLegion.Tests.EditMode
 
             Assert.IsTrue(store.SaveRun(pending));
             Assert.IsTrue(store.ConfirmRewardAndPersist(pending, 0, null));
+            Assert.IsFalse(store.ConfirmRewardAndPersist(pending, null, null));
             var next = store.LoadRun();
             var restored = RunSave.Restore(next);
             Assert.AreEqual(RunSavePhase.Map, next.Phase);
