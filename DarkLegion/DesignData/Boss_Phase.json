@@ -76,8 +76,8 @@
       "Phase": 2,
       "HP_Pct_Min": 20,
       "HP_Pct_Max": 50,
-      "Summary": "분열·광역",
-      "TurnCycle_T0": "P2 진입 시 FLS_003 분열 소환 ×1. 광역 6",
+      "Summary": "진입 1회 소환·광역",
+      "TurnCycle_T0": "첫 T0만 FLS_003 ×1. 매 사이클 광역 6",
       "TurnCycle_T1": "흡혈",
       "TurnCycle_T2": null
     },
@@ -87,7 +87,7 @@
       "HP_Pct_Min": 0,
       "HP_Pct_Max": 20,
       "Summary": "2회+자힐",
-      "TurnCycle_T0": "2회 공격 + 자힐 6",
+      "TurnCycle_T0": "단일 2회 후 자힐 6",
       "TurnCycle_T1": null,
       "TurnCycle_T2": null
     },
@@ -99,7 +99,7 @@
       "Summary": "단일·Bind·Execute",
       "TurnCycle_T0": "단일 공격",
       "TurnCycle_T1": "Bind 1턴 (Front)",
-      "TurnCycle_T2": "Execute 판정 (HP≤30%)"
+      "TurnCycle_T2": "Execute (임계 30%, 아니면 피해 0)"
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -117,7 +117,7 @@
       "HP_Pct_Min": 0,
       "HP_Pct_Max": 20,
       "Summary": "2회+Vuln",
-      "TurnCycle_T0": "2회 공격 + Vulnerable 2턴(전장)",
+      "TurnCycle_T0": "단일 2회 + 전장 Vulnerable 2턴(별도 행)",
       "TurnCycle_T1": null,
       "TurnCycle_T2": null
     },
@@ -129,7 +129,7 @@
       "Summary": "Crystal·저주",
       "TurnCycle_T0": "Crystal -1",
       "TurnCycle_T1": "단일 공격",
-      "TurnCycle_T2": "허무 저주 카드 1장 추가"
+      "TurnCycle_T2": "CUR_001 허무 1장"
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -137,7 +137,7 @@
       "HP_Pct_Min": 20,
       "HP_Pct_Max": 50,
       "Summary": "소환·Crystal",
-      "TurnCycle_T0": "ABY_002 소환",
+      "TurnCycle_T0": "ABY_002 ×1",
       "TurnCycle_T1": "광역 6",
       "TurnCycle_T2": "Crystal -2"
     },

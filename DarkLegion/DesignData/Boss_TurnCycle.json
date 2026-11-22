@@ -10,7 +10,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -21,7 +24,10 @@
       "StatusEffect": "Weak 2턴",
       "TargetRule": "Back",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -32,7 +38,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -43,7 +52,10 @@
       "StatusEffect": null,
       "TargetRule": null,
       "EnqueueTwice": false,
-      "Note": "GHO_001 ×1"
+      "Note": "GHO_001 ×1",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -54,7 +66,10 @@
       "StatusEffect": "HP 회복 50%",
       "TargetRule": "LowestHp",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -65,7 +80,10 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_1F_001",
@@ -76,7 +94,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": true,
-      "Note": "P3 매 턴 2회"
+      "Note": "P3 매 턴 2회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -87,7 +108,10 @@
       "StatusEffect": "Burn+2",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "전장"
+      "Note": "전장",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -98,7 +122,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -109,7 +136,10 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -120,7 +150,10 @@
       "StatusEffect": "Burn+3",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "강화"
+      "Note": "강화",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -131,7 +164,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": true,
-      "Note": "2회"
+      "Note": "2회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -142,7 +178,10 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -153,7 +192,10 @@
       "StatusEffect": "Burn+1",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "매 턴"
+      "Note": "매 턴",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_2F_001",
@@ -164,7 +206,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": "같은 턴"
+      "Note": "같은 턴",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -175,7 +220,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -186,7 +234,10 @@
       "StatusEffect": "Weak 2턴",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "희생 유도"
+      "Note": "희생 유도",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -197,7 +248,10 @@
       "StatusEffect": "HP 회복 50%",
       "TargetRule": "LowestHp",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -208,7 +262,10 @@
       "StatusEffect": null,
       "TargetRule": null,
       "EnqueueTwice": false,
-      "Note": "FLS_003 분열 ×1 (P2 진입 시 1회)"
+      "Note": "FLS_003 ×1",
+      "OnceOnPhaseEnter": true,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -219,7 +276,10 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "T0 후 즉시"
+      "Note": "T0 후 즉시",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -230,7 +290,10 @@
       "StatusEffect": "HP 회복 50%",
       "TargetRule": "LowestHp",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_3F_001",
@@ -241,7 +304,24 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": true,
-      "Note": "2회 + 자힐 6"
+      "Note": "2회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
+    },
+    {
+      "Boss_ID": "BOS_3F_001",
+      "Phase": 3,
+      "TurnIndex": 0,
+      "Action": "SelfHeal",
+      "Damage": 6,
+      "StatusEffect": null,
+      "TargetRule": "Self",
+      "EnqueueTwice": false,
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -252,7 +332,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -263,7 +346,10 @@
       "StatusEffect": "Bind 1턴",
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -274,7 +360,10 @@
       "StatusEffect": "HP≤30% 즉사",
       "TargetRule": "LowestHpPct",
       "EnqueueTwice": false,
-      "Note": "Lv2 처형"
+      "Note": "Lv2 처형",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": 30,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -285,7 +374,10 @@
       "StatusEffect": "Execute 임계 25% 상향 2턴",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": "오라"
+      "Note": "오라",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": 25,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -296,7 +388,10 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -307,7 +402,10 @@
       "StatusEffect": "Shield 전량 제거",
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_4F_001",
@@ -315,21 +413,41 @@
       "TurnIndex": 0,
       "Action": "SingleAttack",
       "Damage": 14,
-      "StatusEffect": "Vulnerable 2턴(전장)",
+      "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": true,
-      "Note": "2회"
+      "Note": "2회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
+    },
+    {
+      "Boss_ID": "BOS_4F_001",
+      "Phase": 3,
+      "TurnIndex": 0,
+      "Action": "ApplyVulnerable",
+      "Damage": 0,
+      "StatusEffect": "Vulnerable 2턴",
+      "TargetRule": "All",
+      "EnqueueTwice": false,
+      "Note": "전장, 1회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
       "Phase": 1,
       "TurnIndex": 0,
       "Action": "CrystalDrain",
-      "Damage": 0,
+      "Damage": 1,
       "StatusEffect": "Crystal -1",
       "TargetRule": "Player",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -340,7 +458,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -351,7 +472,10 @@
       "StatusEffect": "허무 카드 추가",
       "TargetRule": "Deck",
       "EnqueueTwice": false,
-      "Note": "Cost1 Exhaust 효과 없음"
+      "Note": "효과 없음",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": "CUR_001"
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -362,7 +486,10 @@
       "StatusEffect": null,
       "TargetRule": null,
       "EnqueueTwice": false,
-      "Note": "ABY_002 소환"
+      "Note": "ABY_002 ×1",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -373,29 +500,38 @@
       "StatusEffect": null,
       "TargetRule": "All",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
       "Phase": 2,
       "TurnIndex": 2,
       "Action": "CrystalDrain",
-      "Damage": 0,
+      "Damage": 2,
       "StatusEffect": "Crystal -2",
       "TargetRule": "Player",
       "EnqueueTwice": false,
-      "Note": null
+      "Note": null,
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
       "Phase": 3,
       "TurnIndex": 0,
       "Action": "CrystalDrain",
-      "Damage": 0,
+      "Damage": 1,
       "StatusEffect": "Crystal -1",
       "TargetRule": "Player",
       "EnqueueTwice": false,
-      "Note": "매 턴"
+      "Note": "매 턴",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     },
     {
       "Boss_ID": "BOS_5F_001",
@@ -406,7 +542,10 @@
       "StatusEffect": null,
       "TargetRule": "Front",
       "EnqueueTwice": true,
-      "Note": "2회"
+      "Note": "2회",
+      "OnceOnPhaseEnter": false,
+      "ThresholdPct": null,
+      "CurseId": null
     }
   ]
 }
