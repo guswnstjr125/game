@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: baa6dc09a8bbcf8459922abec2af9d3a, type: 3}
+  m_Script: {fileID: 11500000, guid: 87d3daf4449e8ef4c8d115acfe85de4a, type: 3}
   m_Name: FUS_010
   m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.FusionRecipeData
   recipeId: FUS_010
