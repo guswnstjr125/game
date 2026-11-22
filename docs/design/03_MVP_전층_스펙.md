@@ -93,10 +93,10 @@
 | 노드 | 타입 |
 |------|------|
 | 1, 2, 4, 7 | Battle |
-| 3 | Event (층별 풀: `06_콘텐츠_마스터.xlsx` Event_FloorPool) |
+| 3 | Event (층별 풀: `06_콘텐츠_마스터.xlsx` Event_FloorPool, 이번 런에서 나온 이벤트 제외 — `24` §2.9, `01` D-69) |
 | 6 | 1층: Event. **2~5층: Shop** (`24` §3, `01` D-34). 1단계 빌드는 2층도 Event |
 | 5 | Elite |
-| 8 | Rest (HP 30% 회복 또는 카드 1장 강화) — 수치: `06_콘텐츠_마스터.xlsx` **RestNode_Rules** |
+| 8 | Rest (HP `floor(MaxHP × 30%)` 회복 또는 카드 1장 강화, 둘 다 불가면 [계속], `01` D-69) — 수치: `06_콘텐츠_마스터.xlsx` **RestNode_Rules** |
 | 9 | Boss |
 
 ---
