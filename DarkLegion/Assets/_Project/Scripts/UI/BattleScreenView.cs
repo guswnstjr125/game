@@ -41,12 +41,43 @@ namespace DarkLegion.UI
         Button _fusion;
         RectTransform _modalRoot;
         Text _modalText;
+        Button _resultButton;
+        GameObject _canvasGo;
+        GameObject _eventsGo;
+        BattleScreenSession _attached;
+        GameData _attachedData;
+        Action _onResult;
+
+        /// <summary>
+        /// 맵 화면이 만든 전투를 이어받는다 (Start 전에 호출). 전투가 끝나면 "결과 보기" 버튼이 나오고 누르면 onResult를 부른다.
+        /// 호출하지 않으면 기존대로 1층 노드 1 전투를 스스로 만든다.
+        /// </summary>
+        internal void Attach(BattleScreenSession session, GameData data, Action onResult)
+        {
+            _attached = session;
+            _attachedData = data;
+            _onResult = onResult;
+        }
+
+        void OnDestroy()
+        {
+            if (_canvasGo != null) Destroy(_canvasGo);
+            if (_eventsGo != null) Destroy(_eventsGo);
+        }
 
         void Start()
         {
             _font = LoadFont();
             _white = White();
             BuildChrome();
+            if (_attached != null)
+            {
+                _data = _attachedData;
+                RememberNames(_data);
+                _session = _attached;
+                Refresh();
+                return;
+            }
             try
             {
                 _data = LoadData();
@@ -315,6 +346,7 @@ namespace DarkLegion.UI
             Rebuild(_enemyRow, snap.Enemies, false, snap);
             RebuildHand(snap);
             _outcome.rectTransform.parent.GetComponent<Image>().raycastTarget = snap.Outcome != BattleOutcome.None;
+            _resultButton.gameObject.SetActive(_onResult != null && snap.Outcome != BattleOutcome.None);
             if (snap.Outcome == BattleOutcome.None)
             {
                 _outcome.text = "";
@@ -470,15 +502,20 @@ namespace DarkLegion.UI
         void BuildChrome()
         {
             var canvasGo = new GameObject("BattleCanvas");
+            _canvasGo = canvasGo;
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             canvasGo.AddComponent<GraphicRaycaster>();
-            var events = new GameObject("EventSystem");
-            events.AddComponent<EventSystem>();
-            events.AddComponent<InputSystemUIInputModule>();
+            if (FindFirstObjectByType<EventSystem>() == null)
+            {
+                var events = new GameObject("EventSystem");
+                events.AddComponent<EventSystem>();
+                events.AddComponent<InputSystemUIInputModule>();
+                _eventsGo = events;
+            }
 
             var root = Stretch(canvasGo.transform);
             _top = Label(Box(root, new Color(0.08f, 0.08f, 0.1f, 1f), 1900, 48), "", 22);
@@ -517,6 +554,8 @@ namespace DarkLegion.UI
             outcomeBar.GetComponent<Image>().raycastTarget = false;
             _outcome = Label(outcomeBar, "", 48);
             _outcome.raycastTarget = false;
+            _resultButton = ActionButton(root, "결과 보기", new Vector2(0f, -140f), () => { if (_onResult != null) _onResult(); });
+            _resultButton.gameObject.SetActive(false);
 
             _modalRoot = Box(root, new Color(0f, 0f, 0f, 0.86f), 900, 640);
             Place(_modalRoot, 0f, 0f);
@@ -619,7 +658,7 @@ namespace DarkLegion.UI
             return _names.TryGetValue(id, out name) && name.Length > 0 ? name : id;
         }
 
-        static Font LoadFont()
+        internal static Font LoadFont()
         {
             try
             {
@@ -634,7 +673,7 @@ namespace DarkLegion.UI
             return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
 
-        static Sprite White()
+        internal static Sprite White()
         {
             var tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
             tex.SetPixel(0, 0, Color.white);
@@ -642,7 +681,7 @@ namespace DarkLegion.UI
             return Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
         }
 
-        static GameData LoadData()
+        internal static GameData LoadData()
         {
             string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "DesignData"));
             var texts = Directory.GetFiles(dir, "*.json").ToDictionary(
