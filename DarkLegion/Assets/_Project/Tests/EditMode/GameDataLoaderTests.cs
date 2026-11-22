@@ -255,6 +255,43 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void Bosses_ReadOnceOnPhaseEnter_ThresholdPct_CurseId_AndUnknownAction()
+        {
+            var data = new GameData(
+                S("Enemies_Master", R(("ENE_ID", "ENE_3F_BOS_001"), ("HP", 73), ("ATK", 11), ("DEF", 2))),
+                S("Boss_List", R(("Boss_ID", "BOS_3F_001"), ("ENE_ID", "ENE_3F_BOS_001"))),
+                S("Boss_TurnCycle",
+                    R(("Boss_ID", "BOS_3F_001"), ("Phase", 2), ("TurnIndex", 0), ("Action", "Summon"), ("Damage", 0), ("Note", "FLS_003 ×1"), ("OnceOnPhaseEnter", true), ("TargetRule", null)),
+                    R(("Boss_ID", "BOS_3F_001"), ("Phase", 3), ("TurnIndex", 0), ("Action", "SelfHeal"), ("Damage", 6), ("TargetRule", "Self"), ("EnqueueTwice", false)),
+                    R(("Boss_ID", "BOS_3F_001"), ("Phase", 1), ("TurnIndex", 2), ("Action", "Execute"), ("Damage", 0), ("TargetRule", "LowestHpPct"), ("ThresholdPct", 30)),
+                    R(("Boss_ID", "BOS_3F_001"), ("Phase", 1), ("TurnIndex", 1), ("Action", "AddCurseCard"), ("Damage", 0), ("TargetRule", "Player"), ("CurseId", "CUR_001"))));
+            var r = GameDataLoader.Load(data);
+            Assert.IsEmpty(r.Errors, string.Join("\n", r.Errors));
+            var steps = r.BossPatterns.Get("ENE_3F_BOS_001");
+            Assert.AreEqual(4, steps.Count);
+            Assert.AreEqual((true, 0, ""), (steps[0].OnceOnPhaseEnter, steps[0].ThresholdPct, steps[0].CurseId));
+            Assert.AreEqual(("SelfHeal", 6, "Self", false), (steps[1].Action, steps[1].Damage, steps[1].TargetRule, steps[1].OnceOnPhaseEnter));
+            Assert.AreEqual((30, ""), (steps[2].ThresholdPct, steps[2].CurseId));
+            Assert.AreEqual(("CUR_001", 0), (steps[3].CurseId, steps[3].ThresholdPct));
+
+            var ctx = new BattleContext(1);
+            ctx.Player = new RuntimePlayer("P", 80, new RuntimeDeck(new RuntimeCard[0], ctx.Random));
+            var boss = new RuntimeEnemy("B", "ENE_3F_BOS_001", 73, 11, 2, true);
+            ctx.Field.PlaceEnemy(boss, SlotPosition.Front, ctx);
+            Assert.DoesNotThrow(() =>
+            {
+                foreach (var step in steps)
+                {
+                    foreach (var action in step.ToActions(boss.DataId))
+                    {
+                        EnemyAi.Execute(ctx, boss, action);
+                        ctx.Queue.Process();
+                    }
+                }
+            });
+        }
+
+        [Test]
         public void Bosses_UnknownBossId_IsError()
         {
             var data = new GameData(

@@ -133,8 +133,8 @@ namespace DarkLegion.Tests.EditMode
                 Assert.AreEqual(w.Count, g.Count, id);
                 for (int i = 0; i < w.Count; i++)
                 {
-                    Assert.AreEqual((w[i].Phase, w[i].TurnIndex, w[i].Action, w[i].Damage, w[i].StatusEffect, w[i].TargetRule, w[i].EnqueueTwice),
-                        (g[i].Phase, g[i].TurnIndex, g[i].Action, g[i].Damage, g[i].StatusEffect, g[i].TargetRule, g[i].EnqueueTwice), $"{id}[{i}]");
+                    Assert.AreEqual((w[i].Phase, w[i].TurnIndex, w[i].Action, w[i].Damage, w[i].StatusEffect, w[i].TargetRule, w[i].EnqueueTwice, w[i].OnceOnPhaseEnter, w[i].ThresholdPct, w[i].CurseId),
+                        (g[i].Phase, g[i].TurnIndex, g[i].Action, g[i].Damage, g[i].StatusEffect, g[i].TargetRule, g[i].EnqueueTwice, g[i].OnceOnPhaseEnter, g[i].ThresholdPct, g[i].CurseId), $"{id}[{i}]");
                 }
             }
         }

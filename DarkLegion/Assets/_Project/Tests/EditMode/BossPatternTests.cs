@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using DarkLegion.Core;
 using NUnit.Framework;
@@ -448,6 +449,135 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreNotEqual(BattleOutcome.None, _ctx.Outcome, "30턴 안에 끝난다");
             CollectionAssert.Contains(phases, 2);
             CollectionAssert.AreEqual(phases.OrderBy(x => x).ToList(), phases, "페이즈는 올라가기만 한다");
+        }
+
+        // ---------- D-79. 3층 P2 소환은 진입 첫 T0만 (`32` BOSS-04의 소환 절) ----------
+
+        private static GameDataLoadResult LoadDesign()
+        {
+            string dir = DesignDataParityTests.FindDesignData();
+            Assert.IsNotNull(dir, "DarkLegion/DesignData/*.json 없음");
+            var texts = Directory.GetFiles(dir, "*.json").ToDictionary(f => Path.GetFileNameWithoutExtension(f), f => File.ReadAllText(f));
+            return GameDataLoader.Load(GameData.FromJson(texts));
+        }
+
+        private int CountLiving(string dataId) => _ctx.Enemies.Count(e => !e.IsDead && e.DataId == dataId);
+        [Test]
+        public void BOSS_3F_P2_SummonsFls003Once_OnFirstT0Only()
+        {
+            // 73의 50% = 36.5 → HP 36은 P2, 20% = 14.6 → 36은 P3가 아니다 (D-65)
+            var loaded = LoadDesign();
+            Assert.IsEmpty(loaded.Errors, string.Join("\n", loaded.Errors));
+            var steps = loaded.BossPatterns.Get("ENE_3F_BOS_001");
+            var summon = steps.Single(s => s.Phase == 2 && s.Action == "Summon");
+            Assert.AreEqual("FLS_003 ×1", summon.Note);
+            Assert.IsTrue(summon.OnceOnPhaseEnter, "3층 P2 소환 행은 OnceOnPhaseEnter");
+            var heal = steps.Single(s => s.Action == "SelfHeal");
+            Assert.AreEqual((3, 6, "Self"), (heal.Phase, heal.Damage, heal.TargetRule));
+            Assert.AreEqual(30, loaded.BossPatterns.Get("ENE_4F_BOS_001").Single(s => s.Action == "Execute").ThresholdPct);
+            Assert.AreEqual("CUR_001", loaded.BossPatterns.Get("ENE_5F_BOS_001").Single(s => s.Action == "AddCurseCard").CurseId);
+
+            _ctx.BossPatterns = loaded.BossPatterns;
+            _ctx.EnemyKits = loaded.EnemyKits;
+            var front = Ally(SlotPosition.Front, hp: 40, atk: 0, def: 1);
+            var boss = Boss("ENE_3F_BOS_001", hp: 73, atk: 11, def: 2);
+            boss.CurrentHP = 36;
+            var dummy = new RuntimeEnemy("D" + (++_id), "ENE_TEST_IDLE", 40, 0, 0, false);
+            _ctx.Field.PlaceEnemy(dummy, SlotPosition.Middle, _ctx);
+
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(2, _ctx.BossPhaseOf(boss));
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(1, CountLiving("ENE_3F_FLS_003"), "진입 첫 T0에 FLS_003 ×1");
+            var flesh = _ctx.Enemies.Single(e => e.DataId == "ENE_3F_FLS_003");
+            Assert.AreEqual((18, 7, 1), (flesh.MaxHP.FinalValue, flesh.Attack.FinalValue, flesh.Defense.FinalValue));
+            // 광역 6: Front DEF 1+1 → max(1, floor(6−2))=4, 플레이어 DEF 0 → 6
+            Assert.AreEqual(36, front.CurrentHP);
+            Assert.AreEqual(74, _ctx.Player.CurrentHP);
+
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(1, CountLiving("ENE_3F_FLS_003"), "T1 흡혈 턴에는 소환이 없다");
+
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(1, CountLiving("ENE_3F_FLS_003"), "다음 T0는 광역만, 소환은 다시 하지 않는다");
+            Assert.AreEqual(68, _ctx.Player.CurrentHP, "광역 6이 한 번 더");
+            Assert.AreEqual(2, _ctx.BossPhaseOf(boss), "흡혈로 50%를 넘어도 P2");
+        }
+
+        [Test]
+        public void BOSS_3F_P2_FullSlots_StillDoesNotSummonOnLaterT0()
+        {
+            var loaded = LoadDesign();
+            _ctx.BossPatterns = loaded.BossPatterns;
+            _ctx.EnemyKits = loaded.EnemyKits;
+            var front = Ally(SlotPosition.Front, hp: 40, atk: 5, def: 1);
+            var boss = Boss("ENE_3F_BOS_001", hp: 73, atk: 11, def: 2);
+            boss.CurrentHP = 36;
+            var victim = new RuntimeEnemy("V" + (++_id), "ENE_TEST_IDLE", 1, 0, 0, false);
+            _ctx.Field.PlaceEnemy(victim, SlotPosition.Middle, _ctx);
+            RuntimeEnemy tank = null;
+            foreach (var pos in new[] { SlotPosition.Back, SlotPosition.Extra1, SlotPosition.Extra2 })
+            {
+                var idle = new RuntimeEnemy("I" + (++_id), "ENE_TEST_IDLE", 30, 0, 0, false);
+                if (tank == null) tank = idle;
+                _ctx.Field.PlaceEnemy(idle, pos, _ctx);
+            }
+            Assert.AreEqual(5, _ctx.Enemies.Count(e => !e.IsDead));
+
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, tank);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(0, CountLiving("ENE_3F_FLS_003"), "칸이 없으면 소환은 무효");
+            Assert.AreEqual(5, _ctx.Enemies.Count(e => !e.IsDead));
+
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, victim);
+            _ctx.EndPlayerTurn();
+            Assert.IsTrue(victim.IsDead);
+            Assert.AreEqual(0, CountLiving("ENE_3F_FLS_003"));
+
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(0, CountLiving("ENE_3F_FLS_003"), "실패한 첫 T0로 기회를 썼으므로 빈 칸이 생겨도 다시 소환하지 않는다");
+        }
+
+        [Test]
+        public void BOSS_SummonNoteWithoutOnceFlag_RepeatsOnLaterT0()
+        {
+            var catalog = new BossPatternCatalog();
+            catalog.Add("ENE_1F_BOS_001", new BossStep(2, 0, "Summon", 0, null, null, false, "GHO_001 ×1", onceOnPhaseEnter: false));
+            _ctx.BossPatterns = catalog;
+            Ally(SlotPosition.Front, hp: 40, atk: 0);
+            var boss = Boss();
+            boss.CurrentHP = 20;
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(2, CountLiving("ENE_1F_GHO_001"), "OnceOnPhaseEnter가 아니면 T0마다 소환 (1층 P2·5층 P2)");
+        }
+
+        [Test]
+        public void BOSS_3F_P3_SelfHealRow_DoesNotThrow()
+        {
+            // SelfHeal·Execute 같은 3~5층 전용 행동은 아직 효과 없음. 행을 만나도 턴이 깨지지 않아야 한다.
+            var loaded = LoadDesign();
+            _ctx.BossPatterns = loaded.BossPatterns;
+            _ctx.EnemyKits = loaded.EnemyKits;
+            Ally(SlotPosition.Front, hp: 40, def: 1);
+            var boss = Boss("ENE_3F_BOS_001", hp: 73, atk: 11, def: 2);
+            boss.CurrentHP = 14; // 73×20 = 1460, 14×100 = 1400 → P3
+            Assert.DoesNotThrow(() =>
+            {
+                _ctx.StartPlayerTurn();
+                Assert.AreEqual(3, _ctx.BossPhaseOf(boss));
+                _ctx.EndPlayerTurn();
+            });
         }
 
     }

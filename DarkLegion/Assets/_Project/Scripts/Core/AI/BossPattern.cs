@@ -19,8 +19,14 @@ namespace DarkLegion.Core
         public string TargetRule { get; }
         public bool EnqueueTwice { get; }
         public string Note { get; }
+        /// <summary>Y면 그 페이즈의 첫 T0에서만 실행한다 (`01` D-79). 빈 칸·N은 false.</summary>
+        public bool OnceOnPhaseEnter { get; }
+        /// <summary>Execute·ExecuteAura의 즉사 비율(%). 칸이 없으면 0.</summary>
+        public int ThresholdPct { get; }
+        /// <summary>AddCurseCard가 넣는 저주 ID. 칸이 없으면 빈 문자열.</summary>
+        public string CurseId { get; }
 
-        public BossStep(int phase, int turnIndex, string action, int damage, string statusEffect, string targetRule, bool enqueueTwice, string note = null)
+        public BossStep(int phase, int turnIndex, string action, int damage, string statusEffect, string targetRule, bool enqueueTwice, string note = null, bool onceOnPhaseEnter = false, int thresholdPct = 0, string curseId = null)
         {
             Phase = phase;
             TurnIndex = turnIndex;
@@ -30,6 +36,9 @@ namespace DarkLegion.Core
             TargetRule = targetRule ?? "";
             EnqueueTwice = enqueueTwice;
             Note = note ?? "";
+            OnceOnPhaseEnter = onceOnPhaseEnter;
+            ThresholdPct = thresholdPct;
+            CurseId = curseId ?? "";
         }
 
         private static readonly Regex Number = new Regex(@"(\d+)");
@@ -87,7 +96,9 @@ namespace DarkLegion.Core
                     break;
                 }
                 default:
-                    // 3~5층 전용 행동(Execute·RemoveShield·CrystalDrain·AddCurseCard·ExecuteAura 등)은 2단계에서 구현
+                    // SelfHeal·Execute·ExecuteAura·RemoveShield·CrystalDrain·AddCurseCard는 효과 구현이 범위 밖이다 (D-79).
+                    // 행은 깨지지 않게 행동으로 남긴다. 실행은 EnemyAi가 로그만 남기고 넘어간다.
+                    // ThresholdPct·CurseId는 BossStep에만 있고, 이 행동 정의에는 아직 넣지 않는다.
                     list.Add(new EnemyActionDef { ActionId = id, ActionType = Action, Value = Damage, Target = TargetRule });
                     break;
             }
@@ -114,6 +125,7 @@ namespace DarkLegion.Core
     /// - 페이즈: 의도를 정할 때(플레이어 턴 시작)의 HP로 판정. HP ≤ 20% → 3, ≤ 50% → 2, 그 외 1. 한 번 올라간 페이즈는 내려가지 않는다.
     /// - 새 페이즈에 들어가면 사이클은 T0부터. 사이클 길이 = 그 페이즈의 TurnIndex 최댓값 + 1.
     /// - 같은 TurnIndex 줄이 여럿이면 표 순서대로 모두 실행한다 (2층 Phase 3).
+    /// - `OnceOnPhaseEnter` 행은 그 페이즈의 첫 T0에서만 실행한다 (D-79).
     /// - Bind·Stun이면 행동 없음, 사이클은 진행하지 않는다 (D-55 #4와 같은 규칙).
     /// </summary>
     public sealed class BossBrain
@@ -125,6 +137,8 @@ namespace DarkLegion.Core
         private readonly List<BossStep> _steps;
         private int _cycleIndex;
         private int _prevCycleIndex;
+        private bool _onceConsumed;
+        private bool _prevOnceConsumed;
 
         public int Phase { get; private set; } = 1;
 
@@ -150,9 +164,11 @@ namespace DarkLegion.Core
             {
                 Phase = target;
                 _cycleIndex = 0;
+                _onceConsumed = false;
                 phaseChanged = target;
             }
             _prevCycleIndex = _cycleIndex;
+            _prevOnceConsumed = _onceConsumed;
             if (!self.Statuses.CanAct) return null;
 
             var phaseSteps = _steps.Where(s => s.Phase == Phase).ToList();
@@ -160,10 +176,21 @@ namespace DarkLegion.Core
             int length = phaseSteps.Max(s => s.TurnIndex) + 1;
             int index = _cycleIndex % length;
             _cycleIndex++;
-            return phaseSteps.Where(s => s.TurnIndex == index).SelectMany(s => s.ToActions(_bossId)).ToList();
+            IEnumerable<BossStep> chosen = phaseSteps.Where(s => s.TurnIndex == index);
+            if (index == 0)
+            {
+                // 그 페이즈의 첫 T0에서만. 소환이 칸 부족으로 무효여도 이 결정을 했으면 기회는 쓴 것이다 (D-79).
+                if (_onceConsumed) chosen = chosen.Where(s => !s.OnceOnPhaseEnter);
+                _onceConsumed = true;
+            }
+            return chosen.SelectMany(s => s.ToActions(_bossId)).ToList();
         }
 
         /// <summary>확정한 행동을 실행하지 못했을 때(그 사이 Bind·Stun) 사이클 위치를 결정 전으로 되돌린다.</summary>
-        public void UndoLastDecision() => _cycleIndex = _prevCycleIndex;
+        public void UndoLastDecision()
+        {
+            _cycleIndex = _prevCycleIndex;
+            _onceConsumed = _prevOnceConsumed;
+        }
     }
 }
