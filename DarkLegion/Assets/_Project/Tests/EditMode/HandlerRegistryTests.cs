@@ -77,6 +77,13 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void Cards_NeedData_NonCardKindsDoNot()
+        {
+            Assert.Throws<System.ArgumentNullException>(() => HandlerRegistry.Has(HandlerKind.Card, "NEC_SKL_002", null));
+            Assert.IsFalse(HandlerRegistry.Has(HandlerKind.Relic, "REL_BLOOD_CHALICE", null));
+        }
+
+        [Test]
         public void CurseRelicEvent_NotImplementedYet_AllMissing()
         {
             // 2-3(저주·이벤트)·2-4(유물)에서 구현하면 이 목록이 줄어든다. 그때 이 테스트를 "비어 있음"으로 바꾼다

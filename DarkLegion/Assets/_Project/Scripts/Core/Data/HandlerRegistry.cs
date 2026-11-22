@@ -77,6 +77,7 @@ namespace DarkLegion.Core
         {
             if (string.IsNullOrEmpty(id)) return false;
             if (kind != HandlerKind.Card) return Registered[kind].Contains(id);
+            if (data == null) throw new System.ArgumentNullException(nameof(data), "card handler check needs Cards_Master·Monster_Effects");
 
             var row = data.Rows("Cards_Master").FirstOrDefault(r => r.Str("ID") == id);
             if (row == null) return false;
