@@ -3,6 +3,7 @@ using System.Linq;
 using DarkLegion.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
@@ -53,9 +54,137 @@ namespace DarkLegion.UI
         Action _retry;
         public string SaveDirectory { get; set; }
 
+        RectTransform _pauseRoot;
+        RectTransform _settingsRoot;
+        RectTransform _creditsRoot;
+        RectTransform _forfeitRoot;
+        Text _displayOptions;
+        Button _pauseButton;
+        int _pauseFrame;
+        bool _settingsFromPause;
+        int _resolutionIndex = 1;
+        int _modeIndex;
+        static readonly int[] ResolutionWidths = { 1280, 1920, 2560, 3840 };
+        static readonly string[] DisplayModes = { "전체 화면", "창", "테두리 없는 창" };
+
+        bool InputBlocked() => _pauseRoot.gameObject.activeSelf || _settingsRoot.gameObject.activeSelf ||
+            _forfeitRoot.gameObject.activeSelf || _errorRoot.gameObject.activeSelf || _pauseFrame == Time.frameCount;
+
+        void Update()
+        {
+            if (Keyboard.current?.escapeKey.wasPressedThisFrame != true || _pauseFrame == Time.frameCount ||
+                _errorRoot == null || _errorRoot.gameObject.activeSelf) return;
+            if (_settingsRoot.gameObject.activeSelf) CloseSettings();
+            else if (_creditsRoot.gameObject.activeSelf) CloseCredits();
+            else if (_forfeitRoot.gameObject.activeSelf) CancelForfeit();
+            else if (_pauseRoot.gameObject.activeSelf) ResumePlay();
+            else if (_battleGo == null && _mapRoot.gameObject.activeSelf) OpenPause();
+        }
+
+        void OpenPause()
+        {
+            if (_map == null || _map.Run.Outcome != RunOutcome.InProgress || InputBlocked()) return;
+            if (_battleGo == null && !_mapRoot.gameObject.activeSelf) return;
+            if (_battleGo != null && _checkpoint.Phase != RunSavePhase.BattleEntry) return;
+            _pauseFrame = Time.frameCount;
+            _pauseRoot.gameObject.SetActive(true);
+        }
+
+        void ResumePlay()
+        {
+            _pauseFrame = Time.frameCount;
+            _pauseRoot.gameObject.SetActive(false);
+        }
+
+        void OpenSettings(bool fromPause)
+        {
+            _settingsFromPause = fromPause;
+            _pauseRoot.gameObject.SetActive(false);
+            _title.gameObject.SetActive(false);
+            _settingsRoot.gameObject.SetActive(true);
+            UpdateDisplayOptions();
+        }
+
+        void CloseSettings()
+        {
+            _pauseFrame = Time.frameCount;
+            _settingsRoot.gameObject.SetActive(false);
+            (_settingsFromPause ? _pauseRoot : _title).gameObject.SetActive(true);
+        }
+
+        void UpdateDisplayOptions()
+        {
+            int width = ResolutionWidths[_resolutionIndex];
+            _displayOptions.text = DisplayModes[_modeIndex] + " / " + width + "×" + (width * 9 / 16) +
+                " / 수직 동기화 " + (QualitySettings.vSyncCount > 0 ? "켜짐" : "꺼짐");
+        }
+
+        void ApplyDisplayOptions()
+        {
+            var mode = _modeIndex == 0 ? FullScreenMode.ExclusiveFullScreen :
+                _modeIndex == 1 ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
+            int width = ResolutionWidths[_resolutionIndex];
+            Screen.SetResolution(width, width * 9 / 16, mode);
+            UpdateDisplayOptions();
+        }
+
+        void CloseCredits()
+        {
+            _creditsRoot.gameObject.SetActive(false);
+            _title.gameObject.SetActive(true);
+        }
+
+        void OpenForfeit()
+        {
+            _pauseRoot.gameObject.SetActive(false);
+            _forfeitRoot.gameObject.SetActive(true);
+        }
+
+        void CancelForfeit()
+        {
+            _forfeitRoot.gameObject.SetActive(false);
+            _pauseRoot.gameObject.SetActive(true);
+        }
+
+        void ConfirmForfeit()
+        {
+            if (!_forfeitRoot.gameObject.activeSelf || _errorRoot.gameObject.activeSelf) return;
+            Attempt(() =>
+            {
+                var run = RunSave.Restore(_checkpoint);
+                RunFlow.Forfeit(run);
+                WriteCheckpoint(RunSave.CaptureSettlement(run, Settlement(run)));
+                _forfeitRoot.gameObject.SetActive(false);
+                CloseBattle();
+                Attempt(() => Resume(_checkpoint));
+            });
+        }
+
+        void ReturnToTitle()
+        {
+            if (!_pauseRoot.gameObject.activeSelf || _errorRoot.gameObject.activeSelf) return;
+            Attempt(() =>
+            {
+                // 전투 도중에는 이미 확정된 진입 저장을 그대로 사용한다 (D-37).
+                if (_battleGo == null) WriteCheckpoint(RunSave.Capture(_map.Run, RunSavePhase.Map));
+                ResumePlay();
+                CloseBattle();
+                ShowTitle();
+            });
+        }
+
+        void CloseBattle()
+        {
+            if (_battleGo == null) return;
+            _battleGo.SetActive(false);
+            Destroy(_battleGo);
+            _battleGo = null;
+        }
+
         void ShowTitle()
         {
             _title.gameObject.SetActive(true);
+            _pauseButton.gameObject.SetActive(false);
             _resultRoot.gameObject.SetActive(false);
             _mapRoot.gameObject.SetActive(false);
             _status.text = "";
@@ -228,6 +357,7 @@ namespace DarkLegion.UI
 
         void RefreshMap()
         {
+            _pauseButton.gameObject.SetActive(true);
             _resultRoot.gameObject.SetActive(false);
             _mapRoot.gameObject.SetActive(true);
             var snap = _map.Capture();
@@ -263,7 +393,7 @@ namespace DarkLegion.UI
 
         void ClickNode(MapNodeView node)
         {
-            if (!node.Enterable || !_map.CanEnter(node.Floor, node.Node)) return;
+            if (InputBlocked() || !node.Enterable || !_map.CanEnter(node.Floor, node.Node)) return;
             Attempt(() =>
             {
                 switch (node.Kind)
@@ -289,6 +419,7 @@ namespace DarkLegion.UI
 
         void OpenEvent(EventPendingDTO pending)
         {
+            _pauseButton.gameObject.SetActive(false);
             _mapRoot.gameObject.SetActive(false);
             var session = EventScreenSession.RestorePending(_map.Run, _loaded, pending, nameOf: NameOf);
             _nodeGo = new GameObject("EventScreen");
@@ -326,6 +457,7 @@ namespace DarkLegion.UI
 
         void OpenRest(RestPendingDTO pending)
         {
+            _pauseButton.gameObject.SetActive(false);
             _mapRoot.gameObject.SetActive(false);
             var session = pending == null ? new RestScreenSession(_map.Run, _loaded, nameOf: NameOf)
                 : RestScreenSession.RestorePending(_map.Run, _loaded, pending, nameOf: NameOf);
@@ -365,11 +497,14 @@ namespace DarkLegion.UI
 
         void ShowBattle(BattleScreenSession session)
         {
+            _pauseButton.gameObject.SetActive(true);
             _mapRoot.gameObject.SetActive(false);
             _battleGo = new GameObject("BattleScreen");
             var view = _battleGo.AddComponent<BattleScreenView>();
             view.Attach(session, _data, OnBattleDone);
             view.OnBattleFinished = () => Attempt(SaveBattleOutcome);
+            view.OpenPause = OpenPause;
+            view.InputBlocked = InputBlocked;
         }
 
         void CloseNodeScreen()
@@ -388,6 +523,7 @@ namespace DarkLegion.UI
                     ? _map.CaptureBattleReward()
                     : RunSave.CaptureSettlement(_map.Run, Settlement(_map.Run));
                 WriteCheckpoint(save);
+                _pauseButton.gameObject.SetActive(false);
             }
 
             if (!_store.ReconcileTutorialCompletion(_checkpoint))
@@ -401,9 +537,7 @@ namespace DarkLegion.UI
             {
                 SaveBattleOutcome();
                 var result = _map.Result();
-                _battleGo.SetActive(false);
-                Destroy(_battleGo);
-                _battleGo = null;
+                CloseBattle();
                 if (result.Battle == BattleOutcome.Victory) ShowResult(result);
                 else Attempt(() => Resume(_checkpoint));
             });
@@ -429,6 +563,7 @@ namespace DarkLegion.UI
 
         void ShowResult(BattleResultView result)
         {
+            _pauseButton.gameObject.SetActive(false);
             _mapRoot.gameObject.SetActive(false);
             _resultRoot.gameObject.SetActive(true);
             _result = result;
@@ -519,10 +654,11 @@ namespace DarkLegion.UI
 
         void ShowRunEnd()
         {
+            _pauseButton.gameObject.SetActive(false);
             _resultRoot.gameObject.SetActive(true);
             _mapRoot.gameObject.SetActive(false);
             var snap = _map.Capture();
-            _resultText.text = (snap.Outcome == RunOutcome.Victory ? "런 승리\n2층 보스를 처치했습니다." : "패배 — 런 종료")
+            _resultText.text = (snap.Outcome == RunOutcome.Forfeit ? "런 포기" : snap.Outcome == RunOutcome.Victory ? "런 승리\n2층 보스를 처치했습니다." : "패배 — 런 종료")
                 + "\nHP " + snap.Hp + "/" + snap.MaxHp + "  골드 " + snap.Gold;
             _result = null;
             RenderChoices();
@@ -588,13 +724,27 @@ namespace DarkLegion.UI
             _restart = ActionButton(panel, "타이틀로", new Vector2(0f, -290f), OnRestart);
             _resultRoot.gameObject.SetActive(false);
 
+            var pauseControl = Stretch(_canvasGo.transform, "PauseControl");
+            var pauseCanvas = pauseControl.gameObject.AddComponent<Canvas>();
+            pauseCanvas.overrideSorting = true;
+            pauseCanvas.sortingOrder = 60;
+            pauseControl.gameObject.AddComponent<GraphicRaycaster>();
+            _pauseButton = ActionButton(pauseControl, "일시정지", new Vector2(820f, 415f), OpenPause);
+            _pauseButton.name = "PauseGame";
             _title = Stretch(_canvasGo.transform, "Title");
             Label(_title, "다크 레기온", 44).rectTransform.anchoredPosition = new Vector2(0f, 230f);
             ActionButton(_title, "새 게임", new Vector2(0f, 90f), StartNew).name = "NewGame";
             _continue = ActionButton(_title, "이어하기", new Vector2(0f, 0f), () => Attempt(() => Resume(_checkpoint = _store.LoadRun())));
             _continue.name = "ContinueGame";
+            ActionButton(_title, "설정", new Vector2(0f, -85f), () => OpenSettings(false));
+            ActionButton(_title, "크레딧", new Vector2(0f, -170f), () =>
+            {
+                _title.gameObject.SetActive(false);
+                _creditsRoot.gameObject.SetActive(true);
+            });
+            ActionButton(_title, "종료", new Vector2(0f, -255f), () => Application.Quit());
             _status = Label(_title, "", 24);
-            _status.rectTransform.anchoredPosition = new Vector2(0f, -180f);
+            _status.rectTransform.anchoredPosition = new Vector2(0f, -350f);
             _status.raycastTarget = false;
 
             _replaceDialog = Stretch(_canvasGo.transform, "ReplaceRunDialog");
@@ -607,6 +757,8 @@ namespace DarkLegion.UI
             _replaceConfirm.name = "ConfirmReplaceRun";
             ActionButton(replacePanel, "취소", new Vector2(170f, -100f), CancelReplacement).name = "CancelReplaceRun";
             _replaceDialog.gameObject.SetActive(false);
+
+            BuildPauseMenus();
 
             var overlay = new GameObject("SaveErrorCanvas", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
             overlay.transform.SetParent(_canvasGo.transform, false);
@@ -623,6 +775,61 @@ namespace DarkLegion.UI
                 if (_retry != null) Attempt(_retry);
             });
             _errorRoot.gameObject.SetActive(false);
+        }
+
+        void BuildPauseMenus()
+        {
+            var pause = BuildMenu("Pause", 70, "일시정지", out _pauseRoot);
+            ActionButton(pause, "계속", new Vector2(0f, 90f), ResumePlay).name = "ResumeGame";
+            ActionButton(pause, "설정", new Vector2(0f, 0f), () => OpenSettings(true));
+            ActionButton(pause, "런 포기", new Vector2(0f, -90f), OpenForfeit).name = "OpenForfeit";
+            ActionButton(pause, "타이틀로", new Vector2(0f, -180f), ReturnToTitle).name = "PauseToTitle";
+
+            var settings = BuildMenu("Settings", 71, "화면 설정", out _settingsRoot);
+            _displayOptions = Label(settings, "", 24);
+            _displayOptions.rectTransform.anchoredPosition = new Vector2(0f, 125f);
+            ActionButton(settings, "화면 모드", new Vector2(-215f, 0f), () =>
+            {
+                _modeIndex = (_modeIndex + 1) % DisplayModes.Length;
+                ApplyDisplayOptions();
+            });
+            ActionButton(settings, "해상도", new Vector2(0f, 0f), () =>
+            {
+                _resolutionIndex = (_resolutionIndex + 1) % ResolutionWidths.Length;
+                ApplyDisplayOptions();
+            });
+            ActionButton(settings, "수직 동기화", new Vector2(215f, 0f), () =>
+            {
+                QualitySettings.vSyncCount = QualitySettings.vSyncCount == 0 ? 1 : 0;
+                UpdateDisplayOptions();
+            });
+            ActionButton(settings, "뒤로", new Vector2(0f, -180f), CloseSettings);
+
+            var credits = BuildMenu("Credits", 71, "크레딧", out _creditsRoot);
+            Label(credits, "다크 레기온 개발팀\n게임 엔진: Unity\n현재 UI 글꼴: 시스템 글꼴", 26);
+            ActionButton(credits, "뒤로", new Vector2(0f, -180f), CloseCredits);
+
+            var forfeit = BuildMenu("Forfeit", 71, "런을 포기할까요?", out _forfeitRoot);
+            Label(forfeit, "현재 런은 패배로 정산됩니다.", 25);
+            ActionButton(forfeit, "런 포기", new Vector2(-120f, -150f), ConfirmForfeit).name = "ConfirmForfeit";
+            ActionButton(forfeit, "취소", new Vector2(120f, -150f), CancelForfeit).name = "CancelForfeit";
+        }
+
+        RectTransform BuildMenu(string name, int order, string heading, out RectTransform root)
+        {
+            var layer = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
+            layer.transform.SetParent(_canvasGo.transform, false);
+            var canvas = layer.GetComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = order;
+            root = Stretch(layer.transform, name + "Root");
+            var backdrop = root.gameObject.AddComponent<Image>();
+            backdrop.color = new Color(0f, 0f, 0f, 0.8f);
+            var panel = Box(root, new Color(0.10f, 0.11f, 0.15f), 760f, 540f);
+            Place(panel, 0f, 0f);
+            Label(panel, heading, 36).rectTransform.anchoredPosition = new Vector2(0f, 210f);
+            root.gameObject.SetActive(false);
+            return panel;
         }
 
         RectTransform Box(Transform parent, Color color, float width, float height)

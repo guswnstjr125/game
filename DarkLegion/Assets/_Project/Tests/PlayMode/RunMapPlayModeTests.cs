@@ -98,6 +98,59 @@ namespace DarkLegion.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator PauseForfeit_CancelKeepsRunAndConfirmSettlesThenReturnsToTitle()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var id = Map.Run.RunId;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "OpenForfeit", "런 포기");
+            yield return Press(b => b.name == "CancelForfeit", "취소");
+            Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase);
+
+            yield return Press(b => b.name == "OpenForfeit", "런 포기");
+            yield return Press(b => b.name == "ConfirmForfeit", "런 포기 확인");
+            Assert.AreEqual(RunOutcome.Forfeit, Map.Run.Outcome);
+            Assert.AreEqual(id, store.LoadMeta().LastSettledRunId);
+            yield return Press(b => TextOf(b) == "타이틀로", "결과에서 타이틀로");
+            Assert.IsFalse(store.HasRunSlot);
+        }
+
+        [UnityTest]
+        public IEnumerator PauseFromMap_CanResumeOrReturnToTitleAndContinue()
+        {
+            var id = Map.Run.RunId;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "정지 중 맵 입력");
+            Assert.IsNull(GameObject.Find("BattleScreen"));
+            yield return Press(b => b.name == "ResumeGame", "계속");
+            Assert.AreEqual(id, Map.Run.RunId);
+
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "PauseToTitle", "타이틀로");
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.AreEqual(id, Map.Run.RunId);
+            Assert.AreEqual("F1-N1", Map.Run.CurrentNodeId);
+        }
+
+        [UnityTest]
+        public IEnumerator PauseFromBattle_ResumeKeepsBattleAndTitleKeepsEntrySave()
+        {
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "전투");
+            var battle = BattleView();
+            var seed = Map.Run.NodeSeed;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "ResumeGame", "계속");
+            Assert.AreSame(battle, BattleView());
+
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "PauseToTitle", "타이틀로");
+            Assert.IsNull(GameObject.Find("BattleScreen"));
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.NotNull(BattleView());
+            Assert.AreEqual(seed, Map.Run.NodeSeed);
+        }
+
+        [UnityTest]
         public IEnumerator NewGame_WithActiveSlot_CancelPreservesAndConfirmReplacesOnce()
         {
             var store = new SaveFileStore(_saveDirectory);
