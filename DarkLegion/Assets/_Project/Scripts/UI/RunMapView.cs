@@ -64,6 +64,7 @@ namespace DarkLegion.UI
         bool _settingsFromPause;
         int _resolutionIndex = 1;
         int _modeIndex;
+        // D-59: 640x360 canvas를 2, 3, 4, 6배로 표시한다.
         static readonly int[] ResolutionWidths = { 1280, 1920, 2560, 3840 };
         static readonly string[] DisplayModes = { "전체 화면", "창", "테두리 없는 창" };
 
@@ -124,8 +125,23 @@ namespace DarkLegion.UI
             var mode = _modeIndex == 0 ? FullScreenMode.ExclusiveFullScreen :
                 _modeIndex == 1 ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
             int width = ResolutionWidths[_resolutionIndex];
-            Screen.SetResolution(width, width * 9 / 16, mode);
+            var resolution = SelectSupportedResolution(width, Screen.currentResolution.width, Screen.currentResolution.height);
+            _resolutionIndex = Array.IndexOf(ResolutionWidths, resolution.x);
+            Screen.SetResolution(resolution.width, resolution.height, mode);
             UpdateDisplayOptions();
+        }
+
+        internal static Vector2Int SelectSupportedResolution(int requestedWidth, int monitorWidth, int monitorHeight)
+        {
+            int requestedIndex = Array.IndexOf(ResolutionWidths, requestedWidth);
+            if (requestedIndex < 0) requestedIndex = 1;
+            for (int i = requestedIndex; i >= 0; i--)
+            {
+                int width = ResolutionWidths[i];
+                int height = width * 9 / 16;
+                if (width <= monitorWidth && height <= monitorHeight) return new Vector2Int(width, height);
+            }
+            return new Vector2Int(ResolutionWidths[0], ResolutionWidths[0] * 9 / 16);
         }
 
         void CloseCredits()
@@ -695,6 +711,7 @@ namespace DarkLegion.UI
             var scaler = _canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             _canvasGo.AddComponent<GraphicRaycaster>();
             if (FindFirstObjectByType<EventSystem>() == null)
             {

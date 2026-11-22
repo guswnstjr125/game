@@ -150,6 +150,21 @@ namespace DarkLegion.Tests.PlayMode
             Assert.AreEqual(seed, Map.Run.NodeSeed);
         }
 
+        [Test]
+        public void DisplayResolution_UsesOnlyD59IntegerScaleAndFitsMonitor()
+        {
+            var type = Type.GetType("DarkLegion.UI.RunMapView, Assembly-CSharp");
+            Assert.NotNull(type);
+            var select = type.GetMethod("SelectSupportedResolution", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(select);
+            Assert.AreEqual(new Vector2Int(2560, 1440), select.Invoke(null, new object[] { 3840, 2560, 1440 }));
+            Assert.AreEqual(new Vector2Int(1920, 1080), select.Invoke(null, new object[] { 2560, 1920, 1080 }));
+            Assert.AreEqual(new Vector2Int(1280, 720), select.Invoke(null, new object[] { 1280, 1366, 768 }));
+            Assert.AreEqual(new Vector2Int(1280, 720), select.Invoke(null, new object[] { 1280, 1024, 768 }));
+            var scaler = GameObject.Find("MapCanvas").GetComponent<CanvasScaler>();
+            Assert.AreEqual(CanvasScaler.ScreenMatchMode.Expand, scaler.screenMatchMode);
+        }
+
         [UnityTest]
         public IEnumerator NewGame_WithActiveSlot_CancelPreservesAndConfirmReplacesOnce()
         {
