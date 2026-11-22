@@ -45,6 +45,8 @@ namespace DarkLegion.Core
         public bool DropNormal;
         public bool DropElite;
         public bool DropBoss;
+        /// <summary>`08` Cards_Upgrade 행이 있다 = 강화할 수 있는 카드 (D-75). 저주는 false.</summary>
+        public bool HasUpgrade;
         public Dictionary<string, double> Params = new Dictionary<string, double>();
         public Dictionary<string, double> UpParams = new Dictionary<string, double>();
 

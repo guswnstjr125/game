@@ -172,7 +172,33 @@ namespace DarkLegion.Core
         /// </summary>
         public static BattleContext Start(RunState run, GameDataLoadResult data)
         {
-            var ctx = new BattleContext(run.NodeSeed)
+            var ctx = NewContext(run, data);
+            var variants = data.Encounters.Variants(run.Floor, run.Node);
+            if (variants.Count == 0) throw new System.InvalidOperationException($"no encounter for {run.CurrentNodeId}");
+            var enc = variants.Count > 1 && ctx.Random.Chance(0.5) ? variants[1] : variants[0];
+            bool wave2 = enc.Waves.Count > 1 && ctx.Random.Chance(0.5);
+            AttachPlayer(run, data, ctx);
+            EncounterFactory.Spawn(ctx, enc, wave2, run.StageIndex);
+            return ctx;
+        }
+
+        /// <summary>
+        /// 영혼 감옥 강제 전투 (D-68): 그 층 노드 1 A/Wave 1 편성, 이벤트 위치의 스테이지 인덱스·노드 시드. 튜토리얼 없음.
+        /// 승리 뒤 RewardFlow.ForBattle(run, NodeKind.Battle, …)로 일반 전투 보상 1회 (D-75 보상 난수).
+        /// </summary>
+        public static BattleContext StartForced(RunState run, GameDataLoadResult data)
+        {
+            var ctx = NewContext(run, data);
+            var enc = data.Encounters.Variants(run.Floor, 1).FirstOrDefault(e => e.Variant == "A")
+                ?? throw new System.InvalidOperationException($"no F{run.Floor}-N1 A encounter");
+            AttachPlayer(run, data, ctx);
+            EncounterFactory.Spawn(ctx, enc, false, run.StageIndex);
+            return ctx;
+        }
+
+        private static BattleContext NewContext(RunState run, GameDataLoadResult data)
+        {
+            return new BattleContext(run.NodeSeed)
             {
                 Cards = data.Cards,
                 EnemyKits = data.EnemyKits,
@@ -180,11 +206,10 @@ namespace DarkLegion.Core
                 Fusion = data.Fusion,
                 FirstSacrificeBonus = run.Relics.Count(r => FirstSacrificeRelics.Contains(r))
             };
-            var variants = data.Encounters.Variants(run.Floor, run.Node);
-            if (variants.Count == 0) throw new System.InvalidOperationException($"no encounter for {run.CurrentNodeId}");
-            var enc = variants.Count > 1 && ctx.Random.Chance(0.5) ? variants[1] : variants[0];
-            bool wave2 = enc.Waves.Count > 1 && ctx.Random.Chance(0.5);
+        }
 
+        private static void AttachPlayer(RunState run, GameDataLoadResult data, BattleContext ctx)
+        {
             var cards = run.Deck.Select(c =>
             {
                 var rc = data.Cards.Get(c.CardId).CreateCard(c.InstanceId, c.Upgraded);
@@ -196,8 +221,6 @@ namespace DarkLegion.Core
                 CurrentHP = run.CurrentHp,
                 FusionCharge = run.FusionCharge
             };
-            EncounterFactory.Spawn(ctx, enc, wave2, run.StageIndex);
-            return ctx;
         }
 
         /// <summary>

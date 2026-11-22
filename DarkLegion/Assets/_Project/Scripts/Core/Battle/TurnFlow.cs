@@ -16,6 +16,12 @@ namespace DarkLegion.Core
             ctx.BeginTurn();
             ctx.Player.ResetCrystalForTurn();
             ctx.Player.Deck.Draw(RuntimeDeck.TurnStartDraw);
+            ctx.Queue.Process(); // 드로우 시 저주 (D-75)
+            if (ctx.Player.CurrentHP <= 0) // 피의 대가 HP 손실로 0이 되면 패배
+            {
+                ctx.EvaluateOutcome();
+                return;
+            }
             foreach (var a in ctx.Allies)
             {
                 a.Command = UnitCommand.Attack;

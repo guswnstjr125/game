@@ -84,12 +84,12 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
-        public void CurseRelicEvent_NotImplementedYet_AllMissing()
+        public void CursesEventsDone_RelicsNotYet()
         {
-            // 2-3(저주·이벤트)·2-4(유물)에서 구현하면 이 목록이 줄어든다. 그때 이 테스트를 "비어 있음"으로 바꾼다
-            CollectionAssert.AreEquivalent(Stage1Scope.Curses.ToArray(), HandlerRegistry.Missing(HandlerKind.Curse, Stage1Scope.Curses, Data).ToArray());
+            // 2-3에서 저주·이벤트 구현. 유물은 2-4에서 구현하면 이 목록이 비고, 그때 "비어 있음"으로 바꾼다
+            CollectionAssert.IsEmpty(HandlerRegistry.Missing(HandlerKind.Curse, Stage1Scope.Curses, Data));
+            CollectionAssert.IsEmpty(HandlerRegistry.Missing(HandlerKind.Event, Stage1Scope.Events, Data));
             CollectionAssert.AreEquivalent(Stage1Scope.Relics.ToArray(), HandlerRegistry.Missing(HandlerKind.Relic, Stage1Scope.Relics, Data).ToArray());
-            CollectionAssert.AreEquivalent(Stage1Scope.Events.ToArray(), HandlerRegistry.Missing(HandlerKind.Event, Stage1Scope.Events, Data).ToArray());
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace DarkLegion.Tests.EditMode
         {
             var r = HandlerRegistry.CheckStage1(Data);
             CollectionAssert.IsEmpty(r.MissingCards);
-            Assert.AreEqual(3 + 8 + 7, r.MissingPending.Count, "저주 3·유물 8·이벤트 7 — 구현 전");
+            Assert.AreEqual(8, r.MissingPending.Count, "유물 8종 — 2-4 구현 전");
             Assert.IsTrue(r.MissingPending.Contains("Relic:REL_BLOOD_CHALICE"));
             Assert.IsTrue(r.CardsOk);
         }

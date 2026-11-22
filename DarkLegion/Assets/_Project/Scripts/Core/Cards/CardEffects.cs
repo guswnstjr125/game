@@ -155,6 +155,13 @@ namespace DarkLegion.Core
                     }
                 }
             },
+            // ---- 저주 (`08` Curse_Cards, D-45·D-75) ----
+            ["CUR_003"] = new CardHandler
+            {
+                // 타락한 의지: 아군 몬스터 1마리 Weak 2턴. 아군이 없으면 쓸 수 없다. Exhaust
+                Target = CardTarget.SelectedAlly,
+                Enqueue = (c, p) => c.Queue.EnqueueMain(Fx("CorruptWill", x => p.Target.Statuses.Apply(StatusType.Weak, (int)p.P("Duration", 2), x)))
+            },
             ["NEU_MON_002"] = new CardHandler
             {
                 // 모방 슬라임: 옆 칸 아군 하나의 기본 HP/ATK/DEF로 바뀐다. 둘이면 대상으로 골라야 한다, 없으면 효과 없음 (D-61·D-70)
@@ -187,6 +194,32 @@ namespace DarkLegion.Core
         private static bool IsMonster(BattleContext c, RuntimeCard card) => c.Cards.Get(card.CardId)?.Type == CardType.Monster;
 
         private static EffectAction Fx(string label, System.Action<BattleContext> run) => new EffectAction(BattleActionType.Trigger, label, run);
+    }
+
+    /// <summary>
+    /// 드로우 시 저주 (`08` Curse_Cards Trigger OnDraw, D-75). 손패에 들어온 순간 Trigger 큐에 넣는다.
+    /// CUR_002: 플레이어 Burn Value1. CUR_004: HP 손실 Value1 — 피해가 아니라 Shield·DEF 무시, 0이면 패배.
+    /// </summary>
+    public static class CurseEffects
+    {
+        /// <summary>동작이 구현된 저주 (핸들러 검사, `38` §5). CUR_003은 사용 효과라 CardEffects에 있다.</summary>
+        public static readonly IReadOnlyList<string> Implemented = new[] { "CUR_002", "CUR_003", "CUR_004" };
+
+        public static void OnDrawn(BattleContext c, RuntimeCard card)
+        {
+            var def = c.Cards?.Get(card.CardId);
+            if (def == null || def.Type != CardType.Curse) return;
+            int value = (int)def.Param("Value1", false);
+            switch (card.CardId)
+            {
+                case "CUR_002":
+                    c.Queue.EnqueueTrigger(new EffectAction(BattleActionType.Trigger, "CurseBrand", x => x.Player.Statuses.Apply(StatusType.Burn, value, x)));
+                    break;
+                case "CUR_004":
+                    c.Queue.EnqueueTrigger(new EffectAction(BattleActionType.Trigger, "BloodPrice", x => x.Player.CurrentHP -= value));
+                    break;
+            }
+        }
     }
 
     /// <summary>

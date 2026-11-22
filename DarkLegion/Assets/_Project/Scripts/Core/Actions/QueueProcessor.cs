@@ -70,6 +70,8 @@ namespace DarkLegion.Core
                 FlushTrigger();
             }
             FlushDeath();
+            // Main 액션 없이 들어온 트리거 (턴 시작 드로우의 저주 등, D-75)
+            FlushTrigger();
         }
 
         private void FlushDeath()

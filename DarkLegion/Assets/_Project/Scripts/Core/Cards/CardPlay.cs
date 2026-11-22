@@ -12,7 +12,9 @@ namespace DarkLegion.Core
         NotEnoughCrystal,
         InvalidTarget,
         FieldFull,
-        NotImplemented
+        NotImplemented,
+        /// <summary>사용 효과가 없는 카드 (드로우 시 저주, D-75).</summary>
+        Unplayable
     }
 
     /// <summary>카드가 고르는 대상의 종류 (`10` §1 TargetRule).</summary>
@@ -73,7 +75,7 @@ namespace DarkLegion.Core
             if (play.Def.Type == CardType.Monster) return PlayMonster(ctx, play, cost);
 
             var handler = CardEffects.For(play.Def.Id);
-            if (handler == null) return PlayResult.NotImplemented;
+            if (handler == null) return play.Def.Type == CardType.Curse ? PlayResult.Unplayable : PlayResult.NotImplemented;
             if (!TargetOk(ctx, handler.Target, play.Target)) return PlayResult.InvalidTarget;
             if (handler.Validate != null && !handler.Validate(ctx, play)) return PlayResult.InvalidTarget;
 

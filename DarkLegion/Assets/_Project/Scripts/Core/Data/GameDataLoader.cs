@@ -66,6 +66,10 @@ namespace DarkLegion.Core
         public BossPatternCatalog BossPatterns { get; } = new BossPatternCatalog();
         /// <summary>`06` Reward_BattleTable·Reward_EliteRelic, `14` Boss_List 보스 유물 (D-16·D-35·D-75).</summary>
         public RewardTables Rewards { get; } = new RewardTables();
+        /// <summary>`06` Event_FloorPool 층별 이벤트 가중치 (D-23·D-69).</summary>
+        public EventPool Events { get; } = new EventPool();
+        /// <summary>`06` RestNode_Rules REST_HEAL HealPercent (D-69). 기본 0.3.</summary>
+        public double RestHealPercent { get; set; } = 0.3;
         /// <summary>`06` Encounters 편성 (층·노드·변형, D-61).</summary>
         public EncounterCatalog Encounters { get; } = new EncounterCatalog();
         public List<string> Errors { get; } = new List<string>();
@@ -111,6 +115,7 @@ namespace DarkLegion.Core
             LoadBosses(data, r);
             LoadEncounters(data, r);
             LoadRewards(data, r);
+            LoadEventsAndRest(data, r);
             return r;
         }
 
@@ -163,6 +168,7 @@ namespace DarkLegion.Core
                     r.Errors.Add($"Cards_Upgrade/{def.Id}: Up_Params format '{row.Str("Up_Params")}'");
                     continue;
                 }
+                def.HasUpgrade = true;
                 foreach (var kv in up)
                 {
                     if (kv.Key == "Cost") def.UpCost = (int)kv.Value;
@@ -198,6 +204,23 @@ namespace DarkLegion.Core
                     continue;
                 }
                 if (row.Str("Special").Contains("Soulbound")) def.Soulbound = true;
+            }
+
+            // 저주 (`08` Curse_Cards, D-45·D-75): 보상 풀·강화·융합 대상이 아니다
+            foreach (var row in data.Rows("Curse_Cards"))
+            {
+                string id = row.Str("Curse_ID");
+                if (defs.ContainsKey(id))
+                {
+                    r.Errors.Add($"Curse_Cards: duplicate ID {id}");
+                    continue;
+                }
+                string keyword = row.Str("Keyword");
+                var curse = new CardDefinition { Id = id, Type = CardType.Curse, Cost = row.Int("Cost"), Exhaust = keyword == "Exhaust", Ethereal = keyword == "Ethereal" };
+                curse.Params["Value1"] = row.Num("Value1");
+                if (row.Has("Duration")) curse.Params["Duration"] = row.Num("Duration");
+                defs[id] = curse;
+                r.Cards.Add(curse);
             }
 
             var seenValue = new HashSet<string>();
@@ -401,6 +424,28 @@ namespace DarkLegion.Core
                 if (checkRelics && id.Length > 0 && !relics.Contains(id)) r.Errors.Add($"Boss_List/{row.Str("Boss_ID")}: {id} not in Relics_MVP");
                 r.Rewards.SetBossRelic(row.Int("Floor"), id);
             }
+        }
+
+        // ---------- 이벤트 풀·휴식 (`06` Event_FloorPool·RestNode_Rules) ----------
+
+        private static void LoadEventsAndRest(GameData data, GameDataLoadResult r)
+        {
+            var sums = new double[6];
+            foreach (var row in data.Rows("Event_FloorPool"))
+            {
+                for (int f = 1; f <= 5; f++)
+                {
+                    double w = row.Num("Floor_" + f);
+                    sums[f] += w;
+                    if (w > 0) r.Events.Add(f, row.Str("Event_ID"), w);
+                }
+            }
+            for (int f = 1; f <= 5; f++)
+            {
+                if (data.Rows("Event_FloorPool").Count > 0 && System.Math.Abs(sums[f] - 1.0) > 1e-6) r.Errors.Add($"Event_FloorPool/Floor_{f}: sum {sums[f]} != 1");
+            }
+            var heal = data.Rows("RestNode_Rules").FirstOrDefault(x => x.Str("OptionID") == "REST_HEAL");
+            if (heal != null) r.RestHealPercent = heal.Num("HealPercent", 0.3);
         }
 
         // ---------- 전투 편성 (`06` Encounters, D-61) ----------
