@@ -130,7 +130,8 @@ namespace DarkLegion.UI
                     + "\nHP " + result.HpBefore + " → " + result.HpAfter + " / " + result.MaxHp;
             }
             _continue.gameObject.SetActive(result.CanContinue);
-            _restart.gameObject.SetActive(!result.CanContinue);
+            // 다시 시작은 패배 때만. 유물 선택 대기(승리)에서는 진행·재시작 모두 숨기고 안내만 보인다.
+            _restart.gameObject.SetActive(result.Battle == BattleOutcome.Defeat);
         }
 
         void OnContinue()
