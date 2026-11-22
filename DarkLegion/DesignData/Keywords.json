@@ -1,0 +1,131 @@
+{
+  "source": "08_카드_데이터베이스.xlsx/Keywords",
+  "rows": [
+    {
+      "Keyword_ID": "KW_EXHAUST",
+      "Term": "Exhaust",
+      "Name_KO": "소멸",
+      "Tooltip_KO": "사용하면 소멸 더미로 간다. 이번 전투에서 다시 나오지 않는다.",
+      "Note": "카드·몬스터·상태 아이콘의 툴팁 문구 (37 §2.1). 상태이상 8종의 규칙 정본은 12 Status_Master·11. D-58"
+    },
+    {
+      "Keyword_ID": "KW_ETHEREAL",
+      "Term": "Ethereal",
+      "Name_KO": "휘발",
+      "Tooltip_KO": "턴이 끝날 때 손패에 남아 있으면 소멸한다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_DEATHRATTLE",
+      "Term": "Deathrattle",
+      "Name_KO": "죽음의 메아리",
+      "Tooltip_KO": "이 몬스터가 죽을 때 효과가 발동한다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_SOULBOUND",
+      "Term": "Soulbound",
+      "Name_KO": "영혼 결속",
+      "Tooltip_KO": "이 몬스터는 희생할 수 없다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_EXECUTE",
+      "Term": "Execute",
+      "Name_KO": "처형",
+      "Tooltip_KO": "대상의 HP가 기준 비율 이하이면 즉시 처치한다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_IGNITE",
+      "Term": "Ignite",
+      "Name_KO": "폭발",
+      "Tooltip_KO": "대상의 Burn 스택만큼 즉시 피해를 주고 그 Burn을 없앤다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_FRENZY",
+      "Term": "Frenzy",
+      "Name_KO": "광폭화",
+      "Tooltip_KO": "피해를 받을 때마다 ATK가 늘어난다. 늘어나는 양과 상한은 몬스터마다 다르다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_TOKEN",
+      "Term": "Token",
+      "Name_KO": "토큰",
+      "Tooltip_KO": "카드 없이 소환된 임시 몬스터. 다음 Wave가 시작되면 사라진다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_SACRIFICE",
+      "Term": "Sacrifice",
+      "Name_KO": "희생",
+      "Tooltip_KO": "아군 몬스터를 없애고 Crystal을 얻는다. 그 몬스터의 카드는 버린 더미로 간다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "KW_FUSION",
+      "Term": "Fusion",
+      "Name_KO": "융합",
+      "Tooltip_KO": "손패의 같은 레벨 몬스터 카드 2장을 합쳐 더 높은 레벨의 몬스터 카드 1장을 만든다. 융합 충전 1과 Crystal을 쓴다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_BURN",
+      "Term": "Burn",
+      "Name_KO": "Burn",
+      "Tooltip_KO": "턴이 끝날 때 스택만큼 피해를 받고 스택이 1 줄어든다. 방어력을 무시한다. 최대 20.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_POISON",
+      "Term": "Poison",
+      "Name_KO": "Poison",
+      "Tooltip_KO": "턴이 끝날 때 스택만큼 피해를 받는다. 스택은 줄지 않는다. 방어력을 무시한다. 최대 20. 전투가 끝나면 사라진다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_WEAK",
+      "Term": "Weak",
+      "Name_KO": "Weak",
+      "Tooltip_KO": "이 유닛이 주는 공격 피해가 25% 줄어든다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_VULNERABLE",
+      "Term": "Vulnerable",
+      "Name_KO": "Vulnerable",
+      "Tooltip_KO": "이 유닛이 받는 공격 피해가 25% 늘어난다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_SHIELD",
+      "Term": "Shield",
+      "Name_KO": "Shield",
+      "Tooltip_KO": "피해를 대신 받는다. 턴이 끝나면 사라진다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_TAUNT",
+      "Term": "Taunt",
+      "Name_KO": "Taunt",
+      "Tooltip_KO": "적이 이 유닛을 먼저 노린다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_BIND",
+      "Term": "Bind",
+      "Name_KO": "Bind",
+      "Tooltip_KO": "공격과 스킬을 쓸 수 없다. 희생은 할 수 있다.",
+      "Note": null
+    },
+    {
+      "Keyword_ID": "STATUS_STUN",
+      "Term": "Stun",
+      "Name_KO": "Stun",
+      "Tooltip_KO": "행동할 수 없다.",
+      "Note": null
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Consumables",
+  "rows": [
+    {
+      "CON_ID": "CON_HP_SMALL",
+      "Name_KO": "작은 회복약",
+      "Effect": "HealPlayer",
+      "Value": 15,
+      "UseTiming": "Map",
+      "Price": 25,
+      "Text_KO": "HP를 15 회복한다. 최대 HP를 넘지 않는다.",
+      "Note": "25 §3"
+    },
+    {
+      "CON_ID": "CON_PURIFY",
+      "Name_KO": "정화의 물",
+      "Effect": "RemoveCurseCard",
+      "Value": 1,
+      "UseTiming": "Map",
+      "Price": 25,
+      "Text_KO": "덱의 저주 카드 1장을 골라 제거한다. 제거할 수 없는 저주는 고를 수 없다.",
+      "Note": "[D-62] 런 디버프가 MVP에 없어 저주 제거로 정함. Curse_Cards.Removable=N 제외"
+    }
+  ]
+}

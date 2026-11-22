@@ -1,0 +1,40 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Meta_Currency",
+  "rows": [
+    {
+      "Reward_ID": "META_F1_CLEAR",
+      "Condition": "ClearFloor1",
+      "META_SOUL": 40,
+      "META_SIGIL": 0,
+      "Note": "런 클리어 보상"
+    },
+    {
+      "Reward_ID": "META_F2_CLEAR",
+      "Condition": "ClearFloor2",
+      "META_SOUL": 55,
+      "META_SIGIL": 0,
+      "Note": null
+    },
+    {
+      "Reward_ID": "META_F3_CLEAR",
+      "Condition": "ClearFloor3",
+      "META_SOUL": 70,
+      "META_SIGIL": 1,
+      "Note": "Sigil+1"
+    },
+    {
+      "Reward_ID": "META_F4_CLEAR",
+      "Condition": "ClearFloor4",
+      "META_SOUL": 90,
+      "META_SIGIL": 1,
+      "Note": null
+    },
+    {
+      "Reward_ID": "META_F5_CLEAR",
+      "Condition": "ClearFloor5",
+      "META_SOUL": 120,
+      "META_SIGIL": 2,
+      "Note": null
+    }
+  ]
+}

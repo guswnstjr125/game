@@ -1,0 +1,89 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Meta_Achievement",
+  "rows": [
+    {
+      "Achievement_ID": "ACH_CLEAR_F1",
+      "Condition": "ClearFloor1",
+      "Soul_Reward": 30,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_CLEAR_F5",
+      "Condition": "ClearFloor5",
+      "Soul_Reward": 120,
+      "Sigil_Reward": 1,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_NO_DEATH_F2",
+      "Condition": "NoAllyDeathFloor2",
+      "Soul_Reward": 40,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_SACRIFICE_50",
+      "Condition": "SacrificeTotal50",
+      "Soul_Reward": 30,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_FUSION_30",
+      "Condition": "FusionTotal30",
+      "Soul_Reward": 30,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_EXECUTE_100",
+      "Condition": "ExecuteTotal100",
+      "Soul_Reward": 40,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_BURN_999",
+      "Condition": "BurnTotal999",
+      "Soul_Reward": 40,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_POISON_999",
+      "Condition": "PoisonTotal999",
+      "Soul_Reward": 40,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_BOSS_1TURN",
+      "Condition": "BossKillTurn1",
+      "Soul_Reward": 0,
+      "Sigil_Reward": 1,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_ZERO_COST_WIN",
+      "Condition": "WinMostlyZeroCost",
+      "Soul_Reward": 60,
+      "Sigil_Reward": 0,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_NO_RELIC_WIN",
+      "Condition": "WinNoRelic",
+      "Soul_Reward": 0,
+      "Sigil_Reward": 1,
+      "Note": null
+    },
+    {
+      "Achievement_ID": "ACH_ALL_CLASS_WIN",
+      "Condition": "WinAllClasses",
+      "Soul_Reward": 120,
+      "Sigil_Reward": 0,
+      "Note": null
+    }
+  ]
+}

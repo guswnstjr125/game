@@ -1,0 +1,21 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/RestNode_Rules",
+  "rows": [
+    {
+      "OptionID": "REST_HEAL",
+      "OptionType": "HP 회복",
+      "HealPercent": 0.3,
+      "FloorScaling": "전 층 동일",
+      "DisableCondition": "HP가 MaxHP 이상이면 비활성",
+      "Note": "03 §2"
+    },
+    {
+      "OptionID": "REST_UPGRADE",
+      "OptionType": "카드 강화",
+      "HealPercent": 0,
+      "FloorScaling": "전 층 동일",
+      "DisableCondition": "강화 가능한 카드 없으면 비활성",
+      "Note": "25 §2, D-31"
+    }
+  ]
+}

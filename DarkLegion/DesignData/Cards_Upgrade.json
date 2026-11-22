@@ -1,0 +1,985 @@
+{
+  "source": "08_카드_데이터베이스.xlsx/Cards_Upgrade",
+  "rows": [
+    {
+      "Card_ID": "NEC_MON_001",
+      "카드명": "뼈 병사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK3 DEF1",
+      "After": "HP12 ATK3 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=3;DEF=1"
+    },
+    {
+      "Card_ID": "NEC_MON_002",
+      "카드명": "굶주린 구울",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP14 ATK2 DEF0",
+      "After": "HP16 ATK2 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=16;ATK=2;DEF=0"
+    },
+    {
+      "Card_ID": "NEC_MON_003",
+      "카드명": "저주받은 해골",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP6 ATK5 DEF0",
+      "After": "HP6 ATK6 DEF0",
+      "Note": "ATK+1",
+      "Up_Params": "HP=6;ATK=6;DEF=0"
+    },
+    {
+      "Card_ID": "NEC_MON_004",
+      "카드명": "역병 쥐",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP6 ATK2 DEF4",
+      "After": "HP8 ATK2 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=8;ATK=2;DEF=4"
+    },
+    {
+      "Card_ID": "NEC_MON_005",
+      "카드명": "망령 전사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP5 ATK2 DEF4",
+      "After": "HP7 ATK2 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=7;ATK=2;DEF=4"
+    },
+    {
+      "Card_ID": "NEC_MON_006",
+      "카드명": "뼈 창병",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP5 ATK3 DEF3",
+      "After": "HP7 ATK3 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=7;ATK=3;DEF=3"
+    },
+    {
+      "Card_ID": "NEC_MON_007",
+      "카드명": "피의 사제",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP15 ATK4 DEF2",
+      "After": "HP17 ATK4 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=17;ATK=4;DEF=2"
+    },
+    {
+      "Card_ID": "NEC_MON_008",
+      "카드명": "뼈 골렘",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP20 ATK6 DEF2",
+      "After": "HP22 ATK6 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=22;ATK=6;DEF=2"
+    },
+    {
+      "Card_ID": "NEC_MON_009",
+      "카드명": "시체 포식자",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK6 DEF3",
+      "After": "HP12 ATK6 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=6;DEF=3"
+    },
+    {
+      "Card_ID": "NEC_MON_010",
+      "카드명": "부패한 기사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP12 ATK7 DEF0",
+      "After": "HP14 ATK7 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=14;ATK=7;DEF=0"
+    },
+    {
+      "Card_ID": "NEC_MON_011",
+      "카드명": "리치",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP22 ATK8 DEF2",
+      "After": "HP24 ATK8 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=24;ATK=8;DEF=2"
+    },
+    {
+      "Card_ID": "NEC_MON_012",
+      "카드명": "뼈의 군주",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP35 ATK6 DEF4",
+      "After": "HP37 ATK6 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=37;ATK=6;DEF=4"
+    },
+    {
+      "Card_ID": "NEC_SKL_001",
+      "카드명": "영혼 추출",
+      "Type": "Skill",
+      "Upgrade_Type": "Value+",
+      "Before": "Draw2",
+      "After": "Draw3",
+      "Note": "지정 아군 사망 시 Draw+1 (D-42)",
+      "Up_Params": "DeathThisTurnDraw=3"
+    },
+    {
+      "Card_ID": "NEC_SKL_002",
+      "카드명": "어둠의 방벽",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "NEC_SKL_003",
+      "카드명": "부패의 손길",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": null,
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "NEC_SKL_004",
+      "카드명": "묘지 도굴",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "NEC_ACT_001",
+      "카드명": "피의 의식",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "BonusCrystal1",
+      "After": "BonusCrystal2",
+      "Note": "D-20",
+      "Up_Params": "CrystalBonus=2"
+    },
+    {
+      "Card_ID": "NEC_ACT_002",
+      "카드명": "망자의 군대",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "해골 토큰 HP4 ×3",
+      "After": "해골 토큰 HP6 ×3",
+      "Note": "D-31",
+      "Up_Params": "TokenHp=6"
+    },
+    {
+      "Card_ID": "NEC_ACT_003",
+      "카드명": "죽음의 소용돌이",
+      "Type": "Action",
+      "Upgrade_Type": "Effect+",
+      "Before": "피해=합산HP",
+      "After": "피해=합산HP×1.2",
+      "Note": "계수 상향",
+      "Up_Params": "DamageMult=1.2"
+    },
+    {
+      "Card_ID": "NEC_ACT_004",
+      "카드명": "생명력 흡수",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "피해15 회복50%",
+      "After": "피해19 회복50%",
+      "Note": "D-31 피해+25%",
+      "Up_Params": "Damage=19"
+    },
+    {
+      "Card_ID": "ELE_MON_001",
+      "카드명": "불꽃 정령",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP8 ATK4 DEF0",
+      "After": "HP10 ATK4 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=10;ATK=4;DEF=0"
+    },
+    {
+      "Card_ID": "ELE_MON_002",
+      "카드명": "잿빛 도깨비",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP9 ATK3 DEF1",
+      "After": "HP11 ATK3 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=11;ATK=3;DEF=1"
+    },
+    {
+      "Card_ID": "ELE_MON_003",
+      "카드명": "용암 슬라임",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP12 ATK2 DEF2",
+      "After": "HP14 ATK2 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=14;ATK=2;DEF=2"
+    },
+    {
+      "Card_ID": "ELE_MON_004",
+      "카드명": "불꽃 박쥐",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP9 ATK4 DEF0",
+      "After": "HP11 ATK4 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=11;ATK=4;DEF=0"
+    },
+    {
+      "Card_ID": "ELE_MON_005",
+      "카드명": "재의 망령",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP7 ATK2 DEF3",
+      "After": "HP9 ATK2 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=9;ATK=2;DEF=3"
+    },
+    {
+      "Card_ID": "ELE_MON_006",
+      "카드명": "화염 도마뱀",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK2 DEF2",
+      "After": "HP12 ATK2 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=2;DEF=2"
+    },
+    {
+      "Card_ID": "ELE_MON_007",
+      "카드명": "흑요석 골렘",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP22 ATK4 DEF3",
+      "After": "HP24 ATK4 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=24;ATK=4;DEF=3"
+    },
+    {
+      "Card_ID": "ELE_MON_008",
+      "카드명": "화염술사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP14 ATK6 DEF1",
+      "After": "HP16 ATK6 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=16;ATK=6;DEF=1"
+    },
+    {
+      "Card_ID": "ELE_MON_009",
+      "카드명": "불의 정령",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP20 ATK5 DEF0",
+      "After": "HP22 ATK5 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=22;ATK=5;DEF=0"
+    },
+    {
+      "Card_ID": "ELE_MON_010",
+      "카드명": "연소하는 영혼",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK8 DEF0",
+      "After": "HP12 ATK8 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=8;DEF=0"
+    },
+    {
+      "Card_ID": "ELE_MON_011",
+      "카드명": "지옥불 드래곤",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP30 ATK10 DEF2",
+      "After": "HP32 ATK10 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=32;ATK=10;DEF=2"
+    },
+    {
+      "Card_ID": "ELE_MON_012",
+      "카드명": "용암 거수",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP40 ATK5 DEF4",
+      "After": "HP42 ATK5 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=42;ATK=5;DEF=4"
+    },
+    {
+      "Card_ID": "ELE_SKL_001",
+      "카드명": "점화",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "ELE_SKL_002",
+      "카드명": "화염 장벽",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "ELE_SKL_003",
+      "카드명": "열기 흡수",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "ELE_SKL_004",
+      "카드명": "폭발적 성장",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "ELE_ACT_001",
+      "카드명": "연쇄 폭발",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "피해8 처치 시 주변6",
+      "After": "피해10 처치 시 주변6",
+      "Note": "D-31 피해+25%",
+      "Up_Params": "Damage=10"
+    },
+    {
+      "Card_ID": "ELE_ACT_002",
+      "카드명": "운석 소환",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "광역5 Burn보너스2",
+      "After": "광역6 Burn보너스2",
+      "Note": "D-31 피해+25%",
+      "Up_Params": "Damage=6"
+    },
+    {
+      "Card_ID": "ELE_ACT_003",
+      "카드명": "화염 폭풍",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "전체 Burn3",
+      "After": "전체 Burn4",
+      "Note": "D-31 상태+1",
+      "Up_Params": "Burn=4"
+    },
+    {
+      "Card_ID": "ELE_ACT_004",
+      "카드명": "대화재",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "점화 후 Burn2 재부여",
+      "After": "점화 후 Burn3 재부여",
+      "Note": "D-31 상태+1",
+      "Up_Params": "IgniteAllBurnThenApplyBurn=3"
+    },
+    {
+      "Card_ID": "BEA_MON_001",
+      "카드명": "숲 늑대",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP11 ATK2 DEF1",
+      "After": "HP13 ATK2 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=13;ATK=2;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_002",
+      "카드명": "핏빛 박쥐",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP6 ATK4 DEF1",
+      "After": "HP8 ATK4 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=8;ATK=4;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_003",
+      "카드명": "사냥개",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP11 ATK3 DEF0",
+      "After": "HP13 ATK3 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=13;ATK=3;DEF=0"
+    },
+    {
+      "Card_ID": "BEA_MON_004",
+      "카드명": "거대 거미",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP12 ATK2 DEF1",
+      "After": "HP14 ATK2 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=14;ATK=2;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_005",
+      "카드명": "가시 멧돼지",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP15 ATK2 DEF1",
+      "After": "HP17 ATK2 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=17;ATK=2;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_006",
+      "카드명": "독뱀",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP7 ATK3 DEF1",
+      "After": "HP9 ATK3 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=9;ATK=3;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_007",
+      "카드명": "쌍두사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP16 ATK5 DEF1",
+      "After": "HP18 ATK5 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=18;ATK=5;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_008",
+      "카드명": "맹독 거미",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP18 ATK4 DEF2",
+      "After": "HP20 ATK4 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=20;ATK=4;DEF=2"
+    },
+    {
+      "Card_ID": "BEA_MON_009",
+      "카드명": "검치호",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP13 ATK8 DEF0",
+      "After": "HP15 ATK8 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=15;ATK=8;DEF=0"
+    },
+    {
+      "Card_ID": "BEA_MON_010",
+      "카드명": "뿔소",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP24 ATK4 DEF1",
+      "After": "HP26 ATK4 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=26;ATK=4;DEF=1"
+    },
+    {
+      "Card_ID": "BEA_MON_011",
+      "카드명": "숲의 군주",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP35 ATK6 DEF3",
+      "After": "HP37 ATK6 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=37;ATK=6;DEF=3"
+    },
+    {
+      "Card_ID": "BEA_MON_012",
+      "카드명": "베히모스",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP45 ATK5 DEF4",
+      "After": "HP47 ATK5 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=47;ATK=5;DEF=4"
+    },
+    {
+      "Card_ID": "BEA_SKL_001",
+      "카드명": "포효",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "BEA_SKL_002",
+      "카드명": "무리 사냥",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "BEA_SKL_003",
+      "카드명": "야성의 감각",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "BEA_SKL_004",
+      "카드명": "피의 굶주림",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "BEA_ACT_001",
+      "카드명": "물어뜯기",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "피해10 Vulnerable2",
+      "After": "피해13 Vulnerable2",
+      "Note": "D-31 피해+25%",
+      "Up_Params": "Damage=13"
+    },
+    {
+      "Card_ID": "BEA_ACT_002",
+      "카드명": "야수 돌진",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "BEA 추가 공격1",
+      "After": "BEA 추가 공격1 (피해+2)",
+      "Note": "D-31",
+      "Up_Params": "ExtraAttackDamage=2"
+    },
+    {
+      "Card_ID": "BEA_ACT_003",
+      "카드명": "광란",
+      "Type": "Action",
+      "Upgrade_Type": "Cost-",
+      "Before": "비용2",
+      "After": "비용1",
+      "Note": "D-31 공격 횟수 증가는 OTK 위험",
+      "Up_Params": "Cost=1"
+    },
+    {
+      "Card_ID": "BEA_ACT_004",
+      "카드명": "포식",
+      "Type": "Action",
+      "Upgrade_Type": "Cost-",
+      "Before": "비용3",
+      "After": "비용2",
+      "Note": "D-31 배율 상향은 OTK 위험",
+      "Up_Params": "Cost=2"
+    },
+    {
+      "Card_ID": "HOL_MON_001",
+      "카드명": "이단 심판관",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP12 ATK3 DEF1",
+      "After": "HP14 ATK3 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=14;ATK=3;DEF=1"
+    },
+    {
+      "Card_ID": "HOL_MON_002",
+      "카드명": "신성한 수도사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP8 ATK2 DEF3",
+      "After": "HP10 ATK2 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=10;ATK=2;DEF=3"
+    },
+    {
+      "Card_ID": "HOL_MON_003",
+      "카드명": "견습 사제",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP9 ATK1 DEF3",
+      "After": "HP11 ATK1 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=11;ATK=1;DEF=3"
+    },
+    {
+      "Card_ID": "HOL_MON_004",
+      "카드명": "철퇴병",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP13 ATK3 DEF0",
+      "After": "HP15 ATK3 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=15;ATK=3;DEF=0"
+    },
+    {
+      "Card_ID": "HOL_MON_005",
+      "카드명": "방패병",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP14 ATK1 DEF3",
+      "After": "HP16 ATK1 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=16;ATK=1;DEF=3"
+    },
+    {
+      "Card_ID": "HOL_MON_006",
+      "카드명": "성소 수호자",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP5 ATK1 DEF5",
+      "After": "HP7 ATK1 DEF5",
+      "Note": "HP+2",
+      "Up_Params": "HP=7;ATK=1;DEF=5"
+    },
+    {
+      "Card_ID": "HOL_MON_007",
+      "카드명": "고위 심판관",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP15 ATK6 DEF1",
+      "After": "HP17 ATK6 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=17;ATK=6;DEF=1"
+    },
+    {
+      "Card_ID": "HOL_MON_008",
+      "카드명": "축복받은 성기사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK6 DEF4",
+      "After": "HP12 ATK6 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=6;DEF=4"
+    },
+    {
+      "Card_ID": "HOL_MON_009",
+      "카드명": "구원자",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP16 ATK3 DEF4",
+      "After": "HP18 ATK3 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=18;ATK=3;DEF=4"
+    },
+    {
+      "Card_ID": "HOL_MON_010",
+      "카드명": "빛의 창병",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP16 ATK6 DEF1",
+      "After": "HP18 ATK6 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=18;ATK=6;DEF=1"
+    },
+    {
+      "Card_ID": "HOL_MON_011",
+      "카드명": "발키리",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP25 ATK8 DEF3",
+      "After": "HP27 ATK8 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=27;ATK=8;DEF=3"
+    },
+    {
+      "Card_ID": "HOL_MON_012",
+      "카드명": "대천사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP30 ATK6 DEF5",
+      "After": "HP32 ATK6 DEF5",
+      "Note": "HP+2",
+      "Up_Params": "HP=32;ATK=6;DEF=5"
+    },
+    {
+      "Card_ID": "HOL_SKL_001",
+      "카드명": "신성한 빛",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "HOL_SKL_002",
+      "카드명": "빛의 장막",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "HOL_SKL_003",
+      "카드명": "징벌의 십자가",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "HOL_SKL_004",
+      "카드명": "부활의 기도",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "HOL_ACT_001",
+      "카드명": "심판의 일격",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "피해12 처형35%",
+      "After": "피해15 처형35%",
+      "Note": "D-31 피해+25%",
+      "Up_Params": "Damage=15"
+    },
+    {
+      "Card_ID": "HOL_ACT_003",
+      "카드명": "성전 선포",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "ATK+4 처형+5%p",
+      "After": "ATK+6 처형+5%p",
+      "Note": "D-31 Watchlist 45% 유지",
+      "Up_Params": "AtkBuff=6"
+    },
+    {
+      "Card_ID": "HOL_ACT_004",
+      "카드명": "신의 가호",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "회복10",
+      "After": "회복13",
+      "Note": "D-31 회복+25%",
+      "Up_Params": "Heal=13"
+    },
+    {
+      "Card_ID": "NEU_MON_001",
+      "카드명": "수정 골렘 파편",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP5 ATK0 DEF0",
+      "After": "HP7 ATK0 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=7;ATK=0;DEF=0"
+    },
+    {
+      "Card_ID": "NEU_MON_002",
+      "카드명": "모방 슬라임",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP10 ATK2 DEF1",
+      "After": "HP12 ATK2 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=12;ATK=2;DEF=1"
+    },
+    {
+      "Card_ID": "NEU_MON_003",
+      "카드명": "떠돌이 용병",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP11 ATK4 DEF1",
+      "After": "HP13 ATK4 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=13;ATK=4;DEF=1"
+    },
+    {
+      "Card_ID": "NEU_MON_004",
+      "카드명": "보급 마차",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP15 ATK0 DEF2",
+      "After": "HP17 ATK0 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=17;ATK=0;DEF=2"
+    },
+    {
+      "Card_ID": "NEU_MON_005",
+      "카드명": "환영 분신",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP1 ATK8 DEF0",
+      "After": "HP3 ATK8 DEF0",
+      "Note": "HP+2",
+      "Up_Params": "HP=3;ATK=8;DEF=0"
+    },
+    {
+      "Card_ID": "NEU_MON_006",
+      "카드명": "기계 부품",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP9 ATK3 DEF2",
+      "After": "HP11 ATK3 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=11;ATK=3;DEF=2"
+    },
+    {
+      "Card_ID": "NEU_MON_007",
+      "카드명": "수정 골렘",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP25 ATK4 DEF4",
+      "After": "HP27 ATK4 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=27;ATK=4;DEF=4"
+    },
+    {
+      "Card_ID": "NEU_MON_008",
+      "카드명": "기계 장치",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP18 ATK6 DEF2",
+      "After": "HP20 ATK6 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=20;ATK=6;DEF=2"
+    },
+    {
+      "Card_ID": "NEU_SKL_001",
+      "카드명": "신속한 지휘",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "NEU_SKL_002",
+      "카드명": "재정비",
+      "Type": "Skill",
+      "Upgrade_Type": "Cost-",
+      "Before": "Crystal1",
+      "After": "Crystal0",
+      "Note": "Cost-1",
+      "Up_Params": "Cost=0"
+    },
+    {
+      "Card_ID": "NEU_ACT_001",
+      "카드명": "기회 포착",
+      "Type": "Action",
+      "Upgrade_Type": "Value+",
+      "Before": "드로우2 버리기1",
+      "After": "드로우3 버리기1",
+      "Note": "D-31",
+      "Up_Params": "Draw=3"
+    },
+    {
+      "Card_ID": "NEU_ACT_002",
+      "카드명": "연금술",
+      "Type": "Action",
+      "Upgrade_Type": "Cost-",
+      "Before": "비용2",
+      "After": "비용1",
+      "Note": "D-31 Crystal 배율 대신 비용",
+      "Up_Params": "Cost=1"
+    },
+    {
+      "Card_ID": "NEC_MON_013",
+      "카드명": "식인 구울",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP18 ATK5 DEF1",
+      "After": "HP20 ATK5 DEF1",
+      "Note": "HP+2",
+      "Up_Params": "HP=20;ATK=5;DEF=1"
+    },
+    {
+      "Card_ID": "NEC_MON_014",
+      "카드명": "저주 기사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP14 ATK6 DEF3",
+      "After": "HP14 ATK7 DEF3",
+      "Note": "ATK+1",
+      "Up_Params": "HP=14;ATK=7;DEF=3"
+    },
+    {
+      "Card_ID": "NEC_MON_015",
+      "카드명": "공포의 군주",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP28 ATK9 DEF3",
+      "After": "HP30 ATK9 DEF3",
+      "Note": "HP+2",
+      "Up_Params": "HP=30;ATK=9;DEF=3"
+    },
+    {
+      "Card_ID": "ELE_MON_013",
+      "카드명": "마그마 정령",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP18 ATK5 DEF2",
+      "After": "HP20 ATK5 DEF2",
+      "Note": "HP+2",
+      "Up_Params": "HP=20;ATK=5;DEF=2"
+    },
+    {
+      "Card_ID": "BEA_MON_013",
+      "카드명": "독니 늑대왕",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP17 ATK6 DEF1",
+      "After": "HP17 ATK7 DEF1",
+      "Note": "ATK+1",
+      "Up_Params": "HP=17;ATK=7;DEF=1"
+    },
+    {
+      "Card_ID": "HOL_MON_013",
+      "카드명": "성역 기사",
+      "Type": "Monster",
+      "Upgrade_Type": "Value+",
+      "Before": "HP18 ATK5 DEF4",
+      "After": "HP20 ATK5 DEF4",
+      "Note": "HP+2",
+      "Up_Params": "HP=20;ATK=5;DEF=4"
+    },
+    {
+      "Card_ID": "HOL_ACT_002",
+      "카드명": "최후의 심판",
+      "Type": "Action",
+      "Upgrade_Type": "Cost-",
+      "Before": "비용3",
+      "After": "비용2",
+      "Note": "D-31 처형 기준 상향 금지",
+      "Up_Params": "Cost=2"
+    }
+  ]
+}

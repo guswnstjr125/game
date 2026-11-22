@@ -1,0 +1,77 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Event_FloorPool",
+  "rows": [
+    {
+      "Event_ID": "EVT_DEVIL_PACT",
+      "Floor_1": 0.14,
+      "Floor_2": 0.14,
+      "Floor_3": 0.14,
+      "Floor_4": 0.14,
+      "Floor_5": 0.14,
+      "Note": "공통"
+    },
+    {
+      "Event_ID": "EVT_BLOOD_ALTAR",
+      "Floor_1": 0.14,
+      "Floor_2": 0.14,
+      "Floor_3": 0.14,
+      "Floor_4": 0.14,
+      "Floor_5": 0.14,
+      "Note": "공통"
+    },
+    {
+      "Event_ID": "EVT_CURSED_CHEST",
+      "Floor_1": 0.14,
+      "Floor_2": 0.14,
+      "Floor_3": 0.14,
+      "Floor_4": 0.14,
+      "Floor_5": 0.14,
+      "Note": "공통"
+    },
+    {
+      "Event_ID": "EVT_SOUL_PRISON",
+      "Floor_1": 0.14,
+      "Floor_2": 0.14,
+      "Floor_3": 0.14,
+      "Floor_4": 0.14,
+      "Floor_5": 0.14,
+      "Note": "공통"
+    },
+    {
+      "Event_ID": "EVT_WANDER_MERCHANT",
+      "Floor_1": 0.22,
+      "Floor_2": 0.0,
+      "Floor_3": 0.0,
+      "Floor_4": 0.22,
+      "Floor_5": 0.22,
+      "Note": "1·4·5층"
+    },
+    {
+      "Event_ID": "EVT_FORGOTTEN_SHRINE",
+      "Floor_1": 0.22,
+      "Floor_2": 0.22,
+      "Floor_3": 0.0,
+      "Floor_4": 0.0,
+      "Floor_5": 0.0,
+      "Note": "1·2층"
+    },
+    {
+      "Event_ID": "EVT_DARK_WAGER",
+      "Floor_1": 0.0,
+      "Floor_2": 0.22,
+      "Floor_3": 0.22,
+      "Floor_4": 0.0,
+      "Floor_5": 0.22,
+      "Note": "2·3·5층"
+    },
+    {
+      "Event_ID": "EVT_GRAVE_WHISPER",
+      "Floor_1": 0.0,
+      "Floor_2": 0.0,
+      "Floor_3": 0.22,
+      "Floor_4": 0.22,
+      "Floor_5": 0.0,
+      "Note": "3·4층"
+    }
+  ]
+}

@@ -46,7 +46,7 @@ namespace DarkLegion.Tests.EditMode
             Mon("NEU_MON_007", 2, 2, 25, 4, 4, 27, 4, 4, sac: 3, value: 1);
             Mon("NEU_MON_008", 2, 2, 18, 6, 2, 20, 6, 2, value: 1);
 
-            // 스킬·액션 12장: Cards_Effect Value, 강화는 Cards_Upgrade Up_Params
+            // 스킬·액션 12장: Cards_Effect Value1~3을 `38` §4.1 이름으로 (D-71), 강화는 Cards_Upgrade Up_Params
             Card("NEC_SKL_001", CardType.Skill, 0, false, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 2 }, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 3 });
             Card("NEC_SKL_002", CardType.Skill, 1, false, new Dictionary<string, double> { ["Shield"] = 3, ["FrontBonus"] = 2 }, upCost: 0);
             Card("NEC_SKL_003", CardType.Skill, 1, false, new Dictionary<string, double> { ["Poison"] = 3, ["Weak"] = 2 }, upCost: 0);
@@ -55,9 +55,9 @@ namespace DarkLegion.Tests.EditMode
             Card("NEU_SKL_002", CardType.Skill, 1, false, new Dictionary<string, double>(), upCost: 0);
             Card("NEC_ACT_001", CardType.Action, 1, true, new Dictionary<string, double> { ["CrystalBonus"] = 1 }, new Dictionary<string, double> { ["CrystalBonus"] = 2 });
             Card("NEC_ACT_002", CardType.Action, 2, true, new Dictionary<string, double> { ["Tokens"] = 3, ["TokenHp"] = 4, ["TokenAtk"] = 2 }, new Dictionary<string, double> { ["TokenHp"] = 6 });
-            Card("NEC_ACT_003", CardType.Action, 2, true, new Dictionary<string, double> { ["DamageMult"] = 1.0 }, new Dictionary<string, double> { ["DamageMult"] = 1.2 });
+            Card("NEC_ACT_003", CardType.Action, 2, true, new Dictionary<string, double>(), new Dictionary<string, double> { ["DamageMult"] = 1.2 }); // 기본 배율 1은 Value 칸이 아니다 (D-71)
             Card("NEC_ACT_004", CardType.Action, 3, true, new Dictionary<string, double> { ["Damage"] = 15, ["HealRatio"] = 0.5 }, new Dictionary<string, double> { ["Damage"] = 19 });
-            Card("NEU_ACT_001", CardType.Action, 0, false, new Dictionary<string, double> { ["Draw"] = 2 }, new Dictionary<string, double> { ["Draw"] = 3 }, ethereal: true);
+            Card("NEU_ACT_001", CardType.Action, 0, false, new Dictionary<string, double> { ["Draw"] = 2, ["Discard"] = 1 }, new Dictionary<string, double> { ["Draw"] = 3 }, ethereal: true);
             Card("NEU_ACT_002", CardType.Action, 2, true, new Dictionary<string, double> { ["Multiplier"] = 2 }, upCost: 1);
             return c;
         }

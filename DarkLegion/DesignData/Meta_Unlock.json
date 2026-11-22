@@ -1,0 +1,68 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Meta_Unlock",
+  "rows": [
+    {
+      "Unlock_ID": "UNL_CLASS_ELE",
+      "Category": "Class",
+      "Target": "ELE",
+      "Soul_Cost": 80,
+      "Sigil_Cost": 0,
+      "Condition": "None",
+      "Note": "기본 메뉴"
+    },
+    {
+      "Unlock_ID": "UNL_CLASS_BEA",
+      "Category": "Class",
+      "Target": "BEA",
+      "Soul_Cost": 120,
+      "Sigil_Cost": 0,
+      "Condition": "ClearFloor2Once",
+      "Note": "24 §2"
+    },
+    {
+      "Unlock_ID": "UNL_CLASS_HOL",
+      "Category": "Class",
+      "Target": "HOL",
+      "Soul_Cost": 150,
+      "Sigil_Cost": 0,
+      "Condition": "ClearFloor3Once",
+      "Note": null
+    },
+    {
+      "Unlock_ID": "UNL_CARD_RARE_T1",
+      "Category": "CardPool",
+      "Target": "Rare_Tier1",
+      "Soul_Cost": 100,
+      "Sigil_Cost": 0,
+      "Condition": "ClearFloor1_x3",
+      "Note": null
+    },
+    {
+      "Unlock_ID": "UNL_CARD_LEG",
+      "Category": "CardPool",
+      "Target": "Legendary",
+      "Soul_Cost": 220,
+      "Sigil_Cost": 2,
+      "Condition": "ClearFloor4",
+      "Note": null
+    },
+    {
+      "Unlock_ID": "UNL_RELIC_BOSS",
+      "Category": "RelicPool",
+      "Target": "Boss_Extended",
+      "Soul_Cost": 180,
+      "Sigil_Cost": 1,
+      "Condition": "ClearFloor3",
+      "Note": "Post-MVP: 보스 보상은 층마다 고정(D-16). 화면·판정에서 제외 (D-53)"
+    },
+    {
+      "Unlock_ID": "UNL_CLASS_NEU",
+      "Category": "Class",
+      "Target": "NEU",
+      "Soul_Cost": 150,
+      "Sigil_Cost": 0,
+      "Condition": "ClearFloor4Once",
+      "Note": "5클래스 업적 전제. D-12"
+    }
+  ]
+}
