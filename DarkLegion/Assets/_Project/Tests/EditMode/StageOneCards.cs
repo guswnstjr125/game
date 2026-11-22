@@ -13,27 +13,40 @@ namespace DarkLegion.Tests.EditMode
         public static CardCatalog Create()
         {
             var c = new CardCatalog();
-            void Mon(string id, int cost, int lv, int hp, int atk, int def, int upHp, int upAtk, int upDef, bool soulbound = false, int? sac = null)
-                => c.Add(new CardDefinition { Id = id, Type = CardType.Monster, Cost = cost, Level = lv, Hp = hp, Atk = atk, Def = def, UpHp = upHp, UpAtk = upAtk, UpDef = upDef, Soulbound = soulbound, SacrificeCrystal = sac });
+            void Mon(string id, int cost, int lv, int hp, int atk, int def, int upHp, int upAtk, int upDef, bool soulbound = false, int? sac = null, int? value = null)
+                => c.Add(new CardDefinition
+                {
+                    Id = id, Type = CardType.Monster, Cost = cost, Level = lv, Hp = hp, Atk = atk, Def = def, UpHp = upHp, UpAtk = upAtk, UpDef = upDef,
+                    Soulbound = soulbound, SacrificeCrystal = sac,
+                    Params = value.HasValue ? new Dictionary<string, double> { ["Value"] = value.Value } : new Dictionary<string, double>()
+                });
             void Card(string id, CardType type, int cost, bool exhaust, Dictionary<string, double> p, Dictionary<string, double> up = null, int? upCost = null, bool ethereal = false)
                 => c.Add(new CardDefinition { Id = id, Type = type, Cost = cost, Exhaust = exhaust, Ethereal = ethereal, Params = p, UpParams = up ?? new Dictionary<string, double>(), UpCost = upCost });
 
-            // 스탯: Cards_Master, 강화 스탯: Cards_Upgrade Up_Params (HP=..;ATK=..;DEF=..)
+            // 1단계 32장 (D-44). 몬스터 20장: 스탯은 Cards_Master, 강화 스탯은 Cards_Upgrade Up_Params (HP=..;ATK=..;DEF=..),
+            // value는 `09` Monster_Effects Value, sac은 OnSacrificed SacrificeCrystal (희생 Crystal 대체값)
             Mon("NEC_MON_001", 1, 1, 10, 3, 1, 12, 3, 1);
-            Mon("NEC_MON_002", 1, 1, 14, 2, 0, 16, 2, 0);
-            Mon("NEC_MON_003", 1, 1, 6, 5, 0, 6, 6, 0);
-            Mon("NEC_MON_005", 1, 1, 5, 2, 4, 7, 2, 4, soulbound: true);
-            Mon("NEC_MON_007", 2, 2, 15, 4, 2, 17, 4, 2);
-            Mon("NEU_MON_001", 0, 1, 5, 0, 0, 7, 0, 0, sac: 1);
-            Mon("NEU_MON_004", 1, 1, 15, 0, 2, 17, 0, 2, soulbound: true);
-            Mon("NEU_MON_008", 2, 2, 18, 6, 2, 20, 6, 2);
-            // 융합 재료·결과 (#43, D-26)
+            Mon("NEC_MON_002", 1, 1, 14, 2, 0, 16, 2, 0, value: 3);
+            Mon("NEC_MON_003", 1, 1, 6, 5, 0, 6, 6, 0, value: 1);
+            Mon("NEC_MON_004", 1, 1, 6, 2, 4, 8, 2, 4, value: 1);
+            Mon("NEC_MON_005", 1, 1, 5, 2, 4, 7, 2, 4, soulbound: true, value: 1);
             Mon("NEC_MON_006", 1, 1, 5, 3, 3, 7, 3, 3);
-            Mon("NEC_MON_013", 2, 2, 18, 5, 1, 20, 5, 1);
-            Mon("NEC_MON_014", 2, 2, 14, 6, 3, 14, 7, 3);
+            Mon("NEC_MON_007", 2, 2, 15, 4, 2, 17, 4, 2, value: 2);
+            Mon("NEC_MON_008", 2, 2, 20, 6, 2, 22, 6, 2);
+            Mon("NEC_MON_009", 2, 2, 10, 6, 3, 12, 6, 3, value: 1);
+            Mon("NEC_MON_010", 2, 2, 12, 7, 0, 14, 7, 0, value: 1);
+            Mon("NEC_MON_013", 2, 2, 18, 5, 1, 20, 5, 1, value: 2);
+            Mon("NEC_MON_014", 2, 2, 14, 6, 3, 14, 7, 3, value: 1);
+            Mon("NEU_MON_001", 0, 1, 5, 0, 0, 7, 0, 0, sac: 1);
+            Mon("NEU_MON_002", 1, 1, 10, 2, 1, 12, 2, 1);
+            Mon("NEU_MON_003", 1, 1, 11, 4, 1, 13, 4, 1);
+            Mon("NEU_MON_004", 1, 1, 15, 0, 2, 17, 0, 2, soulbound: true, value: 1);
+            Mon("NEU_MON_005", 1, 1, 1, 8, 0, 3, 8, 0);
             Mon("NEU_MON_006", 1, 1, 9, 3, 2, 11, 3, 2);
-            Mon("NEU_MON_007", 2, 2, 25, 4, 4, 27, 4, 4);
+            Mon("NEU_MON_007", 2, 2, 25, 4, 4, 27, 4, 4, sac: 3, value: 1);
+            Mon("NEU_MON_008", 2, 2, 18, 6, 2, 20, 6, 2, value: 1);
 
+            // 스킬·액션 12장: Cards_Effect Value, 강화는 Cards_Upgrade Up_Params
             Card("NEC_SKL_001", CardType.Skill, 0, false, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 2 }, new Dictionary<string, double> { ["DeathThisTurnDraw"] = 3 });
             Card("NEC_SKL_002", CardType.Skill, 1, false, new Dictionary<string, double> { ["Shield"] = 3, ["FrontBonus"] = 2 }, upCost: 0);
             Card("NEC_SKL_003", CardType.Skill, 1, false, new Dictionary<string, double> { ["Poison"] = 3, ["Weak"] = 2 }, upCost: 0);

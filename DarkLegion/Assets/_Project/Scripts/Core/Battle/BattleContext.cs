@@ -329,7 +329,11 @@ namespace DarkLegion.Core
         {
             foreach (var a in Allies) a.Statuses.ClearAll();
             foreach (var e in Enemies) e.Statuses.ClearAll();
-            if (Player != null) Player.Statuses.ClearAll();
+            if (Player != null)
+            {
+                Player.Statuses.ClearAll();
+                Player.NextTurnCrystal = 0; // 다음 턴 Crystal은 전투 안에서만 (D-70)
+            }
         }
 
         /// <summary>

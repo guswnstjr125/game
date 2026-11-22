@@ -51,6 +51,12 @@ namespace DarkLegion.Core
         private readonly Dictionary<(string, string), (string recipe, string result)> _fixed = new Dictionary<(string, string), (string, string)>();
         private readonly Dictionary<(string, int), List<(string card, int weight)>> _pools = new Dictionary<(string, int), List<(string, int)>>();
         private readonly Dictionary<(string, int), List<string>> _commons = new Dictionary<(string, int), List<string>>();
+        private readonly HashSet<string> _classMimics = new HashSet<string>();
+
+        /// <summary>융합 때 상대 재료의 클래스로 취급하는 카드 (`09` Monster_Effects FusionAsClass, 모방 슬라임, D-70).</summary>
+        public void AddClassMimic(string cardId) => _classMimics.Add(cardId);
+
+        public bool IsClassMimic(string cardId) => cardId != null && _classMimics.Contains(cardId);
 
         public void AddFixed(string recipeId, string cardA, string cardB, string resultCard)
         {
@@ -158,7 +164,7 @@ namespace DarkLegion.Core
             if (catalog.TryGetFixed(cardA, cardB, out recipeId, out var fixedResult)) return fixedResult;
             recipeId = null;
 
-            string ca = ClassOf(cardA), cb = ClassOf(cardB);
+            var (ca, cb) = MaterialClasses(catalog, cardA, cardB);
             IReadOnlyList<(string card, int weight)> pool;
             if (ca == cb) pool = catalog.Pool(ca, level);
             else if (ca == "NEU" || cb == "NEU") pool = catalog.Pool((ca == "NEU" ? cb : ca) + "+NEU", level);
@@ -182,11 +188,24 @@ namespace DarkLegion.Core
             return commons.Count > 0 ? commons[random.Next(0, commons.Count)] : null;
         }
 
+        /// <summary>
+        /// 랜덤 판정에 쓰는 재료 클래스. 모방 슬라임처럼 클래스를 따라가는 카드는 상대 재료의 클래스로 본다 (D-70).
+        /// 둘 다 그런 카드면 원래 클래스(NEU) 그대로. 고정 레시피는 이 함수 전에 카드 ID로 찾는다.
+        /// </summary>
+        public static (string a, string b) MaterialClasses(FusionCatalog catalog, string cardA, string cardB)
+        {
+            string ca = ClassOf(cardA), cb = ClassOf(cardB);
+            bool ma = catalog.IsClassMimic(cardA), mb = catalog.IsClassMimic(cardB);
+            if (ma && !mb) ca = cb;
+            else if (mb && !ma) cb = ca;
+            return (ca, cb);
+        }
+
         private static bool HasAnyResult(FusionCatalog catalog, string a, string b, int level)
         {
             if (catalog == null) return false;
             if (catalog.TryGetFixed(a, b, out _, out _)) return true;
-            string ca = ClassOf(a), cb = ClassOf(b);
+            var (ca, cb) = MaterialClasses(catalog, a, b);
             if (catalog.Commons(ca, level + 1).Count > 0) return true;
             if (ca == cb) return catalog.Pool(ca, level).Count > 0;
             if (ca == "NEU" || cb == "NEU") return catalog.Pool((ca == "NEU" ? cb : ca) + "+NEU", level).Count > 0;
