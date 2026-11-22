@@ -53,7 +53,8 @@ namespace DarkLegion.Tests.EditMode
         {
             var r = Loaded();
             Assert.IsEmpty(r.Errors, string.Join("\n", r.Errors));
-            Assert.AreEqual(98, r.Cards.Ids.Count(), "Cards_Master 98행 전부 (1단계에도 모든 행, `38` §3)");
+            Assert.AreEqual(98, r.Cards.Ids.Count(id => r.Cards.Get(id).Type != CardType.Curse), "Cards_Master 98행 전부 (1단계에도 모든 행, `38` §3)");
+            Assert.AreEqual(5, r.Cards.Ids.Count(id => r.Cards.Get(id).Type == CardType.Curse), "Curse_Cards 5행 (D-75)");
         }
 
         [TestCaseSource(nameof(Stage1Cards))]

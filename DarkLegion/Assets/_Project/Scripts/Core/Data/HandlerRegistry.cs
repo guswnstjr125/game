@@ -65,9 +65,9 @@ namespace DarkLegion.Core
 
         private static readonly Dictionary<HandlerKind, HashSet<string>> Registered = new Dictionary<HandlerKind, HashSet<string>>
         {
-            [HandlerKind.Curse] = new HashSet<string>(),
+            [HandlerKind.Curse] = new HashSet<string>(CurseEffects.Implemented),
             [HandlerKind.Relic] = new HashSet<string>(),
-            [HandlerKind.Event] = new HashSet<string>(),
+            [HandlerKind.Event] = new HashSet<string>(EventFlow.Implemented),
         };
 
         /// <summary>저주·유물·이벤트 핸들러를 구현한 코드가 자기 ID를 등록한다.</summary>

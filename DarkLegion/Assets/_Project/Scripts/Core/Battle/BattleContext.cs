@@ -35,7 +35,21 @@ namespace DarkLegion.Core
         /// <summary>현재 턴 (1부터). <see cref="BeginTurn"/>마다 1 증가.</summary>
         public int Turn { get; private set; }
 
-        public RuntimePlayer Player { get; set; }
+        private RuntimePlayer _player;
+
+        /// <summary>플레이어. 넣을 때 덱의 드로우 알림을 구독한다 (드로우 시 저주, D-75).</summary>
+        public RuntimePlayer Player
+        {
+            get => _player;
+            set
+            {
+                if (_player != null) _player.Deck.DrawnToHand -= OnCardDrawn;
+                _player = value;
+                if (_player?.Deck != null) _player.Deck.DrawnToHand += OnCardDrawn;
+            }
+        }
+
+        private void OnCardDrawn(RuntimeCard card) => CurseEffects.OnDrawn(this, card);
         public BattleField Field { get; } = new BattleField();
         public TriggerBus Triggers { get; } = new TriggerBus();
         /// <summary>카드 정의 (임포터가 채운다). 없으면 카드를 쓸 수 없다.</summary>

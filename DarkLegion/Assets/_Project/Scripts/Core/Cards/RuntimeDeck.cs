@@ -95,10 +95,17 @@ namespace DarkLegion.Core
                 }
                 var card = _draw[_draw.Count - 1];
                 _draw.RemoveAt(_draw.Count - 1);
-                if (AddToHand(card)) drawn.Add(card);
+                if (AddToHand(card))
+                {
+                    drawn.Add(card);
+                    DrawnToHand?.Invoke(card);
+                }
             }
             return drawn;
         }
+
+        /// <summary>드로우로 손패에 들어온 카드 (드로우 시 저주, D-75). 손패 10장이라 버린 더미로 간 카드는 알리지 않는다.</summary>
+        public event System.Action<RuntimeCard> DrawnToHand;
 
         /// <summary>손패로 카드를 넣는다 (드로우·융합 결과 등). 10장이면 버린 더미로 (D-30). 넣었으면 true.</summary>
         public bool AddToHand(RuntimeCard card)
