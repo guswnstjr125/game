@@ -129,10 +129,7 @@ namespace DarkLegion.Core
         public static string Enter(RunState run, GameDataLoadResult data)
         {
             if (run.NodeEventIds.TryGetValue(run.CurrentNodeId, out var saved)) return saved;
-            var pool = data.Events.Floor(run.Floor);
-            var seen = new HashSet<string>(run.NodeEventIds.Values);
-            var cands = pool.Where(e => !seen.Contains(e.id)).ToList();
-            if (cands.Count == 0) cands = pool.ToList();
+            var cands = Weighted(run, data);
             if (cands.Count == 0) throw new System.InvalidOperationException($"no events for floor {run.Floor}");
             double x = new BattleRandom(run.NodeSeed).NextFloat() * cands.Sum(e => e.weight);
             string pick = cands[cands.Count - 1].id;
@@ -147,6 +144,25 @@ namespace DarkLegion.Core
             }
             run.NodeEventIds[run.CurrentNodeId] = pick;
             return pick;
+        }
+
+        /// <summary>
+        /// 이 노드에서 나올 수 있는 이벤트와 확률 (D-69): 그 층 풀에서 이번 런에 나온 이벤트(현재 노드 제외)를 빼고 재정규화. 후보가 없으면 풀 전체.
+        /// 예: 1층 노드 3이 악마 계약이면 노드 6은 14/86 × 3, 22/86 × 2 (EVT-03).
+        /// </summary>
+        public static List<(string id, double probability)> Candidates(RunState run, GameDataLoadResult data)
+        {
+            var cands = Weighted(run, data);
+            double total = cands.Sum(e => e.weight);
+            return cands.Select(e => (e.id, e.weight / total)).ToList();
+        }
+
+        private static List<(string id, double weight)> Weighted(RunState run, GameDataLoadResult data)
+        {
+            var pool = data.Events.Floor(run.Floor);
+            var seen = new HashSet<string>(run.NodeEventIds.Where(kv => kv.Key != run.CurrentNodeId).Select(kv => kv.Value));
+            var cands = pool.Where(e => !seen.Contains(e.id)).ToList();
+            return cands.Count > 0 ? cands : pool.ToList();
         }
 
         /// <summary>이벤트 안 추첨용 난수: 노드 시드 난수에서 첫 값(이벤트 결정)을 버린 것 (D-69).</summary>
