@@ -115,7 +115,8 @@ public class MapSaveDTO
 {
     public string CurrentNodeId;
     public List<string> VisitedNodeIds;
-    public List<MapEdgeDTO> Edges;   // 간선 직렬화
+    public Dictionary<string, string> NodeEventIds; // 이벤트 노드 ID → 나온 이벤트 ID (`24` §2.9, `01` D-69)
+    // 분기 맵 간선(Edges)은 Post-MVP (`01` D-11). MVP는 층당 9노드 단일 경로라 저장하지 않는다
 }
 ```
 
