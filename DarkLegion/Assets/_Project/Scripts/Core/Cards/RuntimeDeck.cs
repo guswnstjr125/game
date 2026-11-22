@@ -160,6 +160,16 @@ namespace DarkLegion.Core
             if (card.Zone == CardZone.Hand) Move(card, CardZone.Destroyed);
         }
 
+        /// <summary>카드를 뽑을 더미 맨 위에 놓는다 (다음 드로우부터 이 카드들). 안내 전투 고정 손패 (D-76).</summary>
+        public void PlaceOnTop(IEnumerable<RuntimeCard> cards)
+        {
+            foreach (var c in cards)
+            {
+                c.Zone = CardZone.DrawPile;
+                _draw.Add(c);
+            }
+        }
+
         /// <summary>새 카드 ID의 하한: 런의 NextCardInstanceId. 런에서 빠진 카드의 ID를 다시 쓰지 않게 한다 (`14` §2, D-73).</summary>
         public int MinNextInstanceId { get; set; } = 1;
 

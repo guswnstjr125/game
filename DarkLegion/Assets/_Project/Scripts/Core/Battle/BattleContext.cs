@@ -51,6 +51,9 @@ namespace DarkLegion.Core
 
         private void OnCardDrawn(RuntimeCard card) => CurseEffects.OnDrawn(this, card);
 
+        /// <summary>1층 노드 1 희생 안내 전투 (D-32). 화면이 안내 3단계를 띄울지 판단한다 (#46).</summary>
+        public bool IsTutorial { get; set; }
+
         /// <summary>이 전투의 유물 (런에서 가져온다, `24` §1). 동작은 RelicEffects.Attach가 붙인다.</summary>
         public System.Collections.Generic.List<string> Relics { get; } = new System.Collections.Generic.List<string>();
 
