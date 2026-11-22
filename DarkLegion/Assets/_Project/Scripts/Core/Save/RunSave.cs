@@ -252,7 +252,7 @@ namespace DarkLegion.Core
                 RunId = Str(root, "RunId"),
                 TutorialEnabled = Bool(root, "TutorialEnabled"),
                 TutorialCompleted = Bool(root, "TutorialCompleted"),
-                Phase = Enum.Parse<RunSavePhase>(Str(root, "Phase")),
+                Phase = (RunSavePhase)Enum.Parse(typeof(RunSavePhase), Str(root, "Phase")),
                 Player = Player(Obj(root, "Player")),
                 Deck = Deck(Arr(root, "Deck")),
                 NextCardInstanceId = Int(root, "NextCardInstanceId"),
