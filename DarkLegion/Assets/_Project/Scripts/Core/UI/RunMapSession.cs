@@ -48,15 +48,21 @@ namespace DarkLegion.Core
         public int MaxHp;
         /// <summary>승리 보상 골드 (`RewardFlow`, D-75). 패배면 0.</summary>
         public int RewardGold;
-        /// <summary>엘리트 보상은 유물을 골라야 확정된다. 그 화면이 없어 이 결과에서는 계속할 수 없다.</summary>
-        public bool NeedsRelicChoice;
-        public bool CanContinue;
+        /// <summary>카드 3택1 후보 (건너뛰기는 선택 없이 확정, D-37). 패배면 비어 있다.</summary>
+        public string[] CardChoices = new string[0];
+        /// <summary>엘리트 유물 후보. 하나를 골라야 확정된다.</summary>
+        public string[] RelicChoices = new string[0];
+        /// <summary>보스 유물 (자동 지급, D-16). 없으면 null.</summary>
+        public string AutoRelic;
+        public bool NeedsRelicChoice => RelicChoices.Length > 0;
+        /// <summary>승리했고 아직 확정하지 않았다. 패배·이미 확정이면 false.</summary>
+        public bool CanConfirm;
     }
 
     /// <summary>
-    /// 18노드 맵 → 전투 → 결과 → 맵 (`37` §1·§2, D-37·D-66·D-67). 규칙은 <see cref="RunFlow"/>·<see cref="RunBattle"/>·
-    /// <see cref="RewardFlow"/>를 그대로 부른다. 이 화면에는 카드·유물 선택 UI가 없어, 승리하면 보상 골드만 받고
-    /// 카드는 건너뛴다 (D-37 건너뛰기). 이벤트·휴식·상점 노드는 화면이 생길 때까지 들어갈 수 없다.
+    /// 18노드 맵 → 전투 → 결과·보상 선택 → 맵 (`37` §1·§2, D-37·D-66·D-67). 규칙은 <see cref="RunFlow"/>·<see cref="RunBattle"/>·
+    /// <see cref="RewardFlow"/>를 그대로 부른다. 승리하면 보상 후보를 보여 주고, <see cref="ConfirmReward"/>가 마지막 확인(D-67)과
+    /// 노드 완료를 한 번만 한다. 이벤트·휴식·상점 노드는 화면이 생길 때까지 들어갈 수 없다.
     /// </summary>
     public sealed class RunMapSession
     {
@@ -187,22 +193,24 @@ namespace DarkLegion.Core
             {
                 _reward = _reward ?? RewardFlow.ForBattle(Run, _activeKind, _data);
                 view.RewardGold = _reward.Gold;
-                view.NeedsRelicChoice = _reward.RelicChoices.Count > 0;
-                view.CanContinue = !view.NeedsRelicChoice && !_reward.Confirmed;
+                view.CardChoices = _reward.CardChoices.ToArray();
+                view.RelicChoices = _reward.RelicChoices.ToArray();
+                view.AutoRelic = string.IsNullOrEmpty(_reward.AutoRelic) ? null : _reward.AutoRelic;
+                view.CanConfirm = !_reward.Confirmed;
             }
             return view;
         }
 
         /// <summary>
-        /// 결과 화면의 "맵으로". 승리면 골드를 받고 카드는 건너뛰어(D-37) 보상을 확정한 뒤 노드를 완료한다 (D-67).
-        /// 패배이거나 유물 선택이 필요하거나 이미 처리했으면 아무것도 바꾸지 않고 false.
+        /// 보상 선택 확정 (D-67). cardIndex null = 카드 건너뛰기(D-37), 엘리트는 relicIndex가 필요하다.
+        /// 성공하면 골드·카드·유물을 한 번만 받고 노드를 완료한다. 패배·입력 오류·이미 확정이면 아무것도 바꾸지 않고 false.
         /// </summary>
-        public bool Continue()
+        public bool ConfirmReward(int? cardIndex, int? relicIndex)
         {
             if (_active == null) return false;
             var view = Result();
-            if (!view.CanContinue) return false;
-            if (!RewardFlow.Confirm(Run, _reward, null, null)) return false;
+            if (!view.CanConfirm) return false;
+            if (!RewardFlow.Confirm(Run, _reward, cardIndex, relicIndex)) return false;
             RunFlow.CompleteNode(Run);
             _active = null;
             return true;

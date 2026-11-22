@@ -117,22 +117,50 @@ namespace DarkLegion.Tests.PlayMode
             StringAssert.Contains("승리", AllText());
             StringAssert.Contains("F1-N1 전투", AllText());
             StringAssert.Contains("HP 80 → 80 / 80", AllText());
-            Assert.AreEqual(1, Map.Capture().Node, "맵으로 가기 전에는 노드가 그대로");
-            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "맵으로"), "일반 승리는 맵으로 버튼");
+            Assert.AreEqual(1, Map.Capture().Node, "확정하기 전에는 노드가 그대로");
             Assert.IsFalse(Buttons.Any(b => TextOf(b) == "다시 시작"), "일반 승리에는 다시 시작이 없습니다");
+            var result = Map.Result();
+            Assert.AreEqual(3, result.CardChoices.Length);
+            foreach (var id in result.CardChoices)
+                Assert.IsTrue(Buttons.Any(b => TextOf(b).Contains(id)), id + " 카드 후보 버튼");
+            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "카드 건너뛰고 확정"), "고르지 않으면 건너뛰기로 확정");
 
-            yield return Press(b => TextOf(b) == "맵으로", "맵으로");
+            // 두 번째 후보를 고르면 확정 버튼이 그 카드 이름으로 바뀐다
+            yield return Press(b => TextOf(b).Contains(result.CardChoices[1]), "두 번째 카드 후보");
+            Assert.IsTrue(Buttons.Any(b => TextOf(b).StartsWith("확정: ")));
+            Assert.AreEqual(1, Map.Capture().Node, "고르기만 해서는 확정되지 않습니다");
+            Assert.AreEqual(0, Map.Capture().Gold);
+
+            yield return Press(b => TextOf(b).StartsWith("확정: "), "확정");
             var snap = Map.Capture();
             Assert.AreEqual(2, snap.Node);
+            Assert.AreEqual(11, snap.DeckCount, "고른 카드가 덱에 들어갑니다");
+            Assert.AreEqual(result.CardChoices[1], Map.Run.Deck.Last().CardId);
+            Assert.AreEqual(result.RewardGold, snap.Gold);
+            Assert.IsFalse(Buttons.Any(b => TextOf(b).StartsWith("확정")), "확정한 뒤 보상 화면은 닫힙니다");
             Assert.AreEqual(MapNodeState.Visited, snap.Nodes[0].State);
             StringAssert.Contains("F1-N1\n전투\n완료", Buttons.First(b => TextOf(b).StartsWith("F1-N1")).GetComponentInChildren<Text>().text);
             StringAssert.Contains("F1-N2 전투: 노드를 눌러", AllText());
         }
 
         [UnityTest]
-        public IEnumerator EliteVictory_WaitingRelicChoice_HidesContinueAndRestart()
+        public IEnumerator Victory_SkipCard_TakesGoldOnly()
         {
-            // F1-N5 엘리트를 현재 노드로 만들고 맵을 다시 그린다 (유물 선택 화면은 이번 범위 밖)
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1");
+            yield return EndBattle(BattleOutcome.Victory);
+            yield return Press(b => TextOf(b) == "결과 보기", "결과 보기");
+            var gold = Map.Result().RewardGold;
+
+            yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", "건너뛰기 확정");
+            Assert.AreEqual(2, Map.Capture().Node);
+            Assert.AreEqual(10, Map.Capture().DeckCount);
+            Assert.AreEqual(gold, Map.Capture().Gold);
+        }
+
+        [UnityTest]
+        public IEnumerator EliteVictory_RelicMustBePicked_ThenConfirmAdvances()
+        {
+            // F1-N5 엘리트를 현재 노드로 만들고 맵을 다시 그린다
             Map.Run.StageIndex = 4;
             _view.GetType().GetMethod("RefreshMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(_view, null);
             yield return null;
@@ -142,10 +170,25 @@ namespace DarkLegion.Tests.PlayMode
             yield return Press(b => TextOf(b) == "결과 보기", "결과 보기");
 
             StringAssert.Contains("승리", AllText());
-            StringAssert.Contains("엘리트 유물 선택 화면이 아직 없어", AllText());
-            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "맵으로"), "유물 선택 대기에서는 진행 버튼이 없습니다");
-            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "다시 시작"), "유물 선택 대기에서는 재시작 버튼도 없습니다");
-            Assert.AreEqual(5, Map.Capture().Node, "확정하지 않았으므로 노드는 그대로");
+            StringAssert.Contains("유물 1개를 고르세요", AllText());
+            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "다시 시작"), "유물 선택 대기에서는 재시작 버튼이 없습니다");
+            foreach (var id in new[] { "REL_COM_001", "REL_COM_002", "REL_COM_003" })
+                Assert.IsTrue(Buttons.Any(b => TextOf(b).StartsWith("유물 ") && TextOf(b).Contains(id)), id + " 유물 후보 버튼");
+
+            var confirm = Buttons.First(b => TextOf(b) == "유물을 고르세요");
+            Assert.IsFalse(confirm.interactable, "유물을 고르기 전에는 확정 버튼이 눌리지 않습니다");
+            confirm.onClick.Invoke();
+            yield return null;
+            Assert.AreEqual(5, Map.Capture().Node, "유물을 고르지 않고 확정해도 노드는 그대로");
+            Assert.AreEqual(0, Map.Capture().Gold);
+
+            yield return Press(b => TextOf(b).StartsWith("유물 ") && TextOf(b).Contains("REL_COM_002"), "REL_COM_002");
+            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "카드 건너뛰고 확정" && b.interactable));
+            yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", "확정");
+
+            Assert.AreEqual(6, Map.Capture().Node);
+            CollectionAssert.AreEqual(new[] { "REL_BLOOD_CHALICE", "REL_COM_002" }, Map.Run.Relics);
+            Assert.AreEqual(10, Map.Capture().DeckCount);
             Assert.AreEqual(RunOutcome.InProgress, Map.Capture().Outcome);
         }
 
@@ -156,7 +199,7 @@ namespace DarkLegion.Tests.PlayMode
             yield return EndBattle(BattleOutcome.Defeat);
             yield return Press(b => TextOf(b) == "결과 보기", "결과 보기");
             StringAssert.Contains("패배", AllText());
-            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "맵으로"), "패배하면 맵으로 돌아가지 않습니다");
+            Assert.IsFalse(Buttons.Any(b => TextOf(b).StartsWith("확정") || TextOf(b).Contains("건너뛰고")), "패배하면 보상 선택이 없습니다");
             Assert.AreEqual(RunOutcome.Defeat, Map.Capture().Outcome);
 
             yield return Press(b => TextOf(b) == "다시 시작", "다시 시작");

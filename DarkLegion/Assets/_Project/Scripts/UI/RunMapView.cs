@@ -30,8 +30,14 @@ namespace DarkLegion.UI
         Text _top;
         Text _hint;
         Text _resultText;
-        Button _continue;
+        Button _confirm;
+        Text _confirmLabel;
         Button _restart;
+        RectTransform _choicesRoot;
+        BattleResultView _result;
+        int? _pickCard;
+        int? _pickRelic;
+        readonly System.Collections.Generic.Dictionary<string, string> _names = new System.Collections.Generic.Dictionary<string, string>();
 
         void Start()
         {
@@ -41,6 +47,8 @@ namespace DarkLegion.UI
             try
             {
                 _data = BattleScreenView.LoadData();
+                foreach (var row in _data.Rows("Cards_Text")) _names[row.Str("Card_ID")] = row.Str("Name_KO");
+                foreach (var row in _data.Rows("Relics_MVP")) _names[row.Str("Relic_ID")] = row.Str("Name_KO");
                 var loaded = GameDataLoader.Load(_data);
                 _map = RunMapSession.NewNecRun(loaded, DateTime.UtcNow.Ticks, tutorialEnabled: true);
                 RefreshMap();
@@ -114,29 +122,70 @@ namespace DarkLegion.UI
         {
             _mapRoot.gameObject.SetActive(false);
             _resultRoot.gameObject.SetActive(true);
+            _result = result;
+            _pickCard = null;
+            _pickRelic = null;
             string kind = RunMapSession.KindLabel(result.Kind);
+            string head = result.NodeId + " " + kind + "\nHP " + result.HpBefore + " → " + result.HpAfter + " / " + result.MaxHp;
             if (result.Battle == BattleOutcome.Victory)
             {
-                _resultText.text = "승리\n" + result.NodeId + " " + kind
-                    + "\nHP " + result.HpBefore + " → " + result.HpAfter + " / " + result.MaxHp
-                    + "\n보상 골드 +" + result.RewardGold
-                    + (result.NeedsRelicChoice
-                        ? "\n엘리트 유물 선택 화면이 아직 없어 이 노드는 넘어갈 수 없습니다."
-                        : "\n카드 보상 선택 화면은 다음 작업이라 카드는 건너뜁니다.");
+                _resultText.text = "승리\n" + head + "\n보상 골드 +" + result.RewardGold
+                    + (result.AutoRelic != null ? "\n보스 유물 " + NameOf(result.AutoRelic) + " 획득" : "")
+                    + (result.NeedsRelicChoice ? "\n유물 1개를 고르세요. 카드는 고르거나 건너뛸 수 있습니다." : "\n카드 1장을 고르거나 건너뛰세요.");
             }
             else
             {
-                _resultText.text = "패배 — 런 종료\n" + result.NodeId + " " + kind
-                    + "\nHP " + result.HpBefore + " → " + result.HpAfter + " / " + result.MaxHp;
+                _resultText.text = "패배 — 런 종료\n" + head;
             }
-            _continue.gameObject.SetActive(result.CanContinue);
-            // 다시 시작은 패배 때만. 유물 선택 대기(승리)에서는 진행·재시작 모두 숨기고 안내만 보인다.
+            RenderChoices();
+            // 다시 시작은 패배 때만. 확정 버튼은 승리하고 아직 확정하지 않았을 때만 보인다.
             _restart.gameObject.SetActive(result.Battle == BattleOutcome.Defeat);
         }
 
-        void OnContinue()
+        /// <summary>카드·유물 후보 버튼과 확정 버튼을 현재 선택에 맞게 다시 그린다.</summary>
+        void RenderChoices()
         {
-            if (!_map.Continue()) return;
+            for (int i = _choicesRoot.childCount - 1; i >= 0; i--) Destroy(_choicesRoot.GetChild(i).gameObject);
+            bool confirmable = _result != null && _result.CanConfirm;
+            _confirm.gameObject.SetActive(confirmable);
+            if (!confirmable) return;
+
+            for (int i = 0; i < _result.CardChoices.Length; i++)
+            {
+                int index = i;
+                bool picked = _pickCard == i;
+                var b = ChoiceButton(NameOf(_result.CardChoices[i]) + "\n" + _result.CardChoices[i], new Vector2(-340f + i * 340f, -20f), picked);
+                b.onClick.AddListener(() => { _pickCard = _pickCard == index ? (int?)null : index; RenderChoices(); });
+            }
+            for (int i = 0; i < _result.RelicChoices.Length; i++)
+            {
+                int index = i;
+                bool picked = _pickRelic == i;
+                var b = ChoiceButton("유물 " + NameOf(_result.RelicChoices[i]) + "\n" + _result.RelicChoices[i], new Vector2(-340f + i * 340f, -140f), picked);
+                b.onClick.AddListener(() => { _pickRelic = index; RenderChoices(); });
+            }
+
+            bool needRelic = _result.NeedsRelicChoice && _pickRelic == null;
+            _confirm.interactable = !needRelic;
+            _confirmLabel.text = needRelic ? "유물을 고르세요"
+                : _pickCard == null ? "카드 건너뛰고 확정" : "확정: " + NameOf(_result.CardChoices[_pickCard.Value]);
+        }
+
+        Button ChoiceButton(string text, Vector2 pos, bool picked)
+        {
+            var box = Box(_choicesRoot, picked ? new Color(0.6f, 0.45f, 0.12f, 1f) : new Color(0.22f, 0.24f, 0.3f, 1f), 320f, 100f);
+            Place(box, pos.x, pos.y);
+            Label(box, text, 22);
+            var button = box.gameObject.AddComponent<Button>();
+            button.targetGraphic = box.GetComponent<Image>();
+            return button;
+        }
+
+        void OnConfirm()
+        {
+            if (_result == null || !_result.CanConfirm) return;
+            if (!_map.ConfirmReward(_pickCard, _pickRelic)) return;
+            _result = null;
             RefreshMap();
             if (_map.Capture().Outcome == RunOutcome.Victory) ShowRunEnd();
         }
@@ -147,8 +196,15 @@ namespace DarkLegion.UI
             _mapRoot.gameObject.SetActive(false);
             var snap = _map.Capture();
             _resultText.text = "런 승리\n2층 보스를 처치했습니다.\nHP " + snap.Hp + "/" + snap.MaxHp + "  골드 " + snap.Gold;
-            _continue.gameObject.SetActive(false);
+            _result = null;
+            RenderChoices();
             _restart.gameObject.SetActive(true);
+        }
+
+        string NameOf(string id)
+        {
+            string name;
+            return _names.TryGetValue(id, out name) && name.Length > 0 ? name : id;
         }
 
         void OnRestart()
@@ -190,12 +246,15 @@ namespace DarkLegion.UI
             _hint = Label(hintBar, "", 24);
 
             _resultRoot = Stretch(_canvasGo.transform, "ResultRoot");
-            var panel = Box(_resultRoot, new Color(0f, 0f, 0f, 0.86f), 900f, 560f);
+            var panel = Box(_resultRoot, new Color(0f, 0f, 0f, 0.9f), 1100f, 720f);
             Place(panel, 0f, 0f);
-            _resultText = Label(panel, "", 32);
-            _resultText.rectTransform.offsetMin = new Vector2(20f, 120f);
-            _continue = ActionButton(panel, "맵으로", new Vector2(-120f, -220f), OnContinue);
-            _restart = ActionButton(panel, "다시 시작", new Vector2(120f, -220f), OnRestart);
+            _resultText = Label(panel, "", 30);
+            _resultText.rectTransform.offsetMin = new Vector2(20f, 380f);
+            _choicesRoot = Stretch(panel, "Choices");
+            _confirm = ActionButton(panel, "확정", new Vector2(0f, -290f), OnConfirm);
+            _confirm.GetComponent<RectTransform>().sizeDelta = new Vector2(420f, 64f);
+            _confirmLabel = _confirm.GetComponentInChildren<Text>();
+            _restart = ActionButton(panel, "다시 시작", new Vector2(0f, -290f), OnRestart);
             _resultRoot.gameObject.SetActive(false);
         }
 
