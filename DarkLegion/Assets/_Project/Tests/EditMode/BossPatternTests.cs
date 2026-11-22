@@ -252,6 +252,168 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreEqual(19, front.CurrentHP);
         }
 
+        // ---------- BOSS-03 (32 1단계 Must Pass, D-65) ----------
+
+        [Test]
+        public void BOSS_03_1F_P2_SummonsOneGhoul_14_5_1_NoNodeScale()
+        {
+            // 노드 9(인덱스 8)로 스케일하면 HP는 HalfUp(14×1.184)=17이다. 소환은 키트 원값이다.
+            Ally(SlotPosition.Front);
+            var boss = Boss();
+            boss.CurrentHP = 20;
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            var ghoul = _ctx.Enemies.Single(e => e != boss);
+            Assert.AreEqual("ENE_1F_GHO_001", ghoul.DataId);
+            Assert.AreEqual(14, ghoul.MaxHP.FinalValue);
+            Assert.AreEqual(5, ghoul.Attack.FinalValue);
+            Assert.AreEqual(1, ghoul.Defense.FinalValue);
+        }
+
+        [Test]
+        public void BOSS_03_1F_P2_FullSlots_NoSummon()
+        {
+            Ally(SlotPosition.Front, hp: 40, atk: 0);
+            var boss = Boss();
+            boss.CurrentHP = 20;
+            Idle(SlotPosition.Middle);
+            Idle(SlotPosition.Back);
+            Idle(SlotPosition.Extra1);
+            Idle(SlotPosition.Extra2);
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(5, _ctx.Enemies.Count(e => !e.IsDead));
+        }
+
+        [Test]
+        public void BOSS_03_1F_LifeSteal_Hp12_Heals4_AndStaysPhase2AboveHalf()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 0);
+            var back = Ally(SlotPosition.Back, hp: 12, def: 0);
+            var boss = Boss();
+            var dummy = Idle(SlotPosition.Middle);
+            Idle(SlotPosition.Back);
+            Idle(SlotPosition.Extra1);
+            Idle(SlotPosition.Extra2);
+            boss.CurrentHP = 23;
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            // Back DEF 0, 위치 보너스 없음. ATK 8 − 0 = 8. floor(8 × 50%) = 4. 23 + 4 = 27
+            Assert.AreEqual(4, back.CurrentHP);
+            Assert.AreEqual(27, boss.CurrentHP);
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(2, _ctx.BossPhaseOf(boss), "27은 47의 50%를 넘어도 P2");
+        }
+
+        [Test]
+        public void BOSS_03_1F_LifeSteal_Hp4_Heals2()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 0);
+            var back = Ally(SlotPosition.Back, hp: 4, def: 0);
+            var boss = Boss();
+            var dummy = Idle(SlotPosition.Middle);
+            Idle(SlotPosition.Back);
+            Idle(SlotPosition.Extra1);
+            Idle(SlotPosition.Extra2);
+            boss.CurrentHP = 23;
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            // 피해 8 중 실제로 깎인 HP는 4. floor(4 × 50%) = 2. 23 + 2 = 25
+            Assert.IsTrue(back.IsDead);
+            Assert.AreEqual(25, boss.CurrentHP);
+        }
+
+        [Test]
+        public void BOSS_03_1F_LifeSteal_ShieldBlocksHeal()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 0);
+            var back = Ally(SlotPosition.Back, hp: 12, def: 0);
+            var boss = Boss();
+            var dummy = Idle(SlotPosition.Middle);
+            Idle(SlotPosition.Back);
+            Idle(SlotPosition.Extra1);
+            Idle(SlotPosition.Extra2);
+            boss.CurrentHP = 23;
+            _ctx.StartPlayerTurn();
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            _ctx.StartPlayerTurn();
+            back.Statuses.Apply(StatusType.Shield, 6, _ctx);
+            _ctx.SetAttackTarget(front, dummy);
+            _ctx.SetAttackTarget(back, dummy);
+            _ctx.EndPlayerTurn();
+            // ATK 8, Shield 6, HP로 들어간 2. floor(2 × 50%) = 1. 23 + 1 = 24. Back 12 − 2 = 10
+            Assert.AreEqual(10, back.CurrentHP);
+            Assert.AreEqual(24, boss.CurrentHP);
+        }
+
+        [Test]
+        public void BOSS_03_2F_P1_Burn2ThenSingle7ThenAoE4OnPlayer()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 1);
+            var boss = Boss("ENE_2F_BOS_001", 59, 9, 2);
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            // 전장 Burn+2, 틱 2. 플레이어 80 − 2 = 78, Front 30 − 2 = 28, 스택 1
+            Assert.AreEqual(78, _ctx.Player.CurrentHP);
+            Assert.AreEqual(28, front.CurrentHP);
+            Assert.AreEqual(1, _ctx.Player.Statuses.Stacks(StatusType.Burn));
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            // 단일 max(1, floor(9 − 2)) = 7, 남은 Burn 틱 1. 28 − 7 − 1 = 20. 플레이어 78 − 1 = 77
+            Assert.AreEqual(20, front.CurrentHP);
+            Assert.AreEqual(77, _ctx.Player.CurrentHP);
+            _ctx.StartPlayerTurn();
+            _ctx.EndPlayerTurn();
+            // 광역 4, 플레이어 DEF 0. 77 − 4 = 73
+            Assert.AreEqual(73, _ctx.Player.CurrentHP);
+        }
+
+        [Test]
+        public void BOSS_03_2F_P3_Burn1AndSingleSameTurn()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 0);
+            var boss = Boss("ENE_2F_BOS_001", 59, 9, 2);
+            boss.CurrentHP = 11;
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(3, _ctx.BossPhaseOf(boss));
+            _ctx.EndPlayerTurn();
+            // 같은 턴 Burn+1과 단일. 단일 max(1, 9 − 1) = 8, 틱 1. 30 − 8 − 1 = 21. 플레이어 80 − 1 = 79
+            Assert.AreEqual(21, front.CurrentHP);
+            Assert.AreEqual(79, _ctx.Player.CurrentHP);
+        }
+
+        [Test]
+        public void BOSS_03_BindOrStun_StopsActionAndCycle()
+        {
+            var front = Ally(SlotPosition.Front, hp: 30, def: 0);
+            var boss = Boss();
+            _ctx.StartPlayerTurn();
+            boss.Statuses.Apply(StatusType.Bind, 1, _ctx);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(30, front.CurrentHP);
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(IntentKind.SingleAttack, _ctx.IntentOf(boss));
+            boss.Statuses.Apply(StatusType.Stun, 1, _ctx);
+            _ctx.EndPlayerTurn();
+            Assert.AreEqual(30, front.CurrentHP, "Stun도 확정된 단일 공격을 하지 않는다");
+            _ctx.StartPlayerTurn();
+            Assert.AreEqual(IntentKind.SingleAttack, _ctx.IntentOf(boss), "사이클도 T0 그대로");
+        }
+
         // ---------- 시뮬 (#45 "각 보스 3회 이상", #28 측정 항목: 플레이어 HP 손실, D-29) ----------
 
         [TestCase("ENE_1F_BOS_001", 47, 8, 1, 1)]

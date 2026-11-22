@@ -85,6 +85,102 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void ST_03_Normal5PlusEnemyPhase4_NoDamage_EndsAt4()
+        {
+            // D-78: 일반 5는 그 턴 종료에 빠지고, Enemy Phase 4만 남는다. 지금 구현은 합 9를 남긴다.
+            var ctx = NewBattle(out var e, enemyHp: 50, enemyDef: 0);
+            e.Statuses.Apply(StatusType.Shield, 5, ctx);
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 4, ctx);
+            Assert.AreEqual(9, e.Shield, "보이는 양은 합");
+            ctx.EndTurn();
+            Assert.AreEqual(4, e.Shield);
+        }
+
+        [Test]
+        public void ST_03_Normal5PlusEnemyPhase4_Damage7_EndsAt2()
+        {
+            // 피해 7은 일반 5를 모두 쓰고 Enemy Phase 4를 2로 남긴다. 종료 후 2.
+            var ctx = NewBattle(out var e, enemyHp: 50, enemyDef: 0);
+            e.Statuses.Apply(StatusType.Shield, 5, ctx);
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 4, ctx);
+            ctx.Queue.EnqueueMain(new DamageAction { Target = e, BaseDamage = 7 });
+            ctx.Queue.Process();
+            Assert.AreEqual(50, e.CurrentHP, "7은 합 9 안이라 HP는 그대로");
+            ctx.EndTurn();
+            Assert.AreEqual(2, e.Shield);
+        }
+
+        [Test]
+        public void ST_03_Normal5PlusEnemyPhase4_Damage3_EndsAt4()
+        {
+            // 피해 3은 일반 5만 2로 줄인다. Enemy Phase 4는 그대로라 종료 후 4.
+            var ctx = NewBattle(out var e, enemyHp: 50, enemyDef: 0);
+            e.Statuses.Apply(StatusType.Shield, 5, ctx);
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 4, ctx);
+            ctx.Queue.EnqueueMain(new DamageAction { Target = e, BaseDamage = 3 });
+            ctx.Queue.Process();
+            Assert.AreEqual(50, e.CurrentHP);
+            ctx.EndTurn();
+            Assert.AreEqual(4, e.Shield);
+        }
+
+        [Test]
+        public void ST_03_BurnAndPoisonTicks_ConsumeNormalShieldFirst()
+        {
+            // 틱 2는 DEF를 무시하고 일반 3부터 깎는다. 종료 후 Enemy Phase 4가 남는다.
+            var ctx = NewBattle(out var burned, enemyHp: 50, enemyDef: 3);
+            var poisoned = new RuntimeEnemy("E2", "ENE_TEST", 50, 5, 3, false);
+            ctx.Enemies.Add(poisoned);
+            burned.Statuses.Apply(StatusType.Shield, 3, ctx);
+            poisoned.Statuses.Apply(StatusType.Shield, 3, ctx);
+            ctx.State = BattleState.EnemyPhase;
+            burned.Statuses.Apply(StatusType.Shield, 4, ctx);
+            poisoned.Statuses.Apply(StatusType.Shield, 4, ctx);
+            ctx.State = BattleState.PlayerPhase;
+            burned.Statuses.Apply(StatusType.Burn, 2, ctx);
+            poisoned.Statuses.Apply(StatusType.Poison, 2, ctx);
+            ctx.EndTurn();
+            Assert.AreEqual(50, burned.CurrentHP, "틱 2는 합 7 안");
+            Assert.AreEqual(50, poisoned.CurrentHP);
+            Assert.AreEqual(4, burned.Shield);
+            Assert.AreEqual(4, poisoned.Shield);
+            Assert.AreEqual(1, burned.Statuses.Stacks(StatusType.Burn), "Burn은 틱 뒤 1 감소");
+            Assert.AreEqual(2, poisoned.Statuses.Stacks(StatusType.Poison), "Poison 스택은 유지");
+        }
+
+        [Test]
+        public void ST_03_ShieldCap99_DropsExcessEnemyPhase_EndLeaves9()
+        {
+            // 일반 90 + Enemy Phase 20은 합 상한 99라 Enemy Phase는 9만 들어간다. 종료 후 9.
+            var ctx = NewBattle(out var e, enemyHp: 50, enemyDef: 0);
+            e.Statuses.Apply(StatusType.Shield, 90, ctx);
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 20, ctx);
+            Assert.AreEqual(99, e.Shield);
+            ctx.EndTurn();
+            Assert.AreEqual(9, e.Shield);
+        }
+
+        [Test]
+        public void ST_03_EnemyPhase4_ThenNextTurnPlus3_SecondEndIs3()
+        {
+            // N턴 Enemy Phase +4, 피해 0 → 종료 후 4. N+1에서 그 4는 일반분, +3만 남는다.
+            var ctx = NewBattle(out var e, enemyHp: 50, enemyDef: 0);
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 4, ctx);
+            ctx.EndTurn();
+            Assert.AreEqual(4, e.Shield);
+            ctx.BeginTurn();
+            ctx.State = BattleState.EnemyPhase;
+            e.Statuses.Apply(StatusType.Shield, 3, ctx);
+            ctx.EndTurn();
+            Assert.AreEqual(3, e.Shield);
+        }
+
+        [Test]
         public void DurationStatus_AppliedInMainPhase_LastsTwoTurnEnds()
         {
             var ctx = NewBattle(out var e);
