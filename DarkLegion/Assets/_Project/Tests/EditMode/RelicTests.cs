@@ -234,6 +234,150 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreEqual(3, b.Attack.FinalValue, "카드 피해 처치는 아니다");
         }
 
+        // ---------- RELIC-02 (32 1단계 Must Pass, D-76) ----------
+
+        [Test]
+        public void RELIC_02_BloodChalice_ThreeSacrifices_OnlyFirstAdds1()
+        {
+            var ctx = Battle(new[] { "REL_BLOOD_CHALICE" });
+            ctx.Player.CurrentCrystal = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                ctx.Sacrifice(Ally(ctx, SlotPosition.Back));
+                ctx.Queue.Process();
+            }
+            // Lv1 1씩. 첫 희생만 잔 +1. 0 → 2 → 3 → 4
+            Assert.AreEqual(4, ctx.Player.CurrentCrystal);
+        }
+
+        [Test]
+        public void RELIC_02_Com001_Spend3ToZero_Plus1_NoSecondTrigger()
+        {
+            var ctx = Battle(new[] { "REL_COM_001" });
+            Assert.AreEqual(3, ctx.Player.CurrentCrystal);
+            ctx.Player.TrySpendCrystal(3);
+            Assert.AreEqual(1, ctx.Player.CurrentCrystal, "3을 써 0이 된 순간 +1");
+            ctx.Player.CurrentCrystal = 3;
+            ctx.Player.TrySpendCrystal(3);
+            Assert.AreEqual(0, ctx.Player.CurrentCrystal, "같은 턴에 다시 0이 되어도 추가 없음");
+        }
+
+        [Test]
+        public void RELIC_02_Com002_FourHits_Poison4()
+        {
+            var ctx = Battle(new[] { "REL_COM_002" });
+            var allies = new[] { Ally(ctx, SlotPosition.Front), Ally(ctx, SlotPosition.Middle), Ally(ctx, SlotPosition.Back) };
+            var enemy = ctx.Enemies[0];
+            Hit(ctx, enemy, allies[0], 4);
+            Assert.AreEqual(1, enemy.Statuses.Stacks(StatusType.Poison), "피해 1건마다 Poison 1");
+            foreach (var t in allies.Skip(1).Cast<RuntimeUnit>().Concat(new[] { ctx.Player }))
+                ctx.Queue.EnqueueMain(new DamageAction { Source = enemy, Target = t, BaseDamage = 4 });
+            ctx.Queue.Process();
+            Assert.AreEqual(4, enemy.Statuses.Stacks(StatusType.Poison), "광역 4명 → 4");
+        }
+
+        [Test]
+        public void RELIC_02_Com003_TenThousandAttacks_VulnerableWithin1_5Points()
+        {
+            int vul = 0;
+            const int n = 10000;
+            for (int seed = 1; seed <= n; seed++)
+            {
+                var run = RunFlow.NewRun("RUN-G", seed, "NEC", 80, new[] { "NEC_SKL_003" }, new[] { "REL_COM_003" });
+                var ctx = RunBattle.Start(run, Data);
+                ctx.StartPlayerTurn();
+                Ally(ctx, SlotPosition.Front, atk: 2);
+                var target = ctx.Enemies[0];
+                Hit(ctx, ctx.Allies[0], target, 2, attack: true);
+                if (target.Statuses.Has(StatusType.Vulnerable)) vul++;
+            }
+            // 10% ± 1.5%p → 850~1150
+            Assert.AreEqual(0.10, vul / (double)n, 0.015);
+        }
+
+        [Test]
+        public void RELIC_02_Com003_KilledTargetGetsNoVulnerable()
+        {
+            for (int seed = 1; seed <= 200; seed++)
+            {
+                var run = RunFlow.NewRun("RUN-G", seed, "NEC", 80, new[] { "NEC_SKL_003" }, new[] { "REL_COM_003" });
+                var ctx = RunBattle.Start(run, Data);
+                ctx.StartPlayerTurn();
+                var a = Ally(ctx, SlotPosition.Front);
+                var t = ctx.Enemies[0];
+                Hit(ctx, a, t, 999, attack: true);
+                Assert.IsFalse(t.Statuses.Has(StatusType.Vulnerable));
+            }
+        }
+
+        [Test]
+        public void RELIC_02_Unc001_ThreeSacrifices_Draw2()
+        {
+            var deck = Enumerable.Repeat("NEC_SKL_003", 12).ToArray();
+            var ctx = Battle(new[] { "REL_UNC_001" }, deck);
+            Assert.AreEqual(5, ctx.Player.Deck.Hand.Count);
+            for (int i = 0; i < 3; i++)
+            {
+                ctx.Sacrifice(Ally(ctx, SlotPosition.Back));
+                ctx.Queue.Process();
+            }
+            Assert.AreEqual(7, ctx.Player.Deck.Hand.Count, "희생 3회 → 드로우 2");
+        }
+
+        [Test]
+        public void RELIC_02_Unc002_BurnCount_Bonus0_2_Cap3()
+        {
+            var ctx = Battle(new[] { "REL_UNC_002" });
+            var a = Ally(ctx, SlotPosition.Front, atk: 3);
+            Assert.AreEqual(3, ctx.EffectiveAttack(a), "Burn 0 → 보너스 0");
+            ctx.Enemies[0].Statuses.Apply(StatusType.Burn, 1, ctx);
+            ctx.Enemies[1].Statuses.Apply(StatusType.Burn, 1, ctx);
+            Assert.AreEqual(5, ctx.EffectiveAttack(a), "Burn 2 → +2");
+            for (int i = 0; i < 2; i++)
+            {
+                var extra = new RuntimeEnemy("EX" + i, "ENE_1F_GHO_001", 10, 1, 0, false);
+                ctx.Field.PlaceEnemy(extra, null, ctx);
+                extra.Statuses.Apply(StatusType.Burn, 1, ctx);
+            }
+            Assert.AreEqual(6, ctx.EffectiveAttack(a), "Burn 4 → 상한 +3");
+        }
+
+        [Test]
+        public void RELIC_02_Unc003_KillBonusStopsAt5()
+        {
+            var ctx = Battle(new[] { "REL_UNC_003" });
+            var a = Ally(ctx, SlotPosition.Front, atk: 3);
+            for (int i = 0; i < 6; i++)
+            {
+                var e = new RuntimeEnemy("K" + i, "ENE_1F_GHO_001", 1, 1, 0, false);
+                ctx.Field.PlaceEnemy(e, SlotPosition.Extra2, ctx);
+                Hit(ctx, a, e, 5, attack: true);
+            }
+            Assert.AreEqual(8, a.Attack.FinalValue, "처치 6회여도 몬스터당 +5에서 멈춤");
+        }
+
+        [Test]
+        public void RELIC_02_Boss1F_FirstSacrificeOnly_WithChaliceIsEco02()
+        {
+            var alone = Battle(new[] { "REL_BOSS_1F" });
+            alone.Player.CurrentCrystal = 0;
+            alone.Sacrifice(Ally(alone, SlotPosition.Back));
+            alone.Queue.Process();
+            Assert.AreEqual(2, alone.Player.CurrentCrystal, "Lv1 1 + 첫 희생 1");
+            alone.Sacrifice(Ally(alone, SlotPosition.Back));
+            alone.Queue.Process();
+            Assert.AreEqual(3, alone.Player.CurrentCrystal, "둘째는 +1");
+
+            var both = Battle(new[] { "REL_BLOOD_CHALICE", "REL_BOSS_1F" });
+            both.Player.CurrentCrystal = 0;
+            both.Sacrifice(Ally(both, SlotPosition.Front));
+            both.Queue.Process();
+            Assert.AreEqual(3, both.Player.CurrentCrystal, "ECO-02 첫 Lv1 +3");
+            both.Sacrifice(Ally(both, SlotPosition.Middle));
+            both.Queue.Process();
+            Assert.AreEqual(4, both.Player.CurrentCrystal, "둘째 +1");
+        }
+
         // ---------- 등록 ----------
 
         [Test]

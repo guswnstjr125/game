@@ -40,9 +40,10 @@ namespace DarkLegion.Core
                     IgnoreDefense = IgnoreDefense,
                     FlatReduction = MonsterEffects.DamageReductionFor(context, Target)
                 });
-            var (shield, hp) = DamageCalculator.ApplyToShieldAndHp(damage, Target.Shield, Target.CurrentHP, IgnoreShield);
+            int absorbed = damage > 0 && !IgnoreShield ? Target.Statuses.Absorb(damage) : 0;
+            int hpLoss = damage > 0 ? damage - absorbed : 0;
+            int hp = Target.CurrentHP - hpLoss;
             LastDealt = Target.CurrentHP - hp;
-            Target.Shield = shield;
             Target.CurrentHP = hp;
             bool killed = Target.CurrentHP <= 0 && Target.MarkDead();
             if (killed)

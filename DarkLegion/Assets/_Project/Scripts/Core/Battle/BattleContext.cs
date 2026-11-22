@@ -336,6 +336,7 @@ namespace DarkLegion.Core
             SacrificesThisTurn = 0;
             _deathDrawWatchers.RemoveAll(w => w.turn < Turn);
             foreach (var a in Allies) a.ExtraActionsThisTurn = 0;
+            foreach (var u in LivingUnits()) u.Statuses.PromoteEnemyPhaseShield();
             State = BattleState.PlayerPhase;
         }
 

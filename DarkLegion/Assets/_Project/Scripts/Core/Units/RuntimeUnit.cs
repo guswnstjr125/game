@@ -39,8 +39,14 @@ namespace DarkLegion.Core
         public RuntimeStat Defense { get; }
 
         public int CurrentHP { get; set; }
-        /// <summary>턴 종료 시 전량 소멸 (`06` §11.2).</summary>
-        public int Shield { get; set; }
+        /// <summary>일반분과 Enemy Phase분의 합 (`01` D-78). 직접 대입은 그 양을 일반분으로 둔다.</summary>
+        public int Shield
+        {
+            get => _shield;
+            set => Statuses.AdoptVisibleShield(value);
+        }
+
+        private int _shield;
 
         public bool IsDead { get; private set; }
         public bool IsTargetable => !IsDead && !Flags.Untargetable;
@@ -65,6 +71,8 @@ namespace DarkLegion.Core
             CurrentHP = maxHp;
             Statuses = new StatusContainer(this);
         }
+
+        internal void SetShieldAmount(int value) => _shield = value;
 
         /// <summary>HP ≤ 0이 된 순간 한 번만 true. 슬롯은 DeathAction이 실행될 때까지 유지한다 (`06` §12).</summary>
         internal bool MarkDead()

@@ -17,7 +17,7 @@ namespace DarkLegion.Core
 
     /// <summary>
     /// 유닛 하나의 상태이상 (`11` §1). 값의 뜻은 종류마다 다르다:
-    /// Burn·Poison = 스택(최대 20, D-08), Weak·Vulnerable·Bind·Stun = 남은 턴, Taunt = 있음(1), Shield = 유닛의 Shield 값.
+    /// Burn·Poison = 스택(최대 20, D-08), Weak·Vulnerable·Bind·Stun = 남은 턴, Taunt = 있음(1), Shield = 일반분과 Enemy Phase분의 합 (D-78).
     /// </summary>
     public sealed class StatusContainer
     {
@@ -29,7 +29,9 @@ namespace DarkLegion.Core
         // Enemy Phase·턴 종료 처리 중에 걸린 지속형 상태는 그 턴 종료에 줄이지 않는다.
         // 안 그러면 적이 건 Stun(1턴)이 같은 턴 종료에 사라져 효과가 없다 (`01` D-57).
         private readonly HashSet<StatusType> _skipNextExpiry = new HashSet<StatusType>();
-        private bool _shieldSurvivesTurnEnd;
+        // 보이는 Shield는 둘의 합이고 상한 99도 합에 적용한다 (`01` D-78).
+        private int _normalShield;
+        private int _enemyPhaseShield;
 
         public StatusContainer(RuntimeUnit owner)
         {
@@ -57,9 +59,7 @@ namespace DarkLegion.Core
             switch (type)
             {
                 case StatusType.Shield:
-                    _owner.Shield = System.Math.Min(MaxShield, _owner.Shield + amount);
-                    // Enemy Phase에 얻은 Shield는 이번 턴 종료에 사라지지 않는다 (`01` D-64)
-                    if (context != null && context.State == BattleState.EnemyPhase) _shieldSurvivesTurnEnd = true;
+                    AddShield(amount, context != null && context.State == BattleState.EnemyPhase);
                     return true;
                 case StatusType.Burn:
                 case StatusType.Poison:
@@ -81,17 +81,22 @@ namespace DarkLegion.Core
 
         public void Remove(StatusType type)
         {
-            if (type == StatusType.Shield) _owner.Shield = 0;
+            if (type == StatusType.Shield)
+            {
+                _normalShield = 0;
+                _enemyPhaseShield = 0;
+                WriteShield();
+            }
             _values.Remove(type);
             _skipNextExpiry.Remove(type);
         }
 
-        /// <summary>턴 종료: Burn −1, Shield 전량 소멸, 지속형 −1 (`11` §1 Tick 순서). 틱 피해는 BattleContext.EndTurn이 먼저 넣는다.</summary>
+        /// <summary>턴 종료: Burn −1, 일반 Shield만 제거, 지속형 −1 (`11` §1, D-78). 틱 피해는 BattleContext.EndTurn이 먼저 넣는다.</summary>
         internal void ExpireAtTurnEnd()
         {
             Decrement(StatusType.Burn);
-            if (_shieldSurvivesTurnEnd) _shieldSurvivesTurnEnd = false;
-            else _owner.Shield = 0;
+            _normalShield = 0;
+            WriteShield();
             foreach (var type in Durations)
             {
                 if (_skipNextExpiry.Remove(type)) continue;
@@ -104,7 +109,55 @@ namespace DarkLegion.Core
         {
             _values.Clear();
             _skipNextExpiry.Clear();
-            _owner.Shield = 0;
+            _normalShield = 0;
+            _enemyPhaseShield = 0;
+            _owner.SetShieldAmount(0);
+        }
+
+        /// <summary>다음 턴이 시작되면 지난 Enemy Phase분은 그 턴의 일반분이 된다 (D-78).</summary>
+        internal void PromoteEnemyPhaseShield()
+        {
+            _normalShield += _enemyPhaseShield;
+            _enemyPhaseShield = 0;
+            WriteShield();
+        }
+
+        /// <summary>
+        /// 피해를 일반분부터 흡수하고, 일반분이 0이면 Enemy Phase분을 깎는다 (D-78). 흡수한 양을 반환한다.
+        /// </summary>
+        public int Absorb(int damage)
+        {
+            if (damage <= 0) return 0;
+            int fromNormal = damage < _normalShield ? damage : _normalShield;
+            _normalShield -= fromNormal;
+            int rest = damage - fromNormal;
+            int fromEnemyPhase = rest < _enemyPhaseShield ? rest : _enemyPhaseShield;
+            _enemyPhaseShield -= fromEnemyPhase;
+            WriteShield();
+            return fromNormal + fromEnemyPhase;
+        }
+
+        private void AddShield(int amount, bool enemyPhase)
+        {
+            int room = MaxShield - (_normalShield + _enemyPhaseShield);
+            if (room < 0) room = 0;
+            int gain = amount < room ? amount : room;
+            if (enemyPhase) _enemyPhaseShield += gain;
+            else _normalShield += gain;
+            WriteShield();
+        }
+
+        /// <summary>보이는 양을 일반분으로 바꾼다. 테스트가 Shield 속성에 직접 넣는 경우다.</summary>
+        internal void AdoptVisibleShield(int value)
+        {
+            _normalShield = value;
+            _enemyPhaseShield = 0;
+            _owner.SetShieldAmount(value);
+        }
+
+        private void WriteShield()
+        {
+            _owner.SetShieldAmount(_normalShield + _enemyPhaseShield);
         }
 
         private static readonly StatusType[] Durations = { StatusType.Weak, StatusType.Vulnerable, StatusType.Bind, StatusType.Stun };

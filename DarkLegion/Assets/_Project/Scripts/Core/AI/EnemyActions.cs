@@ -267,7 +267,8 @@ namespace DarkLegion.Core
                 {
                     var t = SingleTarget(ctx, d.Target);
                     var hit = Hit(ctx, self, t, d.Value);
-                    ctx.Queue.EnqueueMain(Fx("EnemyDrain", x => x.Heal(self, (int)System.Math.Floor(hit.LastDealt * d.DrainRatio))));
+                    // 회복은 실제로 깎인 HP만. HP 4에 피해 8이면 4이고, 0 아래는 넣지 않는다 (32 BOSS-03).
+                    ctx.Queue.EnqueueMain(Fx("EnemyDrain", x => x.Heal(self, (int)System.Math.Floor(HpActuallyLost(t, hit.LastDealt) * d.DrainRatio))));
                     break;
                 }
                 case "Summon":
@@ -283,6 +284,15 @@ namespace DarkLegion.Core
                     ctx.Log($"[AI] action type '{d.ActionType}' not implemented yet ({self.DataId})");
                     break;
             }
+        }
+
+        /// <summary>LastDealt는 HP가 0 아래로 내려간 몫까지 포함한다. 흡혈은 그 몫을 뺀다.</summary>
+        private static int HpActuallyLost(RuntimeUnit target, int lastDealt)
+        {
+            if (target == null || lastDealt <= 0) return 0;
+            if (target.CurrentHP >= 0) return lastDealt;
+            int lost = lastDealt + target.CurrentHP;
+            return lost > 0 ? lost : 0;
         }
 
         private static DamageAction Hit(BattleContext ctx, RuntimeEnemy self, RuntimeUnit target, double multiplier)
