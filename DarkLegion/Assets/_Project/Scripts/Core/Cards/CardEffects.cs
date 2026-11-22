@@ -195,6 +195,18 @@ namespace DarkLegion.Core
     /// </summary>
     public static class MonsterEffects
     {
+        /// <summary>
+        /// 이 클래스가 동작을 가진 몬스터 카드 (`38` §5 핸들러 검사용, HandlerRegistry). 아래 switch에 카드를 더하면 여기에도 더한다.
+        /// 카드를 낼 때 고르는 효과(피의 사제·모방 슬라임)는 CardEffects, 데이터만으로 도는 효과(희생 Crystal·융합 클래스)는 로더 (D-71).
+        /// </summary>
+        private static readonly HashSet<string> Handled = new HashSet<string>
+        {
+            "NEC_MON_002", "NEC_MON_003", "NEC_MON_004", "NEC_MON_005", "NEC_MON_009", "NEC_MON_010", "NEC_MON_013", "NEC_MON_014",
+            "NEU_MON_004", "NEU_MON_007", "NEU_MON_008"
+        };
+
+        public static bool Handles(string cardId) => cardId != null && Handled.Contains(cardId);
+
         public static void Attach(BattleContext ctx)
         {
             ctx.Triggers.AllySummoned += OnSummoned;
