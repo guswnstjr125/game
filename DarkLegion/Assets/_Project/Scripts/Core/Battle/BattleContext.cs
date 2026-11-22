@@ -253,10 +253,6 @@ namespace DarkLegion.Core
             return SacrificeResult.Ok;
         }
 
-        /// <summary>
-        /// 다음 Wave (`09` §6, `03` §2): 토큰은 RemoveTokenAction으로 제거(사망 아님), 몬스터는 HP·상태·위치 유지, 적 칸 비움.
-        /// 새 적 배치와 Crystal·손패 처리는 Wave를 시작하는 쪽이 한다.
-        /// </summary>
         private readonly System.Collections.Generic.List<RuntimeEnemy[]> _pendingWaves = new System.Collections.Generic.List<RuntimeEnemy[]>();
 
         /// <summary>아직 나오지 않은 Wave 수. 0보다 크면 적이 모두 죽어도 승리가 아니다 (D-72, CORE-03).</summary>
@@ -275,6 +271,10 @@ namespace DarkLegion.Core
             Log($"[WAVE] next wave {next.Length} enemies, {_pendingWaves.Count} left");
         }
 
+        /// <summary>
+        /// Wave 정리 (`09` §6, `03` §2): 토큰은 RemoveTokenAction으로 제거(사망 아님), 몬스터는 HP·상태·위치 유지, 적 칸 비움.
+        /// 예약한 Wave(<see cref="QueueWave"/>)는 턴 종료가 이것을 부른 뒤 배치한다. Crystal 리셋·Draw 5는 다음 턴 시작이 한다 (D-72).
+        /// </summary>
         public void StartNextWave()
         {
             foreach (var a in Allies.ToArray())
