@@ -432,6 +432,28 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreEqual(run.RunId, store.LoadMeta().LastSettledRunId);
         }
 
+        [Test]
+        public void ReplaceActiveRun_PreservesSlotOnFailureAndRejectsRepeatedConfirmation()
+        {
+            var files = new MemorySaveFileSystem();
+            var store = new SaveFileStore("save", files);
+            var previous = RunSave.Capture(Floor2BossEntry(), RunSavePhase.Map);
+            var newRun = RunFlow.NewRun("NEW-RUN", 99, "NEC", 80, StageOneBattleSim.NecStartDeck, Array.Empty<string>());
+            var next = RunSave.Capture(newRun, RunSavePhase.Map);
+            Assert.IsTrue(store.SaveRun(previous));
+            Assert.IsTrue(store.SaveMeta(new MetaSaveDTO { MetaSoul = 17 }));
+            files.FailReplace = true;
+
+            Assert.IsFalse(store.ReplaceActiveRun(previous, next));
+            Assert.AreEqual(previous.RunId, store.LoadRun().RunId);
+            files.FailReplace = false;
+            Assert.IsTrue(store.ReplaceActiveRun(previous, next));
+            Assert.IsFalse(store.ReplaceActiveRun(previous, next));
+            Assert.AreEqual(next.RunId, store.LoadRun().RunId);
+            Assert.AreEqual(17, store.LoadMeta().MetaSoul);
+            Assert.IsNull(store.LoadMeta().LastSettledRunId);
+        }
+
         private sealed class MemorySaveFileSystem : ISaveFileSystem
         {
             readonly System.Collections.Generic.Dictionary<string, string> _files = new System.Collections.Generic.Dictionary<string, string>();

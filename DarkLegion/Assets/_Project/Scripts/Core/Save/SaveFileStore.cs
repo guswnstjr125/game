@@ -65,6 +65,15 @@ namespace DarkLegion.Core
             _files.Delete(Path.Combine(_directory, RunFileName));
         }
 
+        /// <summary>D-85: 진행 중 슬롯을 새 런으로 교체한다. 정산과 메타 파일에는 손대지 않는다.</summary>
+        public bool ReplaceActiveRun(SaveData expected, SaveData next)
+        {
+            if (expected == null || expected.Phase == RunSavePhase.SettlementPending ||
+                next == null || next.Phase != RunSavePhase.Map || next.RunId == expected.RunId)
+                return false;
+            return ReplaceCheckpoint(expected, next);
+        }
+
         public bool SaveRun(SaveData save) => AtomicWrite(Path.Combine(_directory, RunFileName), SaveJson.Write(save));
         public SaveData LoadRun()
         {

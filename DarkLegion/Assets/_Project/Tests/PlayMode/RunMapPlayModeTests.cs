@@ -98,6 +98,33 @@ namespace DarkLegion.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator NewGame_WithActiveSlot_CancelPreservesAndConfirmReplacesOnce()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var previous = store.LoadRun();
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+
+            yield return Press(b => b.name == "NewGame", "새 게임");
+            StringAssert.Contains("기존 런 포기", AllText());
+            yield return Press(b => b.name == "CancelReplaceRun", "취소");
+            Assert.AreEqual(previous.RunId, store.LoadRun().RunId);
+            Assert.IsTrue(Buttons.Single(b => b.name == "ContinueGame").interactable);
+
+            yield return Press(b => b.name == "NewGame", "새 게임");
+            var confirm = Buttons.Single(b => b.name == "ConfirmReplaceRun");
+            confirm.onClick.Invoke();
+            var savedId = store.LoadRun().RunId;
+            confirm.onClick.Invoke();
+            Assert.AreNotEqual(previous.RunId, savedId);
+            Assert.AreEqual(savedId, store.LoadRun().RunId);
+            Assert.AreEqual("F1-N1", Map.Run.CurrentNodeId);
+            Assert.IsNull(store.LoadMeta().LastSettledRunId);
+        }
+
+        [UnityTest]
         public IEnumerator Continue_RestartsBattleFromItsEntryCheckpoint()
         {
             yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1");

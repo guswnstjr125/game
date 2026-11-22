@@ -46,6 +46,10 @@ namespace DarkLegion.UI
         RectTransform _title;
         Text _status;
         Button _continue;
+        RectTransform _replaceDialog;
+        Button _replaceConfirm;
+        SaveData _replaceExpected;
+        bool _startingNew;
         Action _retry;
         public string SaveDirectory { get; set; }
 
@@ -56,6 +60,7 @@ namespace DarkLegion.UI
             _mapRoot.gameObject.SetActive(false);
             _status.text = "";
             _continue.interactable = false;
+            _checkpoint = null;
             try
             {
                 _checkpoint = _store.LoadRun();
@@ -67,19 +72,64 @@ namespace DarkLegion.UI
 
         void StartNew()
         {
-            // 활성 슬롯은 결과 정리가 끝날 때까지 보존한다.
-            if (_store.HasRunSlot)
+            if (!_title.gameObject.activeSelf || _startingNew) return;
+            if (!_store.HasRunSlot)
             {
-                _status.text = "진행 중인 런을 먼저 이어서 마쳐 주세요.";
+                BeginNewRun(null);
                 return;
             }
 
+            if (!_continue.interactable || _checkpoint.Phase == RunSavePhase.SettlementPending)
+            {
+                _status.text = "기존 저장을 확인해 주세요. 정산 대기 중이면 이어하기로 결과를 마쳐 주세요.";
+                return;
+            }
+
+            _replaceExpected = _checkpoint;
+            _replaceConfirm.interactable = true;
+            _title.gameObject.SetActive(false);
+            _replaceDialog.gameObject.SetActive(true);
+        }
+
+        void CancelReplacement()
+        {
+            if (_startingNew || !_replaceDialog.gameObject.activeSelf) return;
+            _replaceExpected = null;
+            _replaceDialog.gameObject.SetActive(false);
+            _title.gameObject.SetActive(true);
+        }
+
+        void ConfirmReplacement()
+        {
+            if (_startingNew || !_replaceDialog.gameObject.activeSelf || _replaceExpected == null) return;
+            _replaceConfirm.interactable = false;
+            BeginNewRun(_replaceExpected);
+        }
+
+        void BeginNewRun(SaveData expected)
+        {
+            _startingNew = true;
+            SaveData next = null;
             Attempt(() =>
             {
-                var run = RunMapSession.NewNecRun(_loaded, DateTime.UtcNow.Ticks, !_store.LoadMeta().TutorialDone).Run;
-                run.RunId = Guid.NewGuid().ToString("N");
-                WriteCheckpoint(RunSave.Capture(run, RunSavePhase.Map));
-                Resume(_checkpoint);
+                if (next == null)
+                {
+                    var run = RunMapSession.NewNecRun(_loaded, DateTime.UtcNow.Ticks, !_store.LoadMeta().TutorialDone).Run;
+                    run.RunId = Guid.NewGuid().ToString("N");
+                    next = RunSave.Capture(run, RunSavePhase.Map);
+                }
+
+                bool saved = expected == null
+                    ? !_store.HasRunSlot && _store.SaveRun(next)
+                    : _store.ReplaceActiveRun(expected, next);
+                if (!saved)
+                    throw new InvalidOperationException("새 게임을 저장하지 못했습니다. 기존 저장을 유지했습니다.");
+
+                _checkpoint = next;
+                _replaceExpected = null;
+                _replaceDialog.gameObject.SetActive(false);
+                _startingNew = false;
+                Attempt(() => Resume(next));
             });
         }
 
@@ -546,6 +596,17 @@ namespace DarkLegion.UI
             _status = Label(_title, "", 24);
             _status.rectTransform.anchoredPosition = new Vector2(0f, -180f);
             _status.raycastTarget = false;
+
+            _replaceDialog = Stretch(_canvasGo.transform, "ReplaceRunDialog");
+            var replacePanel = Box(_replaceDialog, new Color(0.08f, 0.08f, 0.1f, 1f), 1000f, 420f);
+            Place(replacePanel, 0f, 0f);
+            var question = Label(replacePanel, "기존 런 포기\n기존 진행을 포기하고 새 게임을 시작할까요?\n포기한 런의 정산 보상은 지급되지 않습니다.", 30);
+            question.rectTransform.anchoredPosition = new Vector2(0f, 75f);
+            question.raycastTarget = false;
+            _replaceConfirm = ActionButton(replacePanel, "포기하고 시작", new Vector2(-170f, -100f), ConfirmReplacement);
+            _replaceConfirm.name = "ConfirmReplaceRun";
+            ActionButton(replacePanel, "취소", new Vector2(170f, -100f), CancelReplacement).name = "CancelReplaceRun";
+            _replaceDialog.gameObject.SetActive(false);
 
             var overlay = new GameObject("SaveErrorCanvas", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
             overlay.transform.SetParent(_canvasGo.transform, false);
