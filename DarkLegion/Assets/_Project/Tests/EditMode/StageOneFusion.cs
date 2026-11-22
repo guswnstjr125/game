@@ -24,6 +24,8 @@ namespace DarkLegion.Tests.EditMode
             // POOL_NEU_L1
             f.AddPool("NEU", 1, "NEU_MON_007", 50);
             f.AddPool("NEU", 1, "NEU_MON_008", 50);
+            // `09` Monster_Effects NEU_MON_002 Passive FusionRule: 상대 재료의 클래스로 취급 (D-70)
+            f.AddClassMimic("NEU_MON_002");
             return f;
         }
     }

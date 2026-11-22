@@ -16,10 +16,12 @@ namespace DarkLegion.Core
         public bool IgnoreDefense;
         /// <summary>부분 관통률 0~1 (예: 방어 무시 50% = 0.5). DEF × (1 − 관통률)을 내림 후 차감.</summary>
         public float PenetrationRate;
+        /// <summary>고정 피해 감소 (수정 골렘 등). Vulnerable·내림 뒤, 최소 1 전에 뺀다 (D-61·D-70).</summary>
+        public int FlatReduction;
     }
 
     /// <summary>
-    /// D-01: 공격 피해 = max(1, floor((기본피해 × 치명 × Weak − DEF) × Vulnerable)).
+    /// D-01: 공격 피해 = max(1, floor((기본피해 × 치명 × Weak − DEF) × Vulnerable) − 피해 감소) (피해 감소 위치는 D-70).
     /// Shield 적용은 <see cref="ApplyToShieldAndHp"/>에서 따로 한다.
     /// </summary>
     public static class DamageCalculator
@@ -49,7 +51,7 @@ namespace DarkLegion.Core
             damage -= def;
             if (r.TargetVulnerable) damage *= VulnerableMultiplier;
 
-            int result = (int)System.Math.Floor(damage);
+            int result = (int)System.Math.Floor(damage) - (r.FlatReduction > 0 ? r.FlatReduction : 0);
             return result < 1 ? 1 : result;
         }
 
