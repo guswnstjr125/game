@@ -50,6 +50,7 @@ namespace DarkLegion.Core
                 context.Queue.EnqueueDeath(new DeathAction { Unit = Target });
             }
             if (IsAttack && Source is RuntimeMonster attacker) context.Triggers.RaiseAllyAttacked(context, attacker, Target, killed);
+            if (!IsStatusTick && Source is RuntimeEnemy enemy && !(Target is RuntimeEnemy)) context.Triggers.RaiseEnemyAttackHit(context, enemy, Target);
         }
 
         public override string ToString() => $"Damage {BaseDamage} → {Target?.UnitId}";

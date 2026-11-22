@@ -22,6 +22,11 @@ namespace DarkLegion.Core
 
         internal void RaiseAllyAttacked(BattleContext ctx, RuntimeMonster attacker, RuntimeUnit target, bool killed) => AllyAttacked?.Invoke(ctx, attacker, target, killed);
 
+        /// <summary>적의 공격 피해 1건이 아군 몬스터·플레이어에게 처리된 뒤 (틱 제외, D-76 "피격"). Shield가 다 막아도 알린다.</summary>
+        public event System.Action<BattleContext, RuntimeEnemy, RuntimeUnit> EnemyAttackHit;
+
+        internal void RaiseEnemyAttackHit(BattleContext ctx, RuntimeEnemy attacker, RuntimeUnit target) => EnemyAttackHit?.Invoke(ctx, attacker, target);
+
         internal void RaiseUnitDied(BattleContext ctx, RuntimeUnit unit, bool isSacrifice) => UnitDied?.Invoke(ctx, unit, isSacrifice);
 
         internal void RaiseAllySummoned(BattleContext ctx, RuntimeMonster m) => AllySummoned?.Invoke(ctx, m);

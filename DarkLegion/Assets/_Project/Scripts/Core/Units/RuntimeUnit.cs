@@ -112,9 +112,14 @@ namespace DarkLegion.Core
         public bool TrySpendCrystal(int cost)
         {
             if (cost < 0 || CurrentCrystal < cost) return false;
+            int before = CurrentCrystal;
             CurrentCrystal -= cost;
+            if (cost > 0) CrystalSpent?.Invoke(before, CurrentCrystal);
             return true;
         }
+
+        /// <summary>카드·융합 비용으로 Crystal을 썼다 (이전 값, 이후 값). 낡은 뼈조각 (D-76).</summary>
+        public event System.Action<int, int> CrystalSpent;
     }
 
     public sealed class RuntimeEnemy : RuntimeUnit

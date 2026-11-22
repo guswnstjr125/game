@@ -66,7 +66,7 @@ namespace DarkLegion.Core
         private static readonly Dictionary<HandlerKind, HashSet<string>> Registered = new Dictionary<HandlerKind, HashSet<string>>
         {
             [HandlerKind.Curse] = new HashSet<string>(CurseEffects.Implemented),
-            [HandlerKind.Relic] = new HashSet<string>(),
+            [HandlerKind.Relic] = new HashSet<string>(RelicEffects.Implemented),
             [HandlerKind.Event] = new HashSet<string>(EventFlow.Implemented),
         };
 

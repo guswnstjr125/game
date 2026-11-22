@@ -163,9 +163,6 @@ namespace DarkLegion.Core
     /// </summary>
     public static class RunBattle
     {
-        /// <summary>턴의 첫 희생 Crystal +1 유물 (피의 잔 D-04·D-06, REL_BOSS_1F D-15·D-16). 나머지 유물은 2-4.</summary>
-        private static readonly string[] FirstSacrificeRelics = { "REL_BLOOD_CHALICE", "REL_BOSS_1F" };
-
         /// <summary>
         /// 현재 노드의 전투를 만든다. 노드 시드의 전투 난수에서 먼저 엘리트 A/B, 그다음 Wave 2를 굴리고(D-73) 같은 난수로 덱을 섞는다.
         /// 적은 Enemies_Master × 스테이지 인덱스 스케일, 보스는 그대로 (`16` §2).
@@ -203,8 +200,7 @@ namespace DarkLegion.Core
                 Cards = data.Cards,
                 EnemyKits = data.EnemyKits,
                 BossPatterns = data.BossPatterns,
-                Fusion = data.Fusion,
-                FirstSacrificeBonus = run.Relics.Count(r => FirstSacrificeRelics.Contains(r))
+                Fusion = data.Fusion
             };
         }
 
@@ -221,6 +217,8 @@ namespace DarkLegion.Core
                 CurrentHP = run.CurrentHp,
                 FusionCharge = run.FusionCharge
             };
+            ctx.Relics.AddRange(run.Relics);
+            RelicEffects.Attach(ctx); // 플레이어를 넣은 뒤 (낡은 뼈조각이 Crystal 사용을 구독)
         }
 
         /// <summary>

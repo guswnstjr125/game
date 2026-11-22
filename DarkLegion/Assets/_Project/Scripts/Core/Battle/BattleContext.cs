@@ -50,6 +50,20 @@ namespace DarkLegion.Core
         }
 
         private void OnCardDrawn(RuntimeCard card) => CurseEffects.OnDrawn(this, card);
+
+        /// <summary>이 전투의 유물 (런에서 가져온다, `24` §1). 동작은 RelicEffects.Attach가 붙인다.</summary>
+        public System.Collections.Generic.List<string> Relics { get; } = new System.Collections.Generic.List<string>();
+
+        internal System.Collections.Generic.List<System.Func<BattleContext, RuntimeMonster, int>> AttackBonuses { get; } =
+            new System.Collections.Generic.List<System.Func<BattleContext, RuntimeMonster, int>>();
+
+        /// <summary>아군 몬스터의 공격력 = ATK + 읽을 때 계산하는 보너스(재앙의 인장, D-76). 공격과 화면이 같이 쓴다.</summary>
+        public int EffectiveAttack(RuntimeMonster m)
+        {
+            int atk = m.Attack.FinalValue;
+            foreach (var bonus in AttackBonuses) atk += bonus(this, m);
+            return atk;
+        }
         public BattleField Field { get; } = new BattleField();
         public TriggerBus Triggers { get; } = new TriggerBus();
         /// <summary>카드 정의 (임포터가 채운다). 없으면 카드를 쓸 수 없다.</summary>

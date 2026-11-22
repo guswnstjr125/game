@@ -80,16 +80,17 @@ namespace DarkLegion.Tests.EditMode
         public void Cards_NeedData_NonCardKindsDoNot()
         {
             Assert.Throws<System.ArgumentNullException>(() => HandlerRegistry.Has(HandlerKind.Card, "NEC_SKL_002", null));
-            Assert.IsFalse(HandlerRegistry.Has(HandlerKind.Relic, "REL_BLOOD_CHALICE", null));
+            Assert.IsTrue(HandlerRegistry.Has(HandlerKind.Relic, "REL_BLOOD_CHALICE", null), "유물은 데이터 없이 ID로");
+            Assert.IsFalse(HandlerRegistry.Has(HandlerKind.Relic, "REL_RARE_001", null), "2단계 유물은 아직 없다");
         }
 
         [Test]
-        public void CursesEventsDone_RelicsNotYet()
+        public void CursesEventsRelics_AllStage1Registered()
         {
-            // 2-3에서 저주·이벤트 구현. 유물은 2-4에서 구현하면 이 목록이 비고, 그때 "비어 있음"으로 바꾼다
+            // 2-3 저주·이벤트, 2-4 유물
             CollectionAssert.IsEmpty(HandlerRegistry.Missing(HandlerKind.Curse, Stage1Scope.Curses, Data));
             CollectionAssert.IsEmpty(HandlerRegistry.Missing(HandlerKind.Event, Stage1Scope.Events, Data));
-            CollectionAssert.AreEquivalent(Stage1Scope.Relics.ToArray(), HandlerRegistry.Missing(HandlerKind.Relic, Stage1Scope.Relics, Data).ToArray());
+            CollectionAssert.IsEmpty(HandlerRegistry.Missing(HandlerKind.Relic, Stage1Scope.Relics, Data));
         }
 
         [Test]
@@ -97,8 +98,7 @@ namespace DarkLegion.Tests.EditMode
         {
             var r = HandlerRegistry.CheckStage1(Data);
             CollectionAssert.IsEmpty(r.MissingCards);
-            Assert.AreEqual(8, r.MissingPending.Count, "유물 8종 — 2-4 구현 전");
-            Assert.IsTrue(r.MissingPending.Contains("Relic:REL_BLOOD_CHALICE"));
+            CollectionAssert.IsEmpty(r.MissingPending, "1단계 저주·유물·이벤트 모두 구현 (2-3·2-4)");
             Assert.IsTrue(r.CardsOk);
         }
     }
