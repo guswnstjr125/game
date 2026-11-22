@@ -50,13 +50,20 @@ namespace DarkLegion.Core
             return m.SacrificeCrystalOverride ?? m.Level;
         }
 
+        /// <summary>확인 창에 보여줄 이번 희생 Crystal. 실행과 같은 식 (`13` §2.3, D-04·D-15, `37` §2.1).</summary>
+        public static int PreviewGain(BattleContext context, RuntimeMonster m)
+        {
+            int gain = CrystalFor(m);
+            if (context.SacrificesThisTurn == 0) gain += context.FirstSacrificeBonus;
+            return gain;
+        }
+
         public override void Execute(BattleContext context)
         {
             if (Target == null) return;
             Target.SacrificeReserved = false;
             if (Target.IsDead) return;
-            int gain = CrystalFor(Target);
-            if (context.SacrificesThisTurn == 0) gain += context.FirstSacrificeBonus;
+            int gain = PreviewGain(context, Target);
             context.Player.CurrentCrystal += gain;
             context.SacrificesThisTurn++;
             // OnSacrifice 트리거는 TriggerBus 구현 때 여기에 넣는다 (Crystal 지급 직후, Death 큐 등록 전)
