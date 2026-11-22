@@ -92,7 +92,7 @@ namespace DarkLegion.Editor
             if (errors.Count != 0) return errors;
 
             var texts = data.Rows("Cards_Text").ToDictionary(row => row.Str("Card_ID"));
-            EnsureAssetFolder(output);
+            DesignAssetFolder.EnsureExists(output);
             foreach (string guid in AssetDatabase.FindAssets("t:CardData", new[] { output }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -124,14 +124,5 @@ namespace DarkLegion.Editor
         /// <summary>Core 읽기로 시트를 읽는다 (`01` D-74). 중복 키·잘못된 source·끝 뒤 문자는 FormatException.</summary>
         private static DataSheet ReadSheet(string folder, string name) =>
             DataSheet.FromJson(name, File.ReadAllText(Path.Combine(folder, name + ".json")));
-
-        private static void EnsureAssetFolder(string path)
-        {
-            if (AssetDatabase.IsValidFolder(path)) return;
-            int separator = path.LastIndexOf('/');
-            string parent = path.Substring(0, separator);
-            EnsureAssetFolder(parent);
-            AssetDatabase.CreateFolder(parent, path.Substring(separator + 1));
-        }
     }
 }
