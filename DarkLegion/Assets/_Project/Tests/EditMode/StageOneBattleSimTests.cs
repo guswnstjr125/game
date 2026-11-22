@@ -15,7 +15,7 @@ namespace DarkLegion.Tests.EditMode
     {
         public const int Seeds = 40;
 
-        private static IEnumerable<(StageOneBattleSim.Encounter enc, bool wave2)> Cases()
+        private static IEnumerable<(Encounter enc, bool wave2)> Cases()
         {
             foreach (int floor in new[] { 1, 2 })
             {

@@ -39,6 +39,10 @@ namespace DarkLegion.Core
         public string MaterialB;
         public string Result;
         public string RecipeId;
+        /// <summary>재료·결과의 카드 개체 ID. 런 덱 반영은 이것으로 찾는다 (`14` §2, D-73).</summary>
+        public int MaterialAInstance;
+        public int MaterialBInstance;
+        public int ResultInstance;
     }
 
     /// <summary>
@@ -154,7 +158,11 @@ namespace DarkLegion.Core
             var card = ctx.Cards.Get(resultId).CreateCard(deck.NextInstanceId(), false);
             card.FromFusion = true;
             deck.AddToHand(card);
-            ctx.FusionHistory.Add(new FusionRecord { MaterialA = a.CardId, MaterialB = b.CardId, Result = resultId, RecipeId = recipeId });
+            ctx.FusionHistory.Add(new FusionRecord
+            {
+                MaterialA = a.CardId, MaterialB = b.CardId, Result = resultId, RecipeId = recipeId,
+                MaterialAInstance = a.InstanceId, MaterialBInstance = b.InstanceId, ResultInstance = card.InstanceId
+            });
             ctx.Log($"[FUSION] {a.CardId} + {b.CardId} → {resultId}{(recipeId != null ? " (" + recipeId + ")" : "")}");
             return new FusionOutcome { Result = card, RecipeId = recipeId };
         }
