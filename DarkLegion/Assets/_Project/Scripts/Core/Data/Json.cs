@@ -8,7 +8,8 @@ namespace DarkLegion.Core
     /// 외부 라이브러리 없는 JSON 읽기 (`38` §2 형식, #35 Unity 비의존 부분).
     /// Core는 UnityEngine·패키지를 참조하지 않으므로(noEngineReferences) Unity와 dotnet 테스트에서 같은 코드로 읽는다.
     /// 결과: 객체 → Dictionary&lt;string, object&gt;(키 순서 유지), 배열 → List&lt;object&gt;, 문자열, 숫자 → double, true/false, null.
-    /// 형식 오류는 위치와 함께 FormatException.
+    /// 형식 오류(같은 객체 안의 중복 키, 끝 뒤의 문자 포함)는 위치와 함께 FormatException.
+    /// Unity 에디터 임포터도 이 코드로 읽는다 (`01` D-74). 그래서 dotnet 대조 테스트가 Unity가 읽는 값을 그대로 검증한다.
     /// </summary>
     public static class Json
     {
@@ -89,6 +90,7 @@ namespace DarkLegion.Core
                 {
                     SkipWhitespace();
                     string key = ReadString();
+                    if (o.ContainsKey(key)) throw Error($"duplicate key \"{key}\"");
                     SkipWhitespace();
                     Expect(':');
                     SkipWhitespace();
@@ -230,6 +232,10 @@ namespace DarkLegion.Core
             if (!(Json.Parse(json) is Dictionary<string, object> root) || !(root.TryGetValue("rows", out var rowsObj) && rowsObj is List<object> rows))
             {
                 throw new System.FormatException($"{name}: expected {{\"source\", \"rows\"}}");
+            }
+            if (root.TryGetValue("source", out var src) && src != null && !(src is string))
+            {
+                throw new System.FormatException($"{name}: source는 문자열이어야 합니다");
             }
             var list = new List<DataRow>(rows.Count);
             foreach (var r in rows)

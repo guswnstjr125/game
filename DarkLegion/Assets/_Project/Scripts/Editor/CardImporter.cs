@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DarkLegion.Core;
 using DarkLegion.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,14 +17,6 @@ namespace DarkLegion.Editor
         {
             "Cards_Master", "Cards_Effect", "Cards_Upgrade", "Cards_FloorUnlock", "Cards_Text",
             "Monsters_Master", "Monster_Effects"
-        };
-        // D-44의 20종 몬스터. 스킬·액션 12종은 D-71 Core 이름표에서 가져온다.
-        private static readonly string[] StageOneMonsters =
-        {
-            "NEC_MON_001", "NEC_MON_002", "NEC_MON_003", "NEC_MON_004", "NEC_MON_005", "NEC_MON_006",
-            "NEC_MON_007", "NEC_MON_008", "NEC_MON_009", "NEC_MON_010", "NEC_MON_013", "NEC_MON_014",
-            "NEU_MON_001", "NEU_MON_002", "NEU_MON_003", "NEU_MON_004", "NEU_MON_005", "NEU_MON_006",
-            "NEU_MON_007", "NEU_MON_008"
         };
 
         [MenuItem("DarkLegion/Import Card Design Data")]
@@ -48,7 +38,7 @@ namespace DarkLegion.Editor
                 loaded = GameDataLoader.Load(data);
             }
             catch (Exception error) when (error is IOException || error is UnauthorizedAccessException ||
-                error is FormatException || error is JsonException)
+                error is FormatException)
             {
                 return new[] { error.Message };
             }
@@ -56,15 +46,12 @@ namespace DarkLegion.Editor
             var errors = loaded.Errors;
             var rows = data.Rows("Cards_Master");
             if (rows.Count == 0) errors.Add("Cards_Master: 카드 행이 없습니다.");
-            foreach (string id in StageOneMonsters)
-                if (loaded.Cards.Get(id)?.Type != CardType.Monster)
-                    errors.Add($"Cards_Master/{id}: 1단계 필수 몬스터 카드가 없습니다.");
-            foreach (string id in GameDataLoader.ValueNames.Keys)
-            {
-                var expectedType = id.Contains("_SKL_") ? CardType.Skill : CardType.Action;
-                if (loaded.Cards.Get(id)?.Type != expectedType || CardEffects.For(id) == null)
-                    errors.Add($"Cards_Master/{id}: 1단계 필수 카드 또는 효과 핸들러가 없습니다.");
-            }
+            // 1단계 필수 핸들러 (`38` §5, Core HandlerRegistry). 카드 32장은 실패, 저주·유물·이벤트는 구현 전이라 경고 (#76)
+            var handlers = HandlerRegistry.CheckStage1(data);
+            foreach (string id in handlers.MissingCards)
+                errors.Add($"Cards_Master/{id}: 1단계 필수 카드 또는 효과 핸들러가 없습니다.");
+            if (handlers.MissingPending.Count > 0)
+                Debug.LogWarning($"아직 구현하지 않은 1단계 핸들러 {handlers.MissingPending.Count}개: {string.Join(", ", handlers.MissingPending)}");
             foreach (var row in data.Rows("Cards_Upgrade"))
             {
                 if (GameDataLoader.TryParseUpParams(row.Str("Up_Params"), out var values)
@@ -134,42 +121,9 @@ namespace DarkLegion.Editor
 
         private static bool IsValidCost(double cost) => cost >= 0 && cost <= int.MaxValue && cost == Math.Truncate(cost);
 
-        private static DataSheet ReadSheet(string folder, string name)
-        {
-            using var file = File.OpenText(Path.Combine(folder, name + ".json"));
-            using var reader = new JsonTextReader(file) { DateParseHandling = DateParseHandling.None };
-            var sheet = JObject.Load(reader, new JsonLoadSettings
-            {
-                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error
-            });
-            if (!(sheet["rows"] is JArray rows))
-                throw new FormatException($"{name}: rows 배열이 없습니다.");
-            var source = sheet["source"];
-            if (source != null && source.Type != JTokenType.String && source.Type != JTokenType.Null)
-                throw new FormatException($"{name}: source는 문자열이어야 합니다.");
-            if (reader.Read())
-                throw new FormatException($"{name}: 시트 객체 뒤에 추가 데이터가 있습니다.");
-            return new DataSheet(name, (string)source, rows.Select(row =>
-            {
-                if (!(row is JObject columns))
-                    throw new FormatException($"{name}: 행은 JSON 객체여야 합니다.");
-                return new DataRow(columns.Properties().ToDictionary(column => column.Name,
-                    column => ReadCell(name, column)));
-            }).ToArray());
-        }
-
-        private static object ReadCell(string sheet, JProperty cell)
-        {
-            switch (cell.Value.Type)
-            {
-                case JTokenType.Integer:
-                case JTokenType.Float: return (double)cell.Value;
-                case JTokenType.Boolean: return (bool)cell.Value;
-                case JTokenType.String: return (string)cell.Value;
-                case JTokenType.Null: return null;
-                default: throw new FormatException($"{sheet}/{cell.Name}: 지원하지 않는 셀 형식");
-            }
-        }
+        /// <summary>Core 읽기로 시트를 읽는다 (`01` D-74). 중복 키·잘못된 source·끝 뒤 문자는 FormatException.</summary>
+        private static DataSheet ReadSheet(string folder, string name) =>
+            DataSheet.FromJson(name, File.ReadAllText(Path.Combine(folder, name + ".json")));
 
         private static void EnsureAssetFolder(string path)
         {
