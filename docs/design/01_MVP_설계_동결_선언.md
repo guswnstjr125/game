@@ -1117,7 +1117,7 @@ D-42와 §4의 "Claude가 단 댓글은 사용자 승인이 아니다"는 D-60�
 
 ### D-68. 이벤트 보상과 대가
 
-**결정 주체**: 사용자 위임 — [#44 근거](https://github.com/guswnstjr125/game/issues/44#issuecomment-7033743557)
+**결정 주체**: 사용자 위임 — [#44 근거](https://github.com/guswnstjr125/game/issues/44#issuecomment-7033743557), 방랑 상인 HP 비용 이유 [#44 근거 댓글 2](https://github.com/guswnstjr125/game/issues/44#issuecomment-7073907068)
 
 **배경**: 유물 후보와 영혼 감옥의 보상·전투가 정해지지 않았다. 맵에서 전투 슬롯을 참조하는 제단 조건과 1단계 2층에서 쓸 곳이 없는 골드 보상을 보완한다.
 
