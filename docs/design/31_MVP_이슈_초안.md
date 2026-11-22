@@ -281,11 +281,13 @@
   - 메뉴 `DarkLegion/Import Design Data`로 JSON을 읽어 `Assets/_Project/Data/Generated/`에 `38` §3 표의 SO(CardData·MonsterData·EnemyData·BossData·BossPhaseData·RelicData·EventData·StatusData 등) 생성. 카드 강화는 Up_Params(`38` §4)
   - 다시 임포트하면 같은 ID의 에셋을 덮어쓰고, 사라진 ID는 경고
   - `38` §5 검사(중복 ID, 잘못된 참조, 비용·확률 범위, 1단계 핸들러 등록) 실패 시 임포트 중단
-  - 1단계는 1~2층에 필요한 데이터(카드 32장, 적 11종, 보스 2, 유물, 이벤트 7종)만 있어도 통과
+  - 1단계도 `38` §3의 대상 시트에 있는 모든 행을 내보내고 임포트한다 (D-40). 실제 보상·이벤트의 카드 후보는 `Stage1CardPool`의 32장으로 제한한다 (D-44).
+  - 1단계 동작 핸들러 검사는 카드 32장, 저주 3장, 유물 8종, 이벤트 7종에 적용한다 (`38` §5). 2층 보스 유물 `REL_BOSS_2F`는 지급·표시 데이터에 포함하고 동작 핸들러는 2단계에서 검사한다 (D-69).
 - **테스트**
   - 임포트 → 런타임 생성(`08` RuntimeFactory) → 값이 Excel과 같은지 샘플 대조
   - Excel 값을 하나 바꾸고 다시 임포트 → 에셋에 반영
   - `38` §5.1 Position_Bonus 해석: Front `+1`→DEF 1, Back `+10%`→0.10, Middle→없음 (기대값 손으로 적음), 형식 오류는 임포트 실패
+  - 2단계 전용 행도 임포트되는지, 1단계 필수 핸들러가 하나라도 없으면 실패 목록을 출력하고 기존 SO가 그대로인지 확인한다 (`38` §3·§5).
 
 ---
 
