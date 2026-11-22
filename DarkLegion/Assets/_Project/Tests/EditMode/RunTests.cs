@@ -234,13 +234,19 @@ namespace DarkLegion.Tests.EditMode
                     }
                     RunBattle.Finish(run, ctx);
                     if (run.Outcome != RunOutcome.InProgress) break;
+                    // 보상 (2-2): 첫 카드, 유물 후보가 있으면 첫 유물
+                    var reward = RewardFlow.ForBattle(run, kind, Loaded);
+                    Assert.IsTrue(RewardFlow.Confirm(run, reward, 0, reward.RelicChoices.Count > 0 ? 0 : (int?)null));
                 }
-                RunFlow.CompleteNode(run); // 이벤트·휴식·보상은 2-2·2-3에서
+                RunFlow.CompleteNode(run); // 이벤트·휴식은 2-3에서
             }
-            TestContext.Progress.WriteLine($"[PROG-01] seed 2026: {run.Outcome}, HP {run.CurrentHp}/{run.MaxHp}, nodes {run.VisitedNodeIds.Count}, charge {run.FusionCharge}");
+            TestContext.Progress.WriteLine($"[PROG-01] seed 2026: {run.Outcome}, HP {run.CurrentHp}/{run.MaxHp}, nodes {run.VisitedNodeIds.Count}, charge {run.FusionCharge}, gold {run.Gold}, deck {run.Deck.Count}, relics {string.Join(",", run.Relics)}");
             Assert.AreEqual(RunOutcome.Victory, run.Outcome);
             Assert.AreEqual(18, run.VisitedNodeIds.Count);
             Assert.AreEqual("F2-N9", run.VisitedNodeIds.Last());
+            Assert.AreEqual(10 + 12, run.Deck.Count, "전투 노드 12개(일반 8·엘리트 2·보스 2)마다 카드 1장");
+            CollectionAssert.IsSubsetOf(new[] { "REL_BOSS_1F", "REL_BOSS_2F" }, run.Relics);
+            Assert.That(run.Gold, Is.InRange(4 * 5 + 4 * 10 + 15 + 30 + 25 + 50, 4 * 10 + 4 * 20 + 25 + 50 + 40 + 80), "골드 합: 1층 일반 4×5~10, 2층 일반 4×10~20, 엘리트 15~25·30~50, 보스 25~40·50~80");
         }
     }
 }

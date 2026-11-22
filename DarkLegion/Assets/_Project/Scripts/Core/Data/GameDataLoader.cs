@@ -64,6 +64,8 @@ namespace DarkLegion.Core
         public FusionCatalog Fusion { get; } = new FusionCatalog();
         public EnemyKitCatalog EnemyKits { get; } = new EnemyKitCatalog();
         public BossPatternCatalog BossPatterns { get; } = new BossPatternCatalog();
+        /// <summary>`06` Reward_BattleTable·Reward_EliteRelic, `14` Boss_List 보스 유물 (D-16·D-35·D-75).</summary>
+        public RewardTables Rewards { get; } = new RewardTables();
         /// <summary>`06` Encounters 편성 (층·노드·변형, D-61).</summary>
         public EncounterCatalog Encounters { get; } = new EncounterCatalog();
         public List<string> Errors { get; } = new List<string>();
@@ -108,6 +110,7 @@ namespace DarkLegion.Core
             LoadEnemies(data, r);
             LoadBosses(data, r);
             LoadEncounters(data, r);
+            LoadRewards(data, r);
             return r;
         }
 
@@ -129,7 +132,11 @@ namespace DarkLegion.Core
                     r.Errors.Add($"Cards_Master/{id}: unknown 타입 {row.Str("타입")}");
                     continue;
                 }
-                var def = new CardDefinition { Id = id, Type = type, Cost = row.Int("Crystal"), Level = row.Int("레벨", 1), Hp = row.Int("HP"), Atk = row.Int("ATK"), Def = row.Int("DEF") };
+                var def = new CardDefinition
+                {
+                    Id = id, Type = type, Cost = row.Int("Crystal"), Level = row.Int("레벨", 1), Hp = row.Int("HP"), Atk = row.Int("ATK"), Def = row.Int("DEF"),
+                    Rarity = row.Str("희귀도"), Class = row.Str("클래스")
+                };
                 defs[id] = def;
                 r.Cards.Add(def);
             }
@@ -164,6 +171,16 @@ namespace DarkLegion.Core
                     else if (def.Type == CardType.Monster && kv.Key == "DEF") def.UpDef = (int)kv.Value;
                     else def.UpParams[kv.Key] = kv.Value;
                 }
+            }
+
+            foreach (var row in Rows(data, "Cards_FloorUnlock", "Card_ID", defs, r.Errors))
+            {
+                var def = defs[row.Str("Card_ID")];
+                if (row.Has("UnlockFloor")) def.UnlockFloor = row.Int("UnlockFloor");
+                if (row.Has("UnlockFloor_IfStartClass")) def.UnlockFloorIfStartClass = row.Int("UnlockFloor_IfStartClass");
+                def.DropNormal = row.Bool("DropPool_Normal");
+                def.DropElite = row.Bool("DropPool_Elite");
+                def.DropBoss = row.Bool("DropPool_Boss");
             }
 
             foreach (var row in Rows(data, "Cards_Text", "Card_ID", defs, r.Errors))
@@ -352,6 +369,38 @@ namespace DarkLegion.Core
                 list.Add((row.Int("Order"), def));
             }
             foreach (var id in order) r.EnemyKits.Add(id, groups[id].OrderBy(x => x.order).Select(x => x.def).ToArray());
+        }
+
+        // ---------- 보상 (`06` Reward_BattleTable·Reward_EliteRelic, `14` Boss_List) ----------
+
+        private static void LoadRewards(GameData data, GameDataLoadResult r)
+        {
+            var relics = new HashSet<string>(data.Rows("Relics_MVP").Select(x => x.Str("Relic_ID")));
+            bool checkRelics = relics.Count > 0;
+            foreach (var row in data.Rows("Reward_BattleTable"))
+            {
+                string type = row.Str("BattleType");
+                int floor = row.Int("Floor");
+                var rarity = new Dictionary<string, double>
+                {
+                    ["C"] = row.Num("Drop_Common"), ["U"] = row.Num("Drop_Uncommon"), ["R"] = row.Num("Drop_Rare"), ["L"] = row.Num("Drop_Legendary")
+                };
+                if (System.Math.Abs(rarity.Values.Sum() - 1.0) > 1e-6) r.Errors.Add($"Reward_BattleTable/{type}/{floor}: rarity sum {rarity.Values.Sum()} != 1 (D-35)");
+                if (row.Int("GoldMin") > row.Int("GoldMax")) r.Errors.Add($"Reward_BattleTable/{type}/{floor}: GoldMin > GoldMax");
+                r.Rewards.AddRow(new RewardRow { BattleType = type, Floor = floor, GoldMin = row.Int("GoldMin"), GoldMax = row.Int("GoldMax"), Rarity = rarity });
+            }
+            foreach (var row in data.Rows("Reward_EliteRelic"))
+            {
+                var pool = new[] { "Relic_Pool_A", "Relic_Pool_B", "Relic_Pool_C" }.Select(c => row.Str(c)).Where(s => s.Length > 0).ToList();
+                foreach (var id in pool.Where(id => checkRelics && !relics.Contains(id))) r.Errors.Add($"Reward_EliteRelic/{row.Int("Floor")}: {id} not in Relics_MVP");
+                r.Rewards.SetEliteRelicPool(row.Int("Floor"), pool);
+            }
+            foreach (var row in data.Rows("Boss_List"))
+            {
+                string id = row.Str("BossRelic_ID");
+                if (checkRelics && id.Length > 0 && !relics.Contains(id)) r.Errors.Add($"Boss_List/{row.Str("Boss_ID")}: {id} not in Relics_MVP");
+                r.Rewards.SetBossRelic(row.Int("Floor"), id);
+            }
         }
 
         // ---------- 전투 편성 (`06` Encounters, D-61) ----------
