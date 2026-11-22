@@ -47,6 +47,7 @@ namespace DarkLegion.UI
         BattleScreenSession _attached;
         GameData _attachedData;
         Action _onResult;
+        internal Action OnBattleFinished;
 
         /// <summary>
         /// 맵 화면이 만든 전투를 이어받는다 (Start 전에 호출). 전투가 끝나면 "결과 보기" 버튼이 나오고 누르면 onResult를 부른다.
@@ -355,6 +356,9 @@ namespace DarkLegion.UI
             {
                 _outcome.text = (snap.Outcome == BattleOutcome.Victory ? "승리" : "패배")
                     + "\nCore " + snap.Outcome + "\nHP " + snap.Hp + "/" + snap.MaxHp;
+                var finished = OnBattleFinished;
+                OnBattleFinished = null;
+                finished?.Invoke();
             }
         }
 

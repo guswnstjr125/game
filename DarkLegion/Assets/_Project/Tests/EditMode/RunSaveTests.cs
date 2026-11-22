@@ -414,6 +414,24 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreEqual("F1-N3", RunSave.Restore(save).CurrentNodeId);
         }
 
+        [Test]
+        public void DeleteSettledRun_PreservesSlotUntilMetaPayoutIsCommitted()
+        {
+            var store = new SaveFileStore("save", new MemorySaveFileSystem());
+            Assert.IsFalse(store.HasRunSlot);
+            var run = Floor2BossEntry();
+            RunFlow.Forfeit(run);
+            var settlement = new SettlementPendingDTO { RunId = run.RunId, Outcome = run.Outcome };
+            Assert.IsTrue(store.SaveRun(RunSave.CaptureSettlement(run, settlement)));
+            Assert.Throws<InvalidOperationException>(() => store.DeleteSettledRun());
+            Assert.IsTrue(store.HasRunSlot);
+
+            Assert.IsTrue(store.ApplySettlement(settlement));
+            store.DeleteSettledRun();
+            Assert.IsFalse(store.HasRunSlot);
+            Assert.AreEqual(run.RunId, store.LoadMeta().LastSettledRunId);
+        }
+
         private sealed class MemorySaveFileSystem : ISaveFileSystem
         {
             readonly System.Collections.Generic.Dictionary<string, string> _files = new System.Collections.Generic.Dictionary<string, string>();

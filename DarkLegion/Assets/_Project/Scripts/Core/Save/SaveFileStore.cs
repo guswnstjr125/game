@@ -54,6 +54,17 @@ namespace DarkLegion.Core
             _files = files ?? new PhysicalSaveFileSystem();
         }
 
+        public bool HasRunSlot => _files.Exists(Path.Combine(_directory, RunFileName));
+
+        public void DeleteSettledRun()
+        {
+            var run = LoadRun();
+            if (run == null) return;
+            if (run.Phase != RunSavePhase.SettlementPending || LoadMeta().LastSettledRunId != run.RunId)
+                throw new InvalidOperationException("정산된 런만 삭제할 수 있습니다.");
+            _files.Delete(Path.Combine(_directory, RunFileName));
+        }
+
         public bool SaveRun(SaveData save) => AtomicWrite(Path.Combine(_directory, RunFileName), SaveJson.Write(save));
         public SaveData LoadRun()
         {
