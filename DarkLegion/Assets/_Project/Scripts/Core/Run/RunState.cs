@@ -60,6 +60,10 @@ namespace DarkLegion.Core
         /// <summary>이벤트 노드 ID → 나온 이벤트 ID (D-69). 이벤트는 2-3에서 채운다.</summary>
         public Dictionary<string, string> NodeEventIds = new Dictionary<string, string>();
         public RunOutcome Outcome = RunOutcome.InProgress;
+        /// <summary>새 런을 만들 때 `!Meta.TutorialDone` (`14` §2·§3). 1층 노드 1 희생 안내 전투 (D-32·D-76).</summary>
+        public bool TutorialEnabled;
+        /// <summary>안내 전투의 승리 또는 패배를 기록했다. 앱 종료·포기는 완료가 아니다 (`14` §3).</summary>
+        public bool TutorialCompleted;
 
         public int Node => StageIndex + 1;
         public string CurrentNodeId => NodeId(Floor, Node);
@@ -121,9 +125,9 @@ namespace DarkLegion.Core
     /// <summary>런 진행: 새 런, 노드 완료(충전·층 이동·승리, D-03·D-66), 포기.</summary>
     public static class RunFlow
     {
-        public static RunState NewRun(string runId, long rngSeed, string startClass, int maxHp, IEnumerable<string> startDeck, IEnumerable<string> startRelics)
+        public static RunState NewRun(string runId, long rngSeed, string startClass, int maxHp, IEnumerable<string> startDeck, IEnumerable<string> startRelics, bool tutorialEnabled = false)
         {
-            var run = new RunState { RunId = runId, RngSeed = rngSeed, StartClass = startClass, MaxHp = maxHp, CurrentHp = maxHp };
+            var run = new RunState { RunId = runId, RngSeed = rngSeed, StartClass = startClass, MaxHp = maxHp, CurrentHp = maxHp, TutorialEnabled = tutorialEnabled };
             foreach (var id in startDeck) run.AddCard(id);
             run.Relics.AddRange(startRelics);
             return run;
@@ -174,7 +178,8 @@ namespace DarkLegion.Core
             if (variants.Count == 0) throw new System.InvalidOperationException($"no encounter for {run.CurrentNodeId}");
             var enc = variants.Count > 1 && ctx.Random.Chance(0.5) ? variants[1] : variants[0];
             bool wave2 = enc.Waves.Count > 1 && ctx.Random.Chance(0.5);
-            AttachPlayer(run, data, ctx);
+            ctx.IsTutorial = IsTutorialBattle(run);
+            AttachPlayer(run, data, ctx, ctx.IsTutorial);
             EncounterFactory.Spawn(ctx, enc, wave2, run.StageIndex);
             return ctx;
         }
@@ -193,6 +198,12 @@ namespace DarkLegion.Core
             return ctx;
         }
 
+        /// <summary>D-32 첫 턴 고정 손패: 파편·뼈 병사·굶주린 구울·영혼 추출·피의 의식.</summary>
+        public static readonly IReadOnlyList<string> TutorialHand = new[] { "NEU_MON_001", "NEC_MON_001", "NEC_MON_002", "NEC_SKL_001", "NEC_ACT_001" };
+
+        /// <summary>이 노드가 희생 안내 전투인가: 1층 노드 1, 안내 켜짐, 아직 완료 아님 (D-32·D-76).</summary>
+        public static bool IsTutorialBattle(RunState run) => run.TutorialEnabled && !run.TutorialCompleted && run.Floor == 1 && run.Node == 1;
+
         private static BattleContext NewContext(RunState run, GameDataLoadResult data)
         {
             return new BattleContext(run.NodeSeed)
@@ -204,15 +215,27 @@ namespace DarkLegion.Core
             };
         }
 
-        private static void AttachPlayer(RunState run, GameDataLoadResult data, BattleContext ctx)
+        private static void AttachPlayer(RunState run, GameDataLoadResult data, BattleContext ctx, bool tutorial = false)
         {
             var cards = run.Deck.Select(c =>
             {
                 var rc = data.Cards.Get(c.CardId).CreateCard(c.InstanceId, c.Upgraded);
                 rc.FromFusion = c.FromFusion;
                 return rc;
-            });
-            ctx.Player = new RuntimePlayer("P", run.MaxHp, new RuntimeDeck(cards, ctx.Random) { MinNextInstanceId = run.NextCardInstanceId })
+            }).ToList();
+            // 안내 전투: 고정 5장은 그 카드 ID의 첫 개체, 나머지는 섞는다. 고정 5장을 뽑을 더미 맨 위에 둬 첫 턴 드로우가 그 5장이다 (D-76)
+            var fixedHand = new List<RuntimeCard>();
+            if (tutorial)
+            {
+                foreach (var id in TutorialHand)
+                {
+                    var first = cards.Where(c => c.CardId == id && !fixedHand.Contains(c)).OrderBy(c => c.InstanceId).FirstOrDefault();
+                    if (first != null) fixedHand.Add(first);
+                }
+            }
+            var deck = new RuntimeDeck(cards.Where(c => !fixedHand.Contains(c)), ctx.Random) { MinNextInstanceId = run.NextCardInstanceId };
+            deck.PlaceOnTop(fixedHand);
+            ctx.Player = new RuntimePlayer("P", run.MaxHp, deck)
             {
                 CurrentHP = run.CurrentHp,
                 FusionCharge = run.FusionCharge
@@ -229,6 +252,7 @@ namespace DarkLegion.Core
         {
             run.CurrentHp = System.Math.Max(0, ctx.Player.CurrentHP);
             run.FusionCharge = ctx.Player.FusionCharge;
+            if (ctx.IsTutorial && ctx.Outcome != BattleOutcome.None) run.TutorialCompleted = true; // 승리·패배 기록 (`14` §3)
             if (ctx.Outcome == BattleOutcome.Defeat)
             {
                 run.Outcome = RunOutcome.Defeat;
