@@ -112,6 +112,29 @@ namespace DarkLegion.Core
         public EventScreenResult Result => _result;
         public bool Completed => _completed;
 
+        /// <summary>D-67: 선택 중 상태와 이미 적용된 결과를 저장 DTO로 내보낸다.</summary>
+        public EventPendingDTO CapturePending() => RunSave.CloneEventPending(new EventPendingDTO
+        {
+            NodeId = _nodeId, EventId = EventId, Phase = Phase, Outcome = _outcome, Choice = _choice, Result = _result
+        });
+
+        /// <summary>이벤트 진행 복구. Result 상태는 저장 결과만 표시하고 EventFlow.Confirm을 다시 부르지 않는다.</summary>
+        public static EventScreenSession RestorePending(RunState run, GameDataLoadResult data, EventPendingDTO pending,
+            Action<EventScreenResult> onComplete = null, Func<string, string> nameOf = null)
+        {
+            if (run == null || pending == null || pending.NodeId != run.CurrentNodeId) throw new InvalidOperationException("event pending does not match run");
+            var clone = RunSave.CloneEventPending(pending);
+            var session = new EventScreenSession(run.Floor, pending.EventId, run, data, onComplete, nameOf)
+            {
+                Phase = clone.Phase, _outcome = clone.Outcome, _choice = clone.Choice ?? new EventChoice(), _result = clone.Result
+            };
+            session._selectedCard = session._choice.CardIndex ?? -1;
+            session._selectedRelic = session._choice.RelicIndex ?? -1;
+            if (pending.Phase == EventScreenPhase.Result && (pending.Result == null || pending.Outcome == null || !pending.Outcome.Confirmed))
+                throw new InvalidOperationException("confirmed event result is missing");
+            return session;
+        }
+
         /// <param name="floor">이벤트 노드의 층. 1·2층만 받는다.</param>
         /// <param name="eventId">EventFlow.Enter가 정한 이벤트 ID. 그 층 풀에 있어야 한다.</param>
         /// <param name="run">현재 노드가 그 이벤트 노드인 런. 확정 때 이 객체를 바꾼다.</param>

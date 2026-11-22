@@ -90,6 +90,22 @@ namespace DarkLegion.Core
             _nameOf = nameOf ?? (id => id);
         }
 
+        /// <summary>D-84 복구: 결과만 복원하며 HP나 카드를 다시 바꾸지 않는다.</summary>
+        public static RestScreenSession RestorePending(RunState run, GameDataLoadResult data, RestPendingDTO pending, Action<RestScreenResult> onComplete = null, Func<string, string> nameOf = null)
+        {
+            if (pending == null) throw new ArgumentNullException(nameof(pending));
+            if (pending.NodeId != run?.CurrentNodeId || pending.HpAfter != run.CurrentHp || pending.MaxHp != run.MaxHp)
+                throw new InvalidOperationException("rest pending does not match run");
+            if (pending.Upgraded && !run.Deck.Any(c => c.InstanceId == pending.UpgradedInstanceId && c.CardId == pending.UpgradedCardId && c.Upgraded))
+                throw new InvalidOperationException("rest upgrade does not match run");
+            var session = new RestScreenSession(run, data, onComplete, nameOf)
+            {
+                Phase = RestScreenPhase.Result,
+                Result = new RestScreenResult { NodeId = pending.NodeId, Healed = pending.Healed, Upgraded = pending.Upgraded, ContinuedOnly = pending.ContinuedOnly, HpBefore = pending.HpBefore, HpAfter = pending.HpAfter, MaxHp = pending.MaxHp, UpgradedInstanceId = pending.UpgradedInstanceId, UpgradedCardId = pending.UpgradedCardId }
+            };
+            return session;
+        }
+
         RestOptions Options => RestFlow.Options(_run, _data);
 
         List<RunCard> Candidates() => _run.Deck.Where(c => RunDeckRules.IsUpgradable(c, _data.Cards)).ToList();

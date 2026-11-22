@@ -56,6 +56,9 @@ namespace DarkLegion.Core
         /// <summary>새 카드에만 발급하는 다음 개체 ID. 재사용하지 않는다 (`14` §2, D-73).</summary>
         public int NextCardInstanceId = 1;
         public List<string> Relics = new List<string>();
+        /// <summary>런 단위 유물 상태 (`14` §2). 실제 효과를 가진 유물만 갱신한다.</summary>
+        public Dictionary<string, bool> RelicUsedThisRun = new Dictionary<string, bool>();
+        public Dictionary<string, int> RelicCounters = new Dictionary<string, int>();
         public List<string> VisitedNodeIds = new List<string>();
         /// <summary>이벤트 노드 ID → 나온 이벤트 ID (D-69). 이벤트는 2-3에서 채운다.</summary>
         public Dictionary<string, string> NodeEventIds = new Dictionary<string, string>();
@@ -64,6 +67,11 @@ namespace DarkLegion.Core
         public bool TutorialEnabled;
         /// <summary>안내 전투의 승리 또는 패배를 기록했다. 앱 종료·포기는 완료가 아니다 (`14` §3).</summary>
         public bool TutorialCompleted;
+        public bool FreeFusionUsed;
+        public bool FreeFusionPending;
+        public List<string> Consumables = new List<string>();
+        public int ShopRemovalsUsed;
+        public ShopVisitDTO Shop;
 
         public int Node => StageIndex + 1;
         public string CurrentNodeId => NodeId(Floor, Node);

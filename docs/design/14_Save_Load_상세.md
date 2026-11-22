@@ -24,8 +24,9 @@ public class SaveData
     public string RunId;        // 새 런마다 고유한 ID
     public bool TutorialEnabled;
     public bool TutorialCompleted;
-    public RunSavePhase Phase;  // Map, BattleEntry, RewardPending, SettlementPending
+    public RunSavePhase Phase;  // Map, BattleEntry, RewardPending, RestPending, SettlementPending
     public RewardPendingDTO Reward;
+    public RestPendingDTO Rest;
     public SettlementPendingDTO Settlement;
     public PlayerSaveDTO Player;
     public List<CardSaveDTO> Deck;  // RunState.Deck의 순서 그대로
@@ -47,6 +48,10 @@ public class SaveData
 ```
 
 `Phase`에 따라 대기 필드는 하나만 채운다. `RewardPendingDTO`는 노드 ID, 보상 출처, 후보 ID의 순서, 선택 단계·항목 번호(카드 건너뛰기 포함), 미적용 비용·효과를 기록한다. `SettlementPendingDTO`는 승리·패배·포기, 도달 위치, 클리어한 층, 지급 내역과 업적 판정에 쓰는 런 집계를 기록한다. `SettlementReceiptDTO`는 해당 런의 결과와 실제 지급 내역·새 업적을 기록한다.
+
+`RestPendingDTO`는 이미 적용한 회복 또는 강화 결과(노드 ID, 종류, HP 전후, 강화한 카드 개체 ID와 카드 ID)를 기록한다. 복구는 저장된 결과를 표시하고 효과를 재적용하지 않는다 (D-84).
+
+영혼 감옥 강제 전투의 `BattleEntry`에는 확인된 이벤트 선택·결과 DTO를 함께 기록한다. 런 상태에는 이미 선택 대가와 효과가 적용되어 있으므로 전투 복구는 이를 다시 적용하지 않고 저장된 진입 상태에서 전투를 시작한다 (D-67).
 
 ### ShopVisitDTO
 
@@ -206,6 +211,7 @@ public class BattleDeckSnapshotDTO
 | 맵 | 새 런 생성 또는 노드 완료 시 런과 다음 위치 저장 | 저장된 맵을 연다 |
 | 전투 진입 | 전투를 열기 전에 노드·진입 상태 저장. 이벤트 강제 전투는 선택 및 진입 전 효과까지 함께 저장 | 해당 전투를 같은 상태와 노드 시드로 처음부터 시작 |
 | 보상 대기 | 승리 후 런 상태, 최종 보스라면 승리 판정, 노드 ID, 고정된 후보, 선택 단계와 현재 선택, 미지급 내역을 저장한 뒤 화면 표시 | 같은 보상 화면과 선택 상태 복구 |
+| 휴식 대기 | 회복 또는 강화 확정 결과와 변경된 런 상태를 저장한 뒤 결과 화면 표시 (D-84) | 저장된 결과 화면을 열고 효과를 재적용하지 않으며, 계속에서 노드를 한 번 완료 |
 | 정산 대기 | 최종 보상 확정, 패배 또는 포기 시 결과와 층별 지급 내역·통계·업적 판정 입력을 저장 | 런 ID로 정산을 재개하고 결과 화면을 복구 |
 
 - 골드·자동 유물·선택 유물·카드의 지급은 보상 화면의 마지막 확인에서 확정한다. 카드 건너뛰기도 선택으로 저장한다. 지급과 다음 위치 또는 정산 대기를 같은 런 파일 교체로 확정한다. 화면에서 같은 확인 입력이 다시 와도 보상 대기 상태가 이미 끝났으면 처리하지 않는다.
