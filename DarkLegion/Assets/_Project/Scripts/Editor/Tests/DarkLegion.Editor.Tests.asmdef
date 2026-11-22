@@ -1,0 +1,6 @@
+{
+    "name": "DarkLegion.Editor.Tests",
+    "references": ["DarkLegion.Core", "DarkLegion.Data", "DarkLegion.Editor"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}
