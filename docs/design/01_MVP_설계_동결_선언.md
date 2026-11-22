@@ -1338,7 +1338,7 @@ D-42와 §4의 "Claude가 단 댓글은 사용자 승인이 아니다"는 D-60�
 
 ### D-78. 일반 Shield와 Enemy Phase Shield가 겹칠 때의 만료 (사용자 위임)
 
-**결정 주체**: 사용자 위임, 개임 개발 분석 선정(2026-11-22). 위임 문장: 「Apply these decisions (user delegated the choice; selected by the '개임 개발' analysis)」. 겹침은 분석의 A안(일반분이 먼저 만료, D-64 문자 그대로)이다. 근거는 이 설계 PR 본문이다.
+**결정 주체**: 사용자 위임, 개임 개발 분석 선정(2026-11-22). 위임 문장: 「Apply these decisions (user delegated the choice; selected by the '개임 개발' analysis)」. 겹침은 분석의 A안(일반분이 먼저 만료, D-64 문자 그대로)이다. 근거는 [PR #97](https://github.com/guswnstjr125/game/pull/97) 본문이다.
 
 **배경**: D-64는 출처가 하나일 때만 정한다. 일반 Shield는 그 턴 종료에 사라지고, Enemy Phase에 얻은 Shield는 다음 턴 종료에 사라진다. Core `StatusContainer`는 Shield를 값 하나와 `_shieldSurvivesTurnEnd` 플래그 하나로 둔다. Enemy Phase에서 1이라도 얻으면 턴 종료에 **남은 전부**를 남긴다. 일반 5 다음에 Enemy Phase 4를 얻으면 종료 뒤 Shield는 9다. D-64를 글자 그대로 읽으면 4가 남아야 한다. 연속으로 Enemy Phase +4 다음 턴 +3이면 구현은 7이 남고, 글자 그대로는 3이다. 겹침·연속 부여 테스트는 없다.
 
