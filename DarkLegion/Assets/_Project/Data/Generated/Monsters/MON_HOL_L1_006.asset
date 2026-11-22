@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_HOL_L1_006
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_HOL_L1_006
+  displayName: "\uC131\uC18C \uC218\uD638\uC790"
+  monsterClass: HOL
+  level: 1
+  cardId: HOL_MON_006
+  hp: 5
+  atk: 1
+  def: 5
+  crystal: 1
+  onSummon: "\uC18C\uD658 \uC2DC \uC544\uAD70 \uC804\uCCB4\uC5D0\uAC8C Shield 2\uB97C
+    \uBD80\uC5EC\uD55C\uB2E4."
+  passive: 
+  onDeath: 
+  onAttack: 
+  special: 
+  effects:
+  - slot: OnSummon
+    trigger: OnSummon
+    condition: 
+    effect: GainShield
+    target: AllAllyMonsters
+    hasValue: 1
+    value: 2
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

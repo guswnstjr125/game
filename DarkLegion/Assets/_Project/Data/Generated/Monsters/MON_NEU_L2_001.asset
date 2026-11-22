@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_NEU_L2_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_NEU_L2_001
+  displayName: "\uC218\uC815 \uACE8\uB818"
+  monsterClass: NEU
+  level: 2
+  cardId: NEU_MON_007
+  hp: 25
+  atk: 4
+  def: 4
+  crystal: 2
+  onSummon: 
+  passive: "Front \uC704\uCE58\uC5D0\uC11C \uC544\uAD70 \uC804\uCCB4\uAC00 \uBC1B\uB294
+    \uD53C\uD574\uB97C 1 \uAC10\uC18C\uC2DC\uD0A8\uB2E4."
+  onDeath: "\uC774 \uBAAC\uC2A4\uD130\uB97C \uD76C\uC0DD\uD558\uBA74 Crystal 3\uC744
+    \uD68D\uB4DD\uD55C\uB2E4. (\uC77C\uBC18 Lv2 \uD76C\uC0DD +2 \uB300\uBE44 +1 \uCD94\uAC00)"
+  onAttack: 
+  special: 
+  effects:
+  - slot: Passive
+    trigger: Aura
+    condition: Self.Position==Front
+    effect: DamageReduction
+    target: AllAllyMonsters
+    hasValue: 1
+    value: 1
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 
+  - slot: OnDeath
+    trigger: OnSacrificed
+    condition: 
+    effect: SacrificeCrystal
+    target: Player
+    hasValue: 1
+    value: 3
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

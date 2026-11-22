@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_BEA_L2_004
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_BEA_L2_004
+  displayName: "\uBFD4\uC18C"
+  monsterClass: BEA
+  level: 2
+  cardId: BEA_MON_010
+  hp: 24
+  atk: 4
+  def: 1
+  crystal: 2
+  onSummon: 
+  passive: "\uC774 \uBAAC\uC2A4\uD130\uB294 Front \uC704\uCE58\uC5D0\uC11C \uC544\uAD70
+    Back \uBAAC\uC2A4\uD130\uB97C \uBCF4\uD638\uD55C\uB2E4. (Taunt \uD6A8\uACFC)"
+  onDeath: 
+  onAttack: 
+  special: 
+  effects:
+  - slot: Passive
+    trigger: Aura
+    condition: Self.Position==Front
+    effect: GrantStatus:Taunt
+    target: Self
+    hasValue: 0
+    value: 0
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

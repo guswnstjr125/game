@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb589a3979e18f744bc89bb386f78633, type: 3}
+  m_Name: REL_UNC_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.RelicData
+  relicId: REL_UNC_002
+  displayName: "\uC7AC\uC559\uC758 \uC778\uC7A5"
+  rarity: Uncommon
+  trigger: Passive
+  effect: "Burn \uC801 \uC218\xD7ATK+1 (\uCD5C\uB300+3)"
+  text: "Burn \uC0C1\uD0DC\uC778 \uC801 1\uBA85\uB9C8\uB2E4 \uC544\uAD70 \uBAAC\uC2A4\uD130
+    \uC804\uCCB4\uC758 ATK\uAC00 1 \uB298\uC5B4\uB09C\uB2E4. (\uCD5C\uB300 +3)"

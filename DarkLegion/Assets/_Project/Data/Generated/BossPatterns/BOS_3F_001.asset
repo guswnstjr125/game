@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a5fc19252d5ddd4586fb25bc9ffe1f6, type: 3}
+  m_Name: BOS_3F_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.BossPatternData
+  bossId: BOS_3F_001
+  enemyId: ENE_3F_BOS_001
+  displayName: "\uD608\uC721\uC758 \uC5B4\uBA38\uB2C8"
+  floor: 3
+  hp: 73
+  atk: 11
+  def: 2
+  phaseCount: 3
+  bossRelicId: REL_BOSS_3F
+  cardRewardPool: "BEA Lv2 + HOL Lv1 (Rare+ \uBCF4\uC815)"
+  hasGoldReward: 1
+  goldRewardMin: 80
+  goldRewardMax: 110
+  phases:
+  - phase: 1
+    hpPctMin: 50
+    hpPctMax: 100
+  - phase: 2
+    hpPctMin: 20
+    hpPctMax: 50
+  - phase: 3
+    hpPctMin: 0
+    hpPctMax: 20
+  steps:
+  - phase: 1
+    turnIndex: 0
+    action: SingleAttack
+    damage: 11
+    statusEffect: 
+    targetRule: Front
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 1
+    turnIndex: 1
+    action: ApplyWeak
+    damage: 0
+    statusEffect: "Weak 2\uD134"
+    targetRule: All
+    enqueueTwice: 0
+    note: "\uD76C\uC0DD \uC720\uB3C4"
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 1
+    turnIndex: 2
+    action: LifeSteal
+    damage: 11
+    statusEffect: "HP \uD68C\uBCF5 50%"
+    targetRule: LowestHp
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 2
+    turnIndex: 0
+    action: Summon
+    damage: 0
+    statusEffect: 
+    targetRule: 
+    enqueueTwice: 0
+    note: "FLS_003 \xD71"
+    onceOnPhaseEnter: 1
+    thresholdPct: 0
+    curseId: 
+  - phase: 2
+    turnIndex: 0
+    action: AoE
+    damage: 6
+    statusEffect: 
+    targetRule: All
+    enqueueTwice: 0
+    note: "T0 \uD6C4 \uC989\uC2DC"
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 2
+    turnIndex: 1
+    action: LifeSteal
+    damage: 11
+    statusEffect: "HP \uD68C\uBCF5 50%"
+    targetRule: LowestHp
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 3
+    turnIndex: 0
+    action: SingleAttack
+    damage: 11
+    statusEffect: 
+    targetRule: Front
+    enqueueTwice: 1
+    note: "2\uD68C"
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 3
+    turnIndex: 0
+    action: SelfHeal
+    damage: 6
+    statusEffect: 
+    targetRule: Self
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 

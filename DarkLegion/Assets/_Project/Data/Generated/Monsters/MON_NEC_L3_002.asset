@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_NEC_L3_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_NEC_L3_002
+  displayName: "\uBF08\uC758 \uAD70\uC8FC"
+  monsterClass: NEC
+  level: 3
+  cardId: NEC_MON_012
+  hp: 35
+  atk: 6
+  def: 4
+  crystal: 3
+  onSummon: "\uC18C\uD658 \uC2DC Lv1 \uD574\uACE8 \uD1A0\uD070 2\uB9C8\uB9AC\uB97C
+    \uC989\uC2DC \uC18C\uD658\uD55C\uB2E4. (\uD1A0\uD070: HP4/ATK2/DEF0)"
+  passive: "\uC544\uAD70 \uBAAC\uC2A4\uD130\uAC00 \uC0AC\uB9DD\uD560 \uB54C\uB9C8\uB2E4
+    \uC774 \uBAAC\uC2A4\uD130\uC758 HP\uB97C 3 \uD68C\uBCF5\uD55C\uB2E4."
+  onDeath: 
+  onAttack: 
+  special: 
+  effects:
+  - slot: OnSummon
+    trigger: OnSummon
+    condition: 
+    effect: SummonToken:Skeleton
+    target: Self
+    hasValue: 1
+    value: 2
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 
+  - slot: Passive
+    trigger: OnAllyDeath
+    condition: 
+    effect: Heal
+    target: Self
+    hasValue: 1
+    value: 3
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

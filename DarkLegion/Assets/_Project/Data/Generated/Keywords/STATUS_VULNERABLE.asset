@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33be8af5dca08a44c8b10296d00bcf74, type: 3}
+  m_Name: STATUS_VULNERABLE
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.KeywordData
+  keywordId: STATUS_VULNERABLE
+  term: Vulnerable
+  displayName: Vulnerable
+  tooltip: "\uC774 \uC720\uB2DB\uC774 \uBC1B\uB294 \uACF5\uACA9 \uD53C\uD574\uAC00
+    25% \uB298\uC5B4\uB09C\uB2E4."

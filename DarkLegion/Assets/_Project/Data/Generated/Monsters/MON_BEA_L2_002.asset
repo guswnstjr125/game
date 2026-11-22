@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_BEA_L2_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_BEA_L2_002
+  displayName: "\uB9F9\uB3C5 \uAC70\uBBF8"
+  monsterClass: BEA
+  level: 2
+  cardId: BEA_MON_008
+  hp: 18
+  atk: 4
+  def: 2
+  crystal: 2
+  onSummon: "\uC18C\uD658 \uC2DC \uC801 \uC804\uCCB4\uC5D0\uAC8C Poison 1\uC744 \uBD80\uC5EC\uD55C\uB2E4."
+  passive: 
+  onDeath: 
+  onAttack: "\uC774 \uBAAC\uC2A4\uD130\uAC00 \uACF5\uACA9\uD560 \uB54C\uB9C8\uB2E4
+    \uB300\uC0C1\uC758 Poison \uC2A4\uD0DD\uC744 1 \uCD94\uAC00\uD55C\uB2E4."
+  special: 
+  effects:
+  - slot: OnSummon
+    trigger: OnSummon
+    condition: 
+    effect: ApplyStatus:Poison
+    target: AllEnemies
+    hasValue: 1
+    value: 1
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 
+  - slot: OnAttack
+    trigger: OnAttack
+    condition: 
+    effect: ApplyStatus:Poison
+    target: AttackTarget
+    hasValue: 1
+    value: 1
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a5fc19252d5ddd4586fb25bc9ffe1f6, type: 3}
+  m_Name: BOS_4F_001
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.BossPatternData
+  bossId: BOS_4F_001
+  enemyId: ENE_4F_BOS_001
+  displayName: "\uBB34\uC8C4\uC758 \uC2EC\uD310\uAD00"
+  floor: 4
+  hp: 87
+  atk: 14
+  def: 3
+  phaseCount: 3
+  bossRelicId: REL_BOSS_4F
+  cardRewardPool: "HOL Lv2 + NEC Lv3 (Rare+ \uBCF4\uC815)"
+  hasGoldReward: 1
+  goldRewardMin: 95
+  goldRewardMax: 130
+  phases:
+  - phase: 1
+    hpPctMin: 50
+    hpPctMax: 100
+  - phase: 2
+    hpPctMin: 20
+    hpPctMax: 50
+  - phase: 3
+    hpPctMin: 0
+    hpPctMax: 20
+  steps:
+  - phase: 1
+    turnIndex: 0
+    action: SingleAttack
+    damage: 14
+    statusEffect: 
+    targetRule: Front
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 1
+    turnIndex: 1
+    action: ApplyBind
+    damage: 0
+    statusEffect: "Bind 1\uD134"
+    targetRule: Front
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 1
+    turnIndex: 2
+    action: Execute
+    damage: 0
+    statusEffect: "HP\u226430% \uC989\uC0AC"
+    targetRule: LowestHpPct
+    enqueueTwice: 0
+    note: "Lv2 \uCC98\uD615"
+    onceOnPhaseEnter: 0
+    thresholdPct: 30
+    curseId: 
+  - phase: 2
+    turnIndex: 0
+    action: ExecuteAura
+    damage: 0
+    statusEffect: "Execute \uC784\uACC4 25% \uC0C1\uD5A5 2\uD134"
+    targetRule: All
+    enqueueTwice: 0
+    note: "\uC624\uB77C"
+    onceOnPhaseEnter: 0
+    thresholdPct: 25
+    curseId: 
+  - phase: 2
+    turnIndex: 1
+    action: AoE
+    damage: 7
+    statusEffect: 
+    targetRule: All
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 2
+    turnIndex: 2
+    action: RemoveShield
+    damage: 0
+    statusEffect: "Shield \uC804\uB7C9 \uC81C\uAC70"
+    targetRule: All
+    enqueueTwice: 0
+    note: 
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 3
+    turnIndex: 0
+    action: SingleAttack
+    damage: 14
+    statusEffect: 
+    targetRule: Front
+    enqueueTwice: 1
+    note: "2\uD68C"
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 
+  - phase: 3
+    turnIndex: 0
+    action: ApplyVulnerable
+    damage: 0
+    statusEffect: "Vulnerable 2\uD134"
+    targetRule: All
+    enqueueTwice: 0
+    note: "\uC804\uC7A5, 1\uD68C"
+    onceOnPhaseEnter: 0
+    thresholdPct: 0
+    curseId: 

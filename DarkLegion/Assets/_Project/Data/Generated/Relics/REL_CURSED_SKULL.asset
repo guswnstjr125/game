@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb589a3979e18f744bc89bb386f78633, type: 3}
+  m_Name: REL_CURSED_SKULL
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.RelicData
+  relicId: REL_CURSED_SKULL
+  displayName: "\uC800\uC8FC\uBC1B\uC740 \uB450\uAC1C\uACE8"
+  rarity: Uncommon
+  trigger: OnAllyDeath
+  effect: Draw +1
+  text: "\uC544\uAD70 \uBAAC\uC2A4\uD130\uAC00 \uC8FD\uC744 \uB54C\uB9C8\uB2E4 \uCE74\uB4DC
+    1\uC7A5\uC744 \uB4DC\uB85C\uC6B0\uD55C\uB2E4."

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb589a3979e18f744bc89bb386f78633, type: 3}
+  m_Name: REL_BOSS_3F
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.RelicData
+  relicId: REL_BOSS_3F
+  displayName: "\uD608\uC721\uC758 \uC778\uC7A5"
+  rarity: Boss
+  trigger: OnSummon
+  effect: "\uC735\uD569\uC73C\uB85C \uB9CC\uB4E0 \uBAAC\uC2A4\uD130 \uC18C\uD658
+    \uC2DC MaxHP+5"
+  text: "\uC735\uD569\uC73C\uB85C \uB9CC\uB4E0 \uBAAC\uC2A4\uD130\uB97C \uC18C\uD658\uD558\uBA74
+    \uADF8 \uBAAC\uC2A4\uD130\uC758 \uCD5C\uB300 HP\uAC00 5 \uB298\uC5B4\uB09C\uB2E4."

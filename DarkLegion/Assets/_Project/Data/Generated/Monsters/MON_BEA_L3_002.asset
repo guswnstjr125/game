@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_BEA_L3_002
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_BEA_L3_002
+  displayName: "\uBCA0\uD788\uBAA8\uC2A4"
+  monsterClass: BEA
+  level: 3
+  cardId: BEA_MON_012
+  hp: 45
+  atk: 5
+  def: 4
+  crystal: 3
+  onSummon: 
+  passive: "\uC774 \uBAAC\uC2A4\uD130\uB294 Taunt\uB97C \uBCF4\uC720\uD558\uBA70,
+    \uD53C\uD574\uB97C \uC785\uC744 \uB54C\uB9C8\uB2E4 \uACF5\uACA9\uD55C \uC801\uC5D0\uAC8C
+    \uD53C\uD574 3\uC744 \uBC18\uC0AC\uD55C\uB2E4."
+  onDeath: 
+  onAttack: 
+  special: 
+  effects:
+  - slot: Passive
+    trigger: Aura
+    condition: 
+    effect: GrantStatus:Taunt
+    target: Self
+    hasValue: 0
+    value: 0
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 
+  - slot: Passive
+    trigger: OnDamagedByAttack
+    condition: 
+    effect: Reflect
+    target: Attacker
+    hasValue: 1
+    value: 3
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: 
+    limit: 

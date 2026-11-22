@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538521cbd7691aa49b2850d45b38d617, type: 3}
+  m_Name: MON_BEA_L2_003
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.MonsterData
+  monsterId: MON_BEA_L2_003
+  displayName: "\uAC80\uCE58\uD638"
+  monsterClass: BEA
+  level: 2
+  cardId: BEA_MON_009
+  hp: 13
+  atk: 8
+  def: 0
+  crystal: 2
+  onSummon: 
+  passive: "[Frenzy] \uD53C\uD574\uB97C \uC785\uC744 \uB54C\uB9C8\uB2E4 ATK\uAC00
+    \uC601\uAD6C\uC801\uC73C\uB85C 2 \uC99D\uAC00\uD55C\uB2E4."
+  onDeath: 
+  onAttack: 
+  special: "[\uD0A4\uC6CC\uB4DC] Frenzy"
+  effects:
+  - slot: Passive
+    trigger: OnDamagedByAttack
+    condition: 
+    effect: ModifyAtk
+    target: Self
+    hasValue: 1
+    value: 2
+    valueText: 
+    hasDuration: 0
+    duration: 0
+    durationText: Battle
+    limit: Max+6

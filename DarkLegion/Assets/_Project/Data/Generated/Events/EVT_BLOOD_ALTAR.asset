@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18be54549fe030d4cb191d4c2dfff633, type: 3}
+  m_Name: EVT_BLOOD_ALTAR
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.EventData
+  eventId: EVT_BLOOD_ALTAR
+  displayName: "\uD53C\uC758 \uC81C\uB2E8"
+  floor1: 0.14
+  floor2: 0.14
+  floor3: 0.14
+  floor4: 0.14
+  floor5: 0.14
+  options:
+  - option: 1
+    condition: HP>20
+    result: "HP-20 \u2192 \uCE74\uB4DC \uAC15\uD654"
+  - option: 2
+    condition: "\uB9F5 \uD76C\uC0DD \uAC00\uB2A5, \uC81C\uAC70 \uB4A4 \uBAAC\uC2A4\uD130
+      3\uC7A5 \uC774\uC0C1 \uBC0F \uAC15\uD654 \uD6C4\uBCF4 \uC788\uC74C"
+    result: "\uBAAC\uC2A4\uD130 \uCE74\uB4DC \uAC1C\uCCB4 1\uC7A5 \uC81C\uAC70 \u2192
+      \uB0A8\uC740 \uCE74\uB4DC \uBB34\uC791\uC704 \uAC15\uD654 1\uC7A5"
+  - option: 3
+    condition: 
+    result: "\uB5A0\uB09C\uB2E4"
