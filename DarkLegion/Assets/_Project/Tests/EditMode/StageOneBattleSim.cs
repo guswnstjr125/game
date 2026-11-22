@@ -23,17 +23,6 @@ namespace DarkLegion.Tests.EditMode
         /// <summary>피의 잔 `REL_BLOOD_CHALICE`: 턴의 첫 희생 Crystal +1 (D-04·D-06).</summary>
         public const int BloodChaliceBonus = 1;
 
-        public sealed class Encounter
-        {
-            public int Floor;
-            public int Node;
-            public string NodeType;
-            public string Variant;
-            /// <summary>Wave 번호 → (적 ID, 수) 순서대로.</summary>
-            public SortedDictionary<int, List<(string id, int count)>> Waves = new SortedDictionary<int, List<(string, int)>>();
-            public string Label => $"{Floor}F N{Node} {NodeType}{(Variant == "A" && NodeType != "Elite" ? "" : " " + Variant)}";
-        }
-
         public sealed class Result
         {
             public Encounter Encounter;
@@ -58,26 +47,8 @@ namespace DarkLegion.Tests.EditMode
 
         public static GameDataLoadResult Loaded() => _loaded ?? (_loaded = GameDataLoader.Load(Data()));
 
-        /// <summary>`06` Encounters의 그 층 편성 (Floor + Node + Variant로 묶고 Wave·행 순서 유지).</summary>
-        public static List<Encounter> Encounters(int floor)
-        {
-            var list = new List<Encounter>();
-            foreach (var row in Data().Rows("Encounters").Where(r => r.Int("Floor") == floor))
-            {
-                int node = row.Int("Node");
-                string variant = row.Str("Variant");
-                var enc = list.FirstOrDefault(e => e.Node == node && e.Variant == variant);
-                if (enc == null)
-                {
-                    enc = new Encounter { Floor = floor, Node = node, NodeType = row.Str("NodeType"), Variant = variant };
-                    list.Add(enc);
-                }
-                int wave = row.Int("Wave", 1);
-                if (!enc.Waves.TryGetValue(wave, out var w)) enc.Waves[wave] = w = new List<(string, int)>();
-                w.Add((row.Str("Enemy_ID"), row.Int("Count", 1)));
-            }
-            return list;
-        }
+        /// <summary>`06` Encounters의 그 층 편성 (Core 로더, D-61).</summary>
+        public static List<Encounter> Encounters(int floor) => Loaded().Encounters.All.Where(e => e.Floor == floor).ToList();
 
         public static BattleContext Build(Encounter enc, bool wave2, int seed)
         {
@@ -94,32 +65,7 @@ namespace DarkLegion.Tests.EditMode
             var deck = NecStartDeck.Select(c => ctx.Cards.Get(c).CreateCard(++id, false)).ToList();
             ctx.Player = new RuntimePlayer("P", StartHp, new RuntimeDeck(deck, ctx.Random));
 
-            int stageIndex = enc.Node - 1;
-            bool boss = enc.NodeType == "Boss";
-            RuntimeEnemy[] Spawn(List<(string id, int count)> wave)
-            {
-                var enemies = new List<RuntimeEnemy>();
-                foreach (var (eid, count) in wave)
-                {
-                    var (bh, ba, bd) = ctx.EnemyKits.SpawnStats(eid).Value;
-                    var (hp, atk, def) = EnemyScaler.Scale(bh, ba, bd, stageIndex, boss);
-                    for (int i = 0; i < count; i++) enemies.Add(new RuntimeEnemy($"E{++id}", eid, hp, atk, def, boss));
-                }
-                return enemies.ToArray();
-            }
-
-            bool first = true;
-            foreach (var kv in enc.Waves)
-            {
-                if (kv.Key >= 2 && !wave2) continue;
-                var enemies = Spawn(kv.Value);
-                if (first)
-                {
-                    foreach (var e in enemies) ctx.Field.PlaceEnemy(e, null, ctx);
-                    first = false;
-                }
-                else ctx.QueueWave(enemies);
-            }
+            EncounterFactory.Spawn(ctx, enc, wave2, enc.Node - 1);
             return ctx;
         }
 

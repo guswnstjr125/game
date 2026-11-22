@@ -26,6 +26,37 @@ namespace DarkLegion.Core
         }
     }
 
+    /// <summary>전투 편성 하나: 층·노드·변형(A/B)과 Wave별 적 (`06` Encounters). 행 순서를 유지한다.</summary>
+    public sealed class Encounter
+    {
+        public int Floor;
+        public int Node;
+        public string NodeType;
+        public string Variant;
+        /// <summary>Wave 번호 → (적 ID, 수), 시트 행 순서.</summary>
+        public SortedDictionary<int, List<(string id, int count)>> Waves = new SortedDictionary<int, List<(string, int)>>();
+        public string Label => $"{Floor}F N{Node} {NodeType}{(NodeType == "Elite" ? " " + Variant : "")}";
+    }
+
+    /// <summary>층·노드 → 변형 목록 (A, B 순서).</summary>
+    public sealed class EncounterCatalog
+    {
+        private readonly List<Encounter> _all = new List<Encounter>();
+
+        public IReadOnlyList<Encounter> All => _all;
+
+        public void Add(int floor, int node, string nodeType, string variant, int wave, string enemyId, int count)
+        {
+            var enc = _all.FirstOrDefault(e => e.Floor == floor && e.Node == node && e.Variant == variant);
+            if (enc == null) _all.Add(enc = new Encounter { Floor = floor, Node = node, NodeType = nodeType, Variant = variant });
+            if (!enc.Waves.TryGetValue(wave, out var list)) enc.Waves[wave] = list = new List<(string, int)>();
+            list.Add((enemyId, count));
+        }
+
+        public IReadOnlyList<Encounter> Variants(int floor, int node) =>
+            _all.Where(e => e.Floor == floor && e.Node == node).OrderBy(e => e.Variant, System.StringComparer.Ordinal).ToList();
+    }
+
     /// <summary>로더 결과. Errors가 하나라도 있으면 임포터는 SO를 쓰지 않는다 (`38` §5).</summary>
     public sealed class GameDataLoadResult
     {
@@ -33,6 +64,8 @@ namespace DarkLegion.Core
         public FusionCatalog Fusion { get; } = new FusionCatalog();
         public EnemyKitCatalog EnemyKits { get; } = new EnemyKitCatalog();
         public BossPatternCatalog BossPatterns { get; } = new BossPatternCatalog();
+        /// <summary>`06` Encounters 편성 (층·노드·변형, D-61).</summary>
+        public EncounterCatalog Encounters { get; } = new EncounterCatalog();
         public List<string> Errors { get; } = new List<string>();
         public bool Ok => Errors.Count == 0;
     }
@@ -74,6 +107,7 @@ namespace DarkLegion.Core
             LoadFusion(data, monToCard, r);
             LoadEnemies(data, r);
             LoadBosses(data, r);
+            LoadEncounters(data, r);
             return r;
         }
 
@@ -318,6 +352,21 @@ namespace DarkLegion.Core
                 list.Add((row.Int("Order"), def));
             }
             foreach (var id in order) r.EnemyKits.Add(id, groups[id].OrderBy(x => x.order).Select(x => x.def).ToArray());
+        }
+
+        // ---------- 전투 편성 (`06` Encounters, D-61) ----------
+
+        private static void LoadEncounters(GameData data, GameDataLoadResult r)
+        {
+            var enemies = new HashSet<string>(data.Rows("Enemies_Master").Select(x => x.Str("ENE_ID")));
+            foreach (var row in data.Rows("Encounters"))
+            {
+                string eid = row.Str("Enemy_ID");
+                string at = $"Encounters/F{row.Int("Floor")}-N{row.Int("Node")}{row.Str("Variant")}";
+                if (!enemies.Contains(eid)) r.Errors.Add($"{at}: Enemy_ID {eid} not in Enemies_Master");
+                else if (row.Int("Count", 1) <= 0) r.Errors.Add($"{at}: Count {row.Int("Count")} <= 0");
+                else r.Encounters.Add(row.Int("Floor"), row.Int("Node"), row.Str("NodeType"), row.Str("Variant"), row.Int("Wave", 1), eid, row.Int("Count", 1));
+            }
         }
 
         // ---------- 보스 (`14` Boss_List·Boss_TurnCycle, D-65) ----------

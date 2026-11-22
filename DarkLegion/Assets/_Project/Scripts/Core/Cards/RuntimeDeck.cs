@@ -153,7 +153,10 @@ namespace DarkLegion.Core
             if (card.Zone == CardZone.Hand) Move(card, CardZone.Destroyed);
         }
 
-        /// <summary>새로 만드는 카드(융합 결과 등)의 인스턴스 ID: 이 덱에서 쓴 가장 큰 값 + 1.</summary>
+        /// <summary>새 카드 ID의 하한: 런의 NextCardInstanceId. 런에서 빠진 카드의 ID를 다시 쓰지 않게 한다 (`14` §2, D-73).</summary>
+        public int MinNextInstanceId { get; set; } = 1;
+
+        /// <summary>새로 만드는 카드(융합 결과 등)의 인스턴스 ID: max(이 덱에서 쓴 가장 큰 값 + 1, MinNextInstanceId).</summary>
         public int NextInstanceId()
         {
             int max = 0;
@@ -161,7 +164,7 @@ namespace DarkLegion.Core
             {
                 foreach (var c in list) if (c.InstanceId > max) max = c.InstanceId;
             }
-            return max + 1;
+            return System.Math.Max(max + 1, MinNextInstanceId);
         }
 
         public void ExhaustFromHand(RuntimeCard card)
