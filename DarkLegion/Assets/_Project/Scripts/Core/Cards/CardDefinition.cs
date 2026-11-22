@@ -34,6 +34,17 @@ namespace DarkLegion.Core
         public int? UpDef;
         public bool Soulbound;
         public int? SacrificeCrystal;
+        /// <summary>희귀도 C/U/R/L (`08` Cards_Master). 보상 희귀도 굴림에 쓴다 (D-49·D-75).</summary>
+        public string Rarity = "";
+        /// <summary>클래스 NEC/ELE/BEA/HOL/NEU (`08` Cards_Master).</summary>
+        public string Class = "";
+        /// <summary>해금층 (`08` Cards_FloorUnlock). null이면 드롭 풀에 없다(융합 전용 등).</summary>
+        public int? UnlockFloor;
+        /// <summary>시작 클래스가 이 카드의 클래스일 때 해금층 (D-07·D-17).</summary>
+        public int? UnlockFloorIfStartClass;
+        public bool DropNormal;
+        public bool DropElite;
+        public bool DropBoss;
         public Dictionary<string, double> Params = new Dictionary<string, double>();
         public Dictionary<string, double> UpParams = new Dictionary<string, double>();
 

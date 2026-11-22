@@ -11,5 +11,11 @@ namespace DarkLegion.Core
         {
             return unchecked((int)(rngSeed * 31 + floor) * 31 + stageIndex);
         }
+
+        /// <summary>전투 보상 난수 시드 = NodeSeed × 31 + 17 (`01` D-75). NodeSeed + 1은 다음 노드 시드라 쓰지 않는다.</summary>
+        public static int RewardSeed(int nodeSeed)
+        {
+            return unchecked(nodeSeed * 31 + 17);
+        }
     }
 }
