@@ -534,7 +534,7 @@ namespace DarkLegion.Core
             if (_guide == Guide.Legion && OnField(BoneId) && OnField(GhoulId)) _guide = Guide.Open;
         }
 
-        void Settle()
+        public void Settle()
         {
             if (_finished || Context.Outcome == BattleOutcome.None) return;
             RunBattle.Finish(_run, Context);
