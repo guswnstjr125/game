@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: ELE_MON_003
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: ELE_MON_003
+  displayName: "\uC6A9\uC554 \uC2AC\uB77C\uC784"
+  cardClass: ELE
+  rarity: C
+  keyword: 
+  description: 
+  upgradedDescription: 
+  unlockFloor:
+    HasValue: 1
+    Value: 2
+  classUnlockFloor:
+    HasValue: 1
+    Value: 1
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 0
+  cost: 1
+  level: 1
+  hp: 12
+  atk: 2
+  def: 2
+  exhaust: 0
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 0
+    Value: 0
+  upHp:
+    HasValue: 1
+    Value: 14
+  upAtk:
+    HasValue: 1
+    Value: 2
+  upDef:
+    HasValue: 1
+    Value: 2
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters:
+  - Name: Value
+    Value: 3
+  upgradedParameters: []

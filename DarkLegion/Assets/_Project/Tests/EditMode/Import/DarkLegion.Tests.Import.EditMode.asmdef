@@ -1,0 +1,6 @@
+{
+    "name": "DarkLegion.Tests.Import.EditMode",
+    "references": ["DarkLegion.Core", "DarkLegion.Data", "DarkLegion.Editor"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

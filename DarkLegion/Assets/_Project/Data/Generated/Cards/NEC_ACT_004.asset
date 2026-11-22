@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: NEC_ACT_004
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: NEC_ACT_004
+  displayName: "\uC0DD\uBA85\uB825 \uD761\uC218"
+  cardClass: NEC
+  rarity: R
+  keyword: Exhaust
+  description: "\uC801 \uB2E8\uC77C \uB300\uC0C1\uC5D0\uAC8C \uD53C\uD574 15\uB97C
+    \uC900\uB2E4. \uC774 \uD53C\uD574\uC758 50%\uB9CC\uD07C \uC544\uAD70 \uC911 HP\uAC00
+    \uAC00\uC7A5 \uB0AE\uC740 \uBAAC\uC2A4\uD130\uB97C \uD68C\uBCF5\uD55C\uB2E4."
+  upgradedDescription: "\uC801 \uB2E8\uC77C \uB300\uC0C1\uC5D0\uAC8C \uD53C\uD574
+    19\uB97C \uC900\uB2E4. \uC774 \uD53C\uD574\uC758 50%\uB9CC\uD07C \uC544\uAD70
+    \uC911 HP\uAC00 \uAC00\uC7A5 \uB0AE\uC740 \uBAAC\uC2A4\uD130\uB97C \uD68C\uBCF5\uD55C\uB2E4."
+  unlockFloor:
+    HasValue: 1
+    Value: 1
+  classUnlockFloor:
+    HasValue: 0
+    Value: 0
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 2
+  cost: 3
+  level: 1
+  hp: 0
+  atk: 0
+  def: 0
+  exhaust: 1
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 0
+    Value: 0
+  upHp:
+    HasValue: 0
+    Value: 0
+  upAtk:
+    HasValue: 0
+    Value: 0
+  upDef:
+    HasValue: 0
+    Value: 0
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters:
+  - Name: Damage
+    Value: 15
+  - Name: HealRatio
+    Value: 0.5
+  upgradedParameters:
+  - Name: Damage
+    Value: 19

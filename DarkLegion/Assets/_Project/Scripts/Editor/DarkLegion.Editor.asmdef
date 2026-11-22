@@ -1,0 +1,5 @@
+{
+    "name": "DarkLegion.Editor",
+    "references": ["DarkLegion.Core", "DarkLegion.Data"],
+    "includePlatforms": ["Editor"]
+}

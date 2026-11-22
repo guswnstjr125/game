@@ -1,0 +1,4 @@
+{
+    "name": "DarkLegion.Data",
+    "references": ["DarkLegion.Core"]
+}

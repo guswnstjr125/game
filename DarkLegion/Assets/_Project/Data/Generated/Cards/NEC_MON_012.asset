@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: NEC_MON_012
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: NEC_MON_012
+  displayName: "\uBF08\uC758 \uAD70\uC8FC"
+  cardClass: NEC
+  rarity: R
+  keyword: 
+  description: 
+  upgradedDescription: 
+  unlockFloor:
+    HasValue: 1
+    Value: 5
+  classUnlockFloor:
+    HasValue: 0
+    Value: 0
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 0
+  cost: 3
+  level: 3
+  hp: 35
+  atk: 6
+  def: 4
+  exhaust: 0
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 0
+    Value: 0
+  upHp:
+    HasValue: 1
+    Value: 37
+  upAtk:
+    HasValue: 1
+    Value: 6
+  upDef:
+    HasValue: 1
+    Value: 4
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters:
+  - Name: Value
+    Value: 2
+  upgradedParameters: []

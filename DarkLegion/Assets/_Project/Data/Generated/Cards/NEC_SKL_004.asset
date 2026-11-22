@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1068955395393b4c84ee4541a6be9f1, type: 3}
+  m_Name: NEC_SKL_004
+  m_EditorClassIdentifier: DarkLegion.Data::DarkLegion.Data.CardData
+  cardId: NEC_SKL_004
+  displayName: "\uBB18\uC9C0 \uB3C4\uAD74"
+  cardClass: NEC
+  rarity: U
+  keyword: 
+  description: "\uBC84\uB9B0 \uB354\uBBF8\uC5D0\uC11C Monster \uCE74\uB4DC 1\uC7A5\uC744
+    \uC120\uD0DD\uD558\uC5EC \uC190\uD328\uB85C \uAC00\uC838\uC628\uB2E4."
+  upgradedDescription: "\uBC84\uB9B0 \uB354\uBBF8\uC5D0\uC11C Monster \uCE74\uB4DC
+    1\uC7A5\uC744 \uC120\uD0DD\uD558\uC5EC \uC190\uD328\uB85C \uAC00\uC838\uC628\uB2E4."
+  unlockFloor:
+    HasValue: 1
+    Value: 1
+  classUnlockFloor:
+    HasValue: 0
+    Value: 0
+  normalDrop: 1
+  eliteDrop: 1
+  bossDrop: 1
+  type: 1
+  cost: 1
+  level: 1
+  hp: 0
+  atk: 0
+  def: 0
+  exhaust: 0
+  ethereal: 0
+  soulbound: 0
+  upCost:
+    HasValue: 1
+    Value: 0
+  upHp:
+    HasValue: 0
+    Value: 0
+  upAtk:
+    HasValue: 0
+    Value: 0
+  upDef:
+    HasValue: 0
+    Value: 0
+  sacrificeCrystal:
+    HasValue: 0
+    Value: 0
+  parameters: []
+  upgradedParameters: []
