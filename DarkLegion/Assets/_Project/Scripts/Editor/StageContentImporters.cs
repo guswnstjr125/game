@@ -20,6 +20,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
+        }
+
         public static IReadOnlyList<string> Import(string input, string output)
         {
             GameData data;
@@ -59,6 +64,11 @@ namespace DarkLegion.Editor
             var errors = Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated);
             if (errors.Count == 0) Debug.Log("보스 패턴 설계 데이터 임포트 완료");
             else Debug.LogError(string.Join("\n", errors));
+        }
+
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
         }
 
         public static IReadOnlyList<string> Import(string input, string output)
@@ -105,6 +115,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
+        }
+
         public static IReadOnlyList<string> Import(string input, string output)
         {
             GameData data;
@@ -144,6 +159,11 @@ namespace DarkLegion.Editor
             var errors = Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated);
             if (errors.Count == 0) Debug.Log("이벤트 설계 데이터 임포트 완료");
             else Debug.LogError(string.Join("\n", errors));
+        }
+
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
         }
 
         public static IReadOnlyList<string> Import(string input, string output)
@@ -187,6 +207,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
+        }
+
         public static IReadOnlyList<string> Import(string input, string output)
         {
             GameData data;
@@ -226,6 +251,11 @@ namespace DarkLegion.Editor
             var errors = Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated);
             if (errors.Count == 0) Debug.Log("키워드 설계 데이터 임포트 완료");
             else Debug.LogError(string.Join("\n", errors));
+        }
+
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
         }
 
         public static IReadOnlyList<string> Import(string input, string output)
@@ -268,6 +298,11 @@ namespace DarkLegion.Editor
             var errors = Import(Path.Combine(Application.dataPath, "..", "DesignData"), Recipes, Pools);
             if (errors.Count == 0) Debug.Log("융합 설계 데이터 임포트 완료");
             else Debug.LogError(string.Join("\n", errors));
+        }
+
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Recipes, Pools));
         }
 
         public static IReadOnlyList<string> Import(string input, string recipeOutput, string poolOutput)
@@ -328,6 +363,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Battles, Elites));
+        }
+
         public static IReadOnlyList<string> Import(string input, string rewardOutput, string eliteOutput)
         {
             GameData data;
@@ -385,6 +425,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
+        }
+
         public static IReadOnlyList<string> Import(string input, string output)
         {
             GameData data;
@@ -426,6 +471,11 @@ namespace DarkLegion.Editor
             else Debug.LogError(string.Join("\n", errors));
         }
 
+        public static void ImportBatch()
+        {
+            DesignAssetWrite.ThrowIfFailed(Import(Path.Combine(Application.dataPath, "..", "DesignData"), Generated));
+        }
+
         public static IReadOnlyList<string> Import(string input, string output)
         {
             GameData data;
@@ -452,6 +502,24 @@ namespace DarkLegion.Editor
                 DesignAssetWrite.Commit(asset, path, created);
             }
             return errors;
+        }
+    }
+
+    /// <summary>batchmode -executeMethod 진입점. 메뉴 10개를 기본 경로로 순서대로 실행한다.</summary>
+    public static class Stage1DesignImport
+    {
+        public static void ImportAllStage1Batch()
+        {
+            MonsterImporter.ImportBatch();
+            BossPatternImporter.ImportBatch();
+            RelicImporter.ImportBatch();
+            EventImporter.ImportBatch();
+            CurseImporter.ImportBatch();
+            KeywordImporter.ImportBatch();
+            FusionImporter.ImportBatch();
+            RewardImporter.ImportBatch();
+            StatusImporter.ImportBatch();
+            ClassStartImporter.ImportBatch();
         }
     }
 }

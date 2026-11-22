@@ -20,7 +20,7 @@ namespace DarkLegion.Editor
         public static bool IsReadError(Exception error) =>
             error is IOException || error is UnauthorizedAccessException || error is FormatException || error is OverflowException;
 
-        public static void RejectForeign<T>(string path, List<string> errors) where T : Object
+        public static void RejectForeign<T>(string path, List<string> errors) where T : UnityEngine.Object
         {
             var existing = AssetDatabase.LoadMainAssetAtPath(path);
             if (existing != null && !(existing is T)) errors.Add(path + ": 다른 종류의 에셋이 있습니다.");
@@ -41,6 +41,11 @@ namespace DarkLegion.Editor
             created = asset == null;
             if (created) asset = ScriptableObject.CreateInstance<T>();
             return asset;
+        }
+
+        public static void ThrowIfFailed(IReadOnlyList<string> errors)
+        {
+            if (errors.Count != 0) throw new InvalidOperationException(string.Join("\n", errors));
         }
 
         public static void Commit(ScriptableObject asset, string path, bool created)
