@@ -5,8 +5,9 @@ using NUnit.Framework;
 namespace DarkLegion.Tests.EditMode
 {
     /// <summary>
-    /// 18노드 맵과 전투 결과 화면의 값 (`37` §1·§2, `03` §2, D-66·D-67·D-73·D-75).
-    /// 기대값은 노드 템플릿(`RunMap.KindOf`, 1단계 빌드)과 NEC 시작 값(HP 80, 덱 10장, 피의 잔)에서 손으로 계산했다.
+    /// 18노드 맵과 전투 결과·보상 선택 화면의 값 (`37` §1·§2, `03` §2, D-16·D-37·D-66·D-67·D-73·D-75).
+    /// 기대값은 노드 템플릿(`RunMap.KindOf`, 1단계 빌드)과 NEC 시작 값(HP 80, 덱 10장, 피의 잔),
+    /// `Reward_EliteRelic` 1층 후보(A·B·C)에서 손으로 계산했다.
     /// </summary>
     [Category("Stage1")]
     public class RunMapSessionTests
@@ -14,6 +15,13 @@ namespace DarkLegion.Tests.EditMode
         static GameDataLoadResult Data => StageOneBattleSim.Loaded();
 
         static RunMapSession NewMap(bool tutorial = false) => RunMapSession.NewNecRun(Data, 20260601L, tutorial);
+
+        static BattleResultView Win(RunMapSession map)
+        {
+            var session = map.EnterBattle();
+            Assert.AreEqual(BattleOutcome.Victory, session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0));
+            return map.Result();
+        }
 
         [Test]
         public void NewRun_ShowsEighteenNodes_FirstOneCurrent()
@@ -95,37 +103,83 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
-        public void Victory_ShowsResult_ThenContinueAdvancesToNextNode()
+        public void Victory_ShowsRewardChoices_WithoutAdvancing()
         {
             var map = NewMap();
-            var session = map.EnterBattle();
-            Assert.AreEqual(BattleOutcome.Victory, session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0));
+            var result = Win(map);
 
-            var result = map.Result();
             Assert.AreEqual(BattleOutcome.Victory, result.Battle);
             Assert.AreEqual("F1-N1", result.NodeId);
             Assert.AreEqual(NodeKind.Battle, result.Kind);
             Assert.AreEqual(80, result.HpBefore);
             Assert.AreEqual(80, result.HpAfter);
-            Assert.IsTrue(result.CanContinue);
+            Assert.IsTrue(result.CanConfirm);
+            Assert.IsFalse(result.NeedsRelicChoice);
+            Assert.AreEqual(3, result.CardChoices.Length, "카드 3택1 (D-37)");
+            var expected = RewardFlow.ForBattle(map.Run, NodeKind.Battle, Data);
+            CollectionAssert.AreEqual(expected.CardChoices, result.CardChoices, "보상 난수는 노드 시드에서 같은 값 (D-75)");
+            Assert.AreEqual(expected.Gold, result.RewardGold);
             var row = Data.Rewards.Row(NodeKind.Battle, 1);
-            Assert.That(result.RewardGold, Is.InRange(row.GoldMin, row.GoldMax), "D-75 보상 골드 범위");
+            Assert.That(result.RewardGold, Is.InRange(row.GoldMin, row.GoldMax));
             Assert.AreEqual(1, map.Run.Node, "결과를 보는 동안 노드는 그대로");
-            Assert.AreEqual(0, map.Run.Gold);
+            Assert.AreEqual(0, map.Run.Gold, "확정 전에는 골드도 그대로");
+            Assert.AreEqual(10, map.Run.Deck.Count);
+            CollectionAssert.AreEqual(result.CardChoices, map.Result().CardChoices, "다시 읽어도 같은 후보");
+        }
 
-            Assert.IsTrue(map.Continue());
+        [Test]
+        public void ConfirmCard_AddsChosenCardAndGold_AdvancesOnce()
+        {
+            var map = NewMap();
+            var result = Win(map);
+
+            Assert.IsTrue(map.ConfirmReward(1, null));
             var snap = map.Capture();
             Assert.AreEqual(2, snap.Node);
-            Assert.AreEqual(result.RewardGold, snap.Gold, "보상 골드가 한 번만 들어간다");
-            Assert.AreEqual(10, snap.DeckCount, "카드는 건너뛴다 (D-37)");
+            Assert.AreEqual(result.RewardGold, snap.Gold);
+            Assert.AreEqual(11, snap.DeckCount, "10장 + 고른 카드 1장");
+            Assert.AreEqual(result.CardChoices[1], map.Run.Deck.Last().CardId, "고른 카드가 덱 끝에 들어간다");
             Assert.AreEqual(MapNodeState.Visited, snap.Nodes[0].State);
             Assert.AreEqual(MapNodeState.Current, snap.Nodes[1].State);
-            Assert.IsFalse(map.Continue(), "두 번째 호출은 아무것도 바꾸지 않는다");
+
+            Assert.IsFalse(map.ConfirmReward(1, null), "두 번째 확정은 아무것도 바꾸지 않는다");
+            Assert.AreEqual(2, map.Capture().Node);
+            Assert.AreEqual(result.RewardGold, map.Capture().Gold, "골드 중복 지급 없음");
+            Assert.AreEqual(11, map.Capture().DeckCount);
+        }
+
+        [Test]
+        public void ConfirmSkip_TakesGoldOnly()
+        {
+            var map = NewMap();
+            var result = Win(map);
+
+            Assert.IsTrue(map.ConfirmReward(null, null));
+            Assert.AreEqual(10, map.Capture().DeckCount);
+            Assert.AreEqual(result.RewardGold, map.Capture().Gold);
             Assert.AreEqual(2, map.Capture().Node);
         }
 
         [Test]
-        public void Defeat_EndsRun_ContinueDoesNotAdvance()
+        public void ConfirmReward_WithBadInput_ChangesNothingAndCanRetry()
+        {
+            var map = NewMap();
+            var result = Win(map);
+
+            Assert.IsFalse(map.ConfirmReward(3, null), "카드 후보는 0~2");
+            Assert.IsFalse(map.ConfirmReward(-1, null));
+            Assert.IsFalse(map.ConfirmReward(null, 0), "유물 후보가 없는 보상에 유물을 고를 수 없다");
+            Assert.AreEqual(1, map.Capture().Node);
+            Assert.AreEqual(0, map.Capture().Gold);
+            Assert.AreEqual(10, map.Capture().DeckCount);
+
+            Assert.IsTrue(map.ConfirmReward(0, null), "잘못된 입력 뒤에도 바로 확정할 수 있다");
+            Assert.AreEqual(2, map.Capture().Node);
+            Assert.AreEqual(result.RewardGold, map.Capture().Gold);
+        }
+
+        [Test]
+        public void Defeat_EndsRun_NoRewardToConfirm()
         {
             var map = NewMap();
             var session = map.EnterBattle();
@@ -136,10 +190,11 @@ namespace DarkLegion.Tests.EditMode
             Assert.AreEqual(BattleOutcome.Defeat, result.Battle);
             Assert.AreEqual(RunOutcome.Defeat, result.Run);
             Assert.AreEqual(0, result.HpAfter);
-            Assert.IsFalse(result.CanContinue);
+            Assert.IsFalse(result.CanConfirm);
+            Assert.AreEqual(0, result.CardChoices.Length);
             Assert.AreEqual(0, result.RewardGold);
 
-            Assert.IsFalse(map.Continue());
+            Assert.IsFalse(map.ConfirmReward(null, null));
             Assert.AreEqual(1, map.Capture().Node, "패배하면 노드가 넘어가지 않는다");
             Assert.AreEqual(RunOutcome.Defeat, map.Capture().Outcome);
             Assert.IsTrue(map.Capture().Nodes.All(x => !x.Enterable));
@@ -155,37 +210,48 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
-        public void EliteVictory_NeedsRelicChoice_SoContinueIsHeld()
+        public void EliteVictory_RequiresRelicChoice_ThenAddsIt()
         {
             var map = NewMap();
             map.Run.StageIndex = 4; // F1-N5 엘리트
-            var session = map.EnterBattle();
-            session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0);
+            var result = Win(map);
 
-            var result = map.Result();
             Assert.AreEqual(NodeKind.Elite, result.Kind);
-            Assert.IsTrue(result.NeedsRelicChoice, "엘리트 유물 선택 화면은 다음 작업");
-            Assert.IsFalse(result.CanContinue);
-            Assert.IsFalse(map.Continue());
+            Assert.IsTrue(result.NeedsRelicChoice);
+            CollectionAssert.AreEqual(new[] { "REL_COM_001", "REL_COM_002", "REL_COM_003" }, result.RelicChoices, "Reward_EliteRelic 1층 A·B·C (시작 유물과 겹치지 않음)");
+            Assert.AreEqual(3, result.CardChoices.Length);
+
+            Assert.IsFalse(map.ConfirmReward(null, null), "유물을 고르지 않으면 확정되지 않는다");
+            Assert.IsFalse(map.ConfirmReward(0, null));
+            Assert.IsFalse(map.ConfirmReward(null, 3));
             Assert.AreEqual(5, map.Capture().Node);
             Assert.AreEqual(0, map.Run.Gold, "확정하지 않았으므로 골드도 그대로");
+            Assert.AreEqual(1, map.Run.Relics.Count);
+
+            Assert.IsTrue(map.ConfirmReward(2, 1));
+            Assert.AreEqual(6, map.Capture().Node);
+            CollectionAssert.AreEqual(new[] { "REL_BLOOD_CHALICE", "REL_COM_002" }, map.Run.Relics);
+            Assert.AreEqual(11, map.Capture().DeckCount);
+            Assert.AreEqual(result.RewardGold, map.Capture().Gold);
+            Assert.IsFalse(map.ConfirmReward(null, 1), "유물 중복 지급 없음");
+            Assert.AreEqual(2, map.Run.Relics.Count);
         }
 
         [Test]
-        public void BossVictoryOnLastFloor_EndsRunAsVictory()
+        public void BossVictoryOnLastFloor_GivesBossRelicAndEndsRunAsVictory()
         {
             var map = NewMap();
             map.Run.Floor = 2;
             map.Run.StageIndex = 8; // F2-N9 보스
-            var session = map.EnterBattle();
-            session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0);
+            var result = Win(map);
 
-            var result = map.Result();
             Assert.AreEqual(NodeKind.Boss, result.Kind);
-            Assert.IsTrue(result.CanContinue, "보스 유물은 자동 지급 (D-16)");
-            Assert.IsTrue(map.Continue());
+            Assert.IsFalse(result.NeedsRelicChoice, "보스 유물은 자동 지급 (D-16)");
+            Assert.IsNotNull(result.AutoRelic);
+            Assert.AreEqual(Data.Rewards.BossRelic(2), result.AutoRelic);
+            Assert.IsTrue(map.ConfirmReward(null, null));
             Assert.AreEqual(RunOutcome.Victory, map.Capture().Outcome, "D-66: 2층 보스를 잡고 보상을 확정하면 런 승리");
-            Assert.AreEqual(1, map.Capture().Relics.Length - 1, "시작 유물에 보스 유물 1개가 더해진다");
+            CollectionAssert.AreEqual(new[] { "REL_BLOOD_CHALICE", result.AutoRelic }, map.Capture().Relics);
             Assert.IsTrue(map.Capture().Nodes.All(x => !x.Enterable));
         }
 
