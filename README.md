@@ -5,8 +5,8 @@
 ## 현재 단계
 
 - **설계**: 1단계(1~2층, 네크로맨서, 카드 32장) 구현에 필요한 설계 완료. 결정 로그 `docs/design/01_MVP_설계_동결_선언.md` §7
-- **구현**: 1단계 착수 전. GitHub 이슈 #34(Unity 프로젝트 생성)부터 #47까지 6주 일정 (`docs/design/31_MVP_이슈_초안.md` §0)
-- **엔진**: Unity 6.3 LTS, 2D URP, uGUI + TextMeshPro, PC 1920×1080 (`01` D-39). 프로젝트 폴더는 `DarkLegion/` (1단계 #34에서 생성)
+- **구현**: 1단계 전투 코어와 Unity 프로젝트 초기 설정. 1단계 이슈는 `docs/design/31_MVP_이슈_초안.md` §0 참고.
+- **엔진**: Unity 6.3 LTS, 2D URP, uGUI + TextMeshPro, PC 1920×1080 (`01` D-39). [Unity 프로젝트 열기](DarkLegion/README.md)
 
 ## 폴더
 
