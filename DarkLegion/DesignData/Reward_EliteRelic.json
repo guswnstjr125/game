@@ -1,0 +1,50 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Reward_EliteRelic",
+  "rows": [
+    {
+      "Floor": 1,
+      "Relic_Pool_A": "REL_COM_001",
+      "Relic_Pool_B": "REL_COM_002",
+      "Relic_Pool_C": "REL_COM_003",
+      "Rarity_Rule": "Rare×2",
+      "Legend_Bonus": "Legend+0%",
+      "Note": "1층 엘리트"
+    },
+    {
+      "Floor": 2,
+      "Relic_Pool_A": "REL_UNC_001",
+      "Relic_Pool_B": "REL_UNC_002",
+      "Relic_Pool_C": "REL_UNC_003",
+      "Rarity_Rule": "Rare×2",
+      "Legend_Bonus": "Legend+3%",
+      "Note": null
+    },
+    {
+      "Floor": 3,
+      "Relic_Pool_A": "REL_RARE_001",
+      "Relic_Pool_B": "REL_RARE_002",
+      "Relic_Pool_C": "REL_UNC_003",
+      "Rarity_Rule": "Rare×2",
+      "Legend_Bonus": "Legend+3%",
+      "Note": "3층 Rare 상향"
+    },
+    {
+      "Floor": 4,
+      "Relic_Pool_A": "REL_RARE_002",
+      "Relic_Pool_B": "REL_RARE_003",
+      "Relic_Pool_C": "REL_LEG_001",
+      "Rarity_Rule": "Rare×2",
+      "Legend_Bonus": "Legend+3%",
+      "Note": null
+    },
+    {
+      "Floor": 5,
+      "Relic_Pool_A": "REL_LEG_001",
+      "Relic_Pool_B": "REL_RARE_003",
+      "Relic_Pool_C": "REL_BOSS_5F",
+      "Rarity_Rule": "Rare×2",
+      "Legend_Bonus": "Legend+6%",
+      "Note": "5층 Legendary 가능"
+    }
+  ]
+}

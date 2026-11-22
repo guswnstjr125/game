@@ -1,0 +1,165 @@
+{
+  "source": "06_콘텐츠_마스터.xlsx/Relics_MVP",
+  "rows": [
+    {
+      "Relic_ID": "REL_BLOOD_CHALICE",
+      "Name_KO": "피의 잔",
+      "Rarity": "Uncommon",
+      "Trigger": "OnSacrifice",
+      "Effect": "턴당 첫 희생에만 Crystal +1",
+      "Text_KO": "매 턴 처음 희생할 때 Crystal을 1 더 얻는다."
+    },
+    {
+      "Relic_ID": "REL_CURSED_SKULL",
+      "Name_KO": "저주받은 두개골",
+      "Rarity": "Uncommon",
+      "Trigger": "OnAllyDeath",
+      "Effect": "Draw +1",
+      "Text_KO": "아군 몬스터가 죽을 때마다 카드 1장을 드로우한다."
+    },
+    {
+      "Relic_ID": "REL_CORRUPT_CHALICE",
+      "Name_KO": "타락한 성배",
+      "Rarity": "Rare",
+      "Trigger": "OnTurnStart",
+      "Effect": "Burn 2 self, Crystal +1",
+      "Text_KO": "턴이 시작될 때 Burn 2를 받고 Crystal을 1 얻는다."
+    },
+    {
+      "Relic_ID": "REL_ABYSS_HEART",
+      "Name_KO": "심연의 심장",
+      "Rarity": "Rare",
+      "Trigger": "PassiveCheck",
+      "Effect": "HP≤50% → ATK +50%",
+      "Text_KO": "HP가 절반 이하이면 ATK가 50% 늘어난다."
+    },
+    {
+      "Relic_ID": "REL_FORBIDDEN_CANDLE",
+      "Name_KO": "금단의 촛불",
+      "Rarity": "Rare",
+      "Trigger": "OnStatusApplyAttempt",
+      "Effect": "첫 상태이상 면역",
+      "Text_KO": "처음 받는 상태이상 1개를 막는다. 런마다 한 번."
+    },
+    {
+      "Relic_ID": "REL_BOSS_1F",
+      "Name_KO": "굶주린 자의 뼈",
+      "Rarity": "Boss",
+      "Trigger": "OnSacrifice",
+      "Effect": "턴당 첫 희생 시 Crystal +1 추가 (피의 잔과 중첩)",
+      "Text_KO": "매 턴 처음 희생할 때 Crystal을 1 더 얻는다. 피의 잔과 함께 적용된다."
+    },
+    {
+      "Relic_ID": "REL_BOSS_2F",
+      "Name_KO": "재의 심장",
+      "Rarity": "Boss",
+      "Trigger": "OnTurnStart",
+      "Effect": "턴 시작 아군 전체 Burn1, ATK+2",
+      "Text_KO": "턴이 시작될 때 아군 몬스터 전체가 Burn 1을 받고, 이번 턴 ATK가 2 늘어난다."
+    },
+    {
+      "Relic_ID": "REL_BOSS_3F",
+      "Name_KO": "혈육의 인장",
+      "Rarity": "Boss",
+      "Trigger": "OnSummon",
+      "Effect": "융합으로 만든 몬스터 소환 시 MaxHP+5",
+      "Text_KO": "융합으로 만든 몬스터를 소환하면 그 몬스터의 최대 HP가 5 늘어난다."
+    },
+    {
+      "Relic_ID": "REL_BOSS_4F",
+      "Name_KO": "심판의 성인",
+      "Rarity": "Boss",
+      "Trigger": "Passive",
+      "Effect": "Execute 임계 +5%p",
+      "Text_KO": "처형 기준이 5%p 올라간다. (최대 45%)"
+    },
+    {
+      "Relic_ID": "REL_BOSS_5F",
+      "Name_KO": "절망의 파편",
+      "Rarity": "Boss",
+      "Trigger": "OnAllyDeath",
+      "Effect": "아군 사망 시 Draw +1. 턴당 첫 사망에만 Crystal +1",
+      "Text_KO": "아군 몬스터가 죽을 때마다 카드 1장을 드로우한다. 매 턴 처음 죽을 때는 Crystal도 1 얻는다."
+    },
+    {
+      "Relic_ID": "REL_COM_001",
+      "Name_KO": "낡은 뼈조각",
+      "Rarity": "Common",
+      "Trigger": "OnCrystalSpent",
+      "Effect": "Crystal을 써서 0이 되면 +1 (턴당 1회)",
+      "Text_KO": "Crystal을 써서 0이 되면 Crystal을 1 얻는다. 턴마다 한 번."
+    },
+    {
+      "Relic_ID": "REL_COM_002",
+      "Name_KO": "독이 든 가시",
+      "Rarity": "Common",
+      "Trigger": "OnDamageTaken",
+      "Effect": "아군 피격 시 공격자 Poison1",
+      "Text_KO": "아군이 적의 공격을 받으면 공격한 적에게 Poison 1을 건다."
+    },
+    {
+      "Relic_ID": "REL_COM_003",
+      "Name_KO": "피 묻은 장갑",
+      "Rarity": "Common",
+      "Trigger": "OnAttack",
+      "Effect": "10% Vulnerable 1턴",
+      "Text_KO": "아군이 공격할 때 10% 확률로 대상에게 Vulnerable 1턴을 건다."
+    },
+    {
+      "Relic_ID": "REL_UNC_001",
+      "Name_KO": "부서진 크리스탈",
+      "Rarity": "Uncommon",
+      "Trigger": "OnSacrifice",
+      "Effect": "희생 시 Draw+1 (턴당 2회)",
+      "Text_KO": "희생할 때 카드 1장을 드로우한다. 턴마다 두 번까지."
+    },
+    {
+      "Relic_ID": "REL_UNC_002",
+      "Name_KO": "재앙의 인장",
+      "Rarity": "Uncommon",
+      "Trigger": "Passive",
+      "Effect": "Burn 적 수×ATK+1 (최대+3)",
+      "Text_KO": "Burn 상태인 적 1명마다 아군 몬스터 전체의 ATK가 1 늘어난다. (최대 +3)"
+    },
+    {
+      "Relic_ID": "REL_UNC_003",
+      "Name_KO": "맹수의 발톱",
+      "Rarity": "Uncommon",
+      "Trigger": "OnKill",
+      "Effect": "처치 시 ATK+1 (최대+5)",
+      "Text_KO": "아군 몬스터가 적을 처치하면 이번 전투 동안 그 몬스터의 ATK가 1 늘어난다. (몬스터마다 최대 +5)"
+    },
+    {
+      "Relic_ID": "REL_RARE_001",
+      "Name_KO": "불멸의 양초",
+      "Rarity": "Rare",
+      "Trigger": "OnAllyDeath",
+      "Effect": "희생이 아닌 첫 아군 사망 시 HP1 부활 (런당 1회)",
+      "Text_KO": "아군 몬스터가 희생이 아닌 이유로 처음 죽을 때 HP 1로 되살아난다. 런마다 한 번."
+    },
+    {
+      "Relic_ID": "REL_RARE_002",
+      "Name_KO": "융합의 촉매",
+      "Rarity": "Rare",
+      "Trigger": "OnFusion",
+      "Effect": "융합 결과 +1레벨 15%",
+      "Text_KO": "융합할 때 15% 확률로 결과 몬스터의 레벨이 1 더 높아진다. (Lv3은 제외)"
+    },
+    {
+      "Relic_ID": "REL_RARE_003",
+      "Name_KO": "공허의 메아리",
+      "Rarity": "Rare",
+      "Trigger": "OnDraw",
+      "Effect": "Exhaust 카드 드로우 시 Crystal+1 (턴당 2회)",
+      "Text_KO": "Exhaust 카드를 드로우하면 Crystal을 1 얻는다. 턴마다 두 번까지."
+    },
+    {
+      "Relic_ID": "REL_LEG_001",
+      "Name_KO": "죽음의 왕관",
+      "Rarity": "Legendary",
+      "Trigger": "OnAllyDeath",
+      "Effect": "아군 사망마다 다음 공격 +3 (누적 최대 +9)",
+      "Text_KO": "아군 몬스터가 죽을 때마다 다음 아군 공격의 피해가 3 늘어난다. (최대 +9, 공격 한 번에 소모)"
+    }
+  ]
+}

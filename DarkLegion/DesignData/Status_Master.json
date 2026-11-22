@@ -1,0 +1,85 @@
+{
+  "source": "12_상태이상_마스터.xlsx/Status_Master",
+  "rows": [
+    {
+      "Status_ID": "STATUS_BURN",
+      "Name_KO": "Burn",
+      "StackType": "Stack",
+      "TickTiming": "TurnEnd",
+      "Effect": "damage = stacks × 1 (ignoreDef)",
+      "MaxStack": 20,
+      "DurationTurns": null,
+      "Notes": "턴종 stacks-1"
+    },
+    {
+      "Status_ID": "STATUS_POISON",
+      "Name_KO": "Poison",
+      "StackType": "Stack",
+      "TickTiming": "TurnEnd",
+      "Effect": "damage = stacks × 1",
+      "MaxStack": 20,
+      "DurationTurns": null,
+      "Notes": "전투 종료 시 제거. 상한 20 (D-08). Wave 간 유지, 20 초과 불가"
+    },
+    {
+      "Status_ID": "STATUS_WEAK",
+      "Name_KO": "Weak",
+      "StackType": "Duration",
+      "TickTiming": null,
+      "Effect": "ATK ×0.75",
+      "MaxStack": null,
+      "DurationTurns": 2,
+      "Notes": "Damage 전 곱연산"
+    },
+    {
+      "Status_ID": "STATUS_VULNERABLE",
+      "Name_KO": "Vulnerable",
+      "StackType": "Duration",
+      "TickTiming": null,
+      "Effect": "받는 피해 ×1.25",
+      "MaxStack": null,
+      "DurationTurns": 2,
+      "Notes": "Weak와 곱 → ×0.9375 (0.75×1.25, D-01). DEF는 Weak 다음·Vulnerable 앞에 차감"
+    },
+    {
+      "Status_ID": "STATUS_SHIELD",
+      "Name_KO": "Shield",
+      "StackType": "Stack",
+      "TickTiming": "TurnEnd",
+      "Effect": "피해 흡수 후 차감",
+      "MaxStack": 99,
+      "DurationTurns": null,
+      "Notes": "턴종 전량 소멸"
+    },
+    {
+      "Status_ID": "STATUS_TAUNT",
+      "Name_KO": "Taunt",
+      "StackType": "Passive",
+      "TickTiming": null,
+      "Effect": "AI Taunt 타겟 우선",
+      "MaxStack": null,
+      "DurationTurns": null,
+      "Notes": "StatusTick 없음"
+    },
+    {
+      "Status_ID": "STATUS_BIND",
+      "Name_KO": "Bind",
+      "StackType": "Duration",
+      "TickTiming": "TurnStart",
+      "Effect": "공격/스킬 차단, 희생 허용",
+      "MaxStack": null,
+      "DurationTurns": false,
+      "Notes": "Frozen과 별도"
+    },
+    {
+      "Status_ID": "STATUS_STUN",
+      "Name_KO": "Stun",
+      "StackType": "Duration",
+      "TickTiming": "TurnStart",
+      "Effect": "1턴 행동 불가",
+      "MaxStack": null,
+      "DurationTurns": 1,
+      "Notes": "턴종 제거"
+    }
+  ]
+}
