@@ -253,9 +253,27 @@ namespace DarkLegion.Core
             return SacrificeResult.Ok;
         }
 
+        private readonly System.Collections.Generic.List<RuntimeEnemy[]> _pendingWaves = new System.Collections.Generic.List<RuntimeEnemy[]>();
+
+        /// <summary>아직 나오지 않은 Wave 수. 0보다 크면 적이 모두 죽어도 승리가 아니다 (D-72, CORE-03).</summary>
+        public int PendingWaveCount => _pendingWaves.Count;
+
+        /// <summary>다음 Wave 적을 예약한다 (전투를 만드는 쪽이 Encounters 순서대로). 배치는 중간 Wave를 끝낸 턴 종료 뒤 (D-72).</summary>
+        public void QueueWave(params RuntimeEnemy[] enemies) => _pendingWaves.Add(enemies);
+
+        /// <summary>D-72: 토큰 제거·적 칸 비우기(StartNextWave) → 예약한 적을 빈 칸 앞쪽부터 배치.</summary>
+        private void AdvanceWave()
+        {
+            var next = _pendingWaves[0];
+            _pendingWaves.RemoveAt(0);
+            StartNextWave();
+            foreach (var e in next) Field.PlaceEnemy(e, null, this);
+            Log($"[WAVE] next wave {next.Length} enemies, {_pendingWaves.Count} left");
+        }
+
         /// <summary>
-        /// 다음 Wave (`09` §6, `03` §2): 토큰은 RemoveTokenAction으로 제거(사망 아님), 몬스터는 HP·상태·위치 유지, 적 칸 비움.
-        /// 새 적 배치와 Crystal·손패 처리는 Wave를 시작하는 쪽이 한다.
+        /// Wave 정리 (`09` §6, `03` §2): 토큰은 RemoveTokenAction으로 제거(사망 아님), 몬스터는 HP·상태·위치 유지, 적 칸 비움.
+        /// 예약한 Wave(<see cref="QueueWave"/>)는 턴 종료가 이것을 부른 뒤 배치한다. Crystal 리셋·Draw 5는 다음 턴 시작이 한다 (D-72).
         /// </summary>
         public void StartNextWave()
         {
@@ -321,7 +339,10 @@ namespace DarkLegion.Core
             Queue.Process();
             foreach (var u in units) u.Statuses.ExpireAtTurnEnd();
             if (Player != null) Player.Deck.EndTurn();
-            return EvaluateOutcome();
+            var outcome = EvaluateOutcome();
+            // 중간 Wave를 끝낸 턴: 턴 종료가 끝난 뒤 다음 Wave (D-72). 30턴 패배는 위에서 먼저 정해진다
+            if (outcome == BattleOutcome.None && LivingEnemyCount == 0 && _pendingWaves.Count > 0) AdvanceWave();
+            return outcome;
         }
 
         /// <summary>전투가 끝나면 상태이상을 전부 지운다 (Poison 포함, D-08). Wave 전환에서는 부르지 않는다.</summary>
@@ -347,9 +368,9 @@ namespace DarkLegion.Core
             {
                 Outcome = BattleOutcome.Defeat;
             }
-            else if (livingEnemies <= 0)
+            else if (livingEnemies <= 0 && _pendingWaves.Count == 0)
             {
-                Outcome = BattleOutcome.Victory;
+                Outcome = BattleOutcome.Victory; // 마지막 Wave까지 끝났을 때만 (D-72)
             }
             else if (Turn >= BattleLimits.MaxTurnCount && State == BattleState.TurnEnd)
             {
