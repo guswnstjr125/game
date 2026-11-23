@@ -87,7 +87,23 @@ namespace DarkLegion.Tests.PlayMode
         {
             var battle = BattleView();
             var session = (BattleScreenSession)battle.GetType().GetField("_session", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(battle);
-            if (outcome == BattleOutcome.Victory) session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0);
+            if (outcome == BattleOutcome.Victory)
+            {
+                var context = session.Context;
+                while (context.PendingWaveCount > 0)
+                {
+                    int pendingWaves = context.PendingWaveCount;
+                    foreach (var enemy in context.Enemies.Where(enemy => !enemy.IsDead).ToArray())
+                    {
+                        enemy.CurrentHP = 1;
+                        context.Queue.EnqueueMain(new DamageAction { Source = context.Player, Target = enemy, BaseDamage = 1, IsStatusTick = true });
+                    }
+                    context.Queue.Process();
+                    Assert.AreEqual(BattleOutcome.None, context.EndTurn(), "중간 웨이브는 전투를 종료하지 않는다");
+                    Assert.AreEqual(pendingWaves - 1, context.PendingWaveCount, "다음 웨이브 진행");
+                }
+                Assert.AreEqual(BattleOutcome.Victory, context.EvaluateOutcome(context.Player.CurrentHP, 0));
+            }
             else
             {
                 session.Context.Player.CurrentHP = 0;
@@ -226,6 +242,98 @@ namespace DarkLegion.Tests.PlayMode
             Assert.AreEqual((8, 74), (Map.Run.Node, Map.Run.CurrentHp));
             yield return Press(b => Named(b, "Continue"), "휴식 결과 계속");
             Assert.AreEqual((9, 74), (Map.Run.Node, Map.Run.CurrentHp));
+        }
+
+        [UnityTest]
+        public IEnumerator Continue_RestoresBattleRewardChoiceAndAdvancesOnlyOnce()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            int goldBefore = Map.Run.Gold;
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1 전투 진입");
+            yield return EndBattle(BattleOutcome.Victory);
+            yield return Press(b => TextOf(b) == "결과 보기", "전투 보상 열기");
+            var reward = Result;
+            int expectedGold = reward.RewardGold;
+            string expectedCard = reward.CardChoices[1];
+            yield return Press(b => TextOf(b).Contains(expectedCard), "보상 카드 선택");
+            Assert.AreEqual(RunSavePhase.RewardPending, store.LoadRun().Phase);
+
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+            yield return Press(b => b.name == "ContinueGame", "보상 이어하기");
+            Assert.AreEqual((1, goldBefore), (Map.Run.Node, Map.Run.Gold), "복구 전에는 보상 미지급");
+            Assert.IsTrue(Buttons.Any(b => TextOf(b).Contains(expectedCard)), "선택 후보 복구");
+            yield return Press(b => TextOf(b).StartsWith("확정: "), "보상 확정");
+
+            Assert.AreEqual((2, expectedGold, 11), (Map.Run.Node, Map.Run.Gold, Map.Run.Deck.Count));
+            Assert.AreEqual(expectedCard, Map.Run.Deck.Last().CardId);
+            Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase);
+            Assert.AreEqual(1, store.LoadRun().Map.VisitedNodeIds.Count);
+        }
+
+        [UnityTest]
+        public IEnumerator RunMapView_CompletesAllEighteenNodesAcrossBothFloors()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var nodeKinds = new[]
+            {
+                "Battle", "Battle", "Event", "Battle", "Elite", "Event", "Battle", "Rest", "Boss",
+                "Battle", "Battle", "Event", "Battle", "Elite", "Event", "Battle", "Rest", "Boss"
+            };
+
+            for (int i = 0; i < nodeKinds.Length; i++)
+            {
+                int floor = i / 9 + 1;
+                int node = i % 9 + 1;
+                string nodeId = "F" + floor + "-N" + node;
+                bool forcedBattle = nodeId == "F1-N3";
+                if (forcedBattle) UseSecondEventBranch("EVT_SOUL_PRISON");
+                yield return Press(b => TextOf(b).StartsWith(nodeId), nodeId + " 진입");
+
+                if (nodeKinds[i] == "Battle" || nodeKinds[i] == "Elite" || nodeKinds[i] == "Boss")
+                {
+                    yield return EndBattle(BattleOutcome.Victory);
+                    yield return Press(b => TextOf(b) == "결과 보기", nodeId + " 전투 결과");
+                    if (nodeKinds[i] == "Elite") yield return Press(b => TextOf(b).StartsWith("유물 "), nodeId + " 유물 선택");
+                    yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", nodeId + " 보상 확정");
+                }
+                else if (nodeKinds[i] == "Event")
+                {
+                    if (forcedBattle)
+                        yield return Press(b => b.name == "Option1", nodeId + " 영혼 감옥 강제 전투 선택");
+                    else yield return Press(b => b.name == "Option3", nodeId + " 이벤트 안전 선택");
+                    yield return Press(b => b.name == "Continue", nodeId + " 이벤트 계속");
+                    if (forcedBattle)
+                    {
+                        Assert.AreEqual(RunSavePhase.BattleEntry, store.LoadRun().Phase, "강제 전투 진입 체크포인트");
+                        Assert.IsTrue(store.LoadRun().BattleEntryEvent.Result.ForcedBattle);
+                        yield return EndBattle(BattleOutcome.Victory);
+                        yield return Press(b => TextOf(b) == "결과 보기", nodeId + " 강제 전투 결과");
+                        yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", nodeId + " 강제 전투 보상 확정");
+                    }
+                }
+                else
+                {
+                    yield return Press(b => b.name == "Upgrade", nodeId + " 휴식 강화 선택");
+                    yield return Press(b => b.name.StartsWith("Card"), nodeId + " 강화 카드 선택");
+                    yield return Press(b => b.name == "Confirm", nodeId + " 강화 확정");
+                    yield return Press(b => b.name == "Continue", nodeId + " 휴식 계속");
+                }
+
+                Assert.AreEqual(i + 1, store.LoadRun().Map.VisitedNodeIds.Count, nodeId + " 방문 기록");
+                if (i < nodeKinds.Length - 1)
+                {
+                    Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase, nodeId + " 다음 맵 저장");
+                    Assert.AreEqual(floor == 1 && node == 9 ? (2, 1) : node == 9 ? (2, 1) : (floor, node + 1),
+                        (store.LoadRun().Floor, store.LoadRun().StageIndex + 1), nodeId + " 다음 위치");
+                }
+            }
+
+            Assert.AreEqual(RunOutcome.Victory, Map.Run.Outcome);
+            Assert.AreEqual(18, store.LoadRun().Map.VisitedNodeIds.Count);
+            Assert.AreEqual(2, store.LoadRun().Settlement.ClearedFloors.Count, "두 층 정산 기록");
         }
 
         [UnityTest]

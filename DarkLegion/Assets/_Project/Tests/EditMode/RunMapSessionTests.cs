@@ -413,6 +413,97 @@ namespace DarkLegion.Tests.EditMode
         }
 
         [Test]
+        public void TwoFloorRun_TraversesAllEighteenNodesAndRestoresAfterEveryCompletion()
+        {
+            var map = NewMap();
+            var kinds = new[]
+            {
+                NodeKind.Battle, NodeKind.Battle, NodeKind.Event, NodeKind.Battle, NodeKind.Elite,
+                NodeKind.Event, NodeKind.Battle, NodeKind.Rest, NodeKind.Boss,
+                NodeKind.Battle, NodeKind.Battle, NodeKind.Event, NodeKind.Battle, NodeKind.Elite,
+                NodeKind.Event, NodeKind.Battle, NodeKind.Rest, NodeKind.Boss
+            };
+
+            for (int i = 0; i < kinds.Length; i++)
+            {
+                var current = map.Capture().Nodes.Single(n => n.State == MapNodeState.Current);
+                Assert.IsTrue(current.Enterable, current.Id + " 진입 가능");
+                Assert.AreEqual(kinds[i], current.Kind, current.Id);
+
+                if (RunMapSession.IsBattleKind(current.Kind))
+                {
+                    var battle = map.EnterBattle();
+                    while (battle.Context.Outcome == BattleOutcome.None)
+                    {
+                        foreach (var enemy in battle.Context.Enemies.Where(e => !e.IsDead).ToArray())
+                            battle.Context.Queue.EnqueueMain(new DamageAction { Target = enemy, BaseDamage = 100000, IsStatusTick = true, IgnoreShield = true });
+                        battle.Context.Queue.Process();
+                        if (battle.Context.Outcome == BattleOutcome.None)
+                        {
+                            if (battle.Context.PendingWaveCount > 0) battle.Context.EndTurn();
+                            else battle.Context.EvaluateOutcome();
+                        }
+                    }
+                    Assert.AreEqual(BattleOutcome.Victory, battle.Context.Outcome, current.Id + " 전투 승리");
+                    var reward = map.Result();
+                    Assert.IsTrue(map.ConfirmReward(reward.CardChoices.Length == 0 ? (int?)null : 0,
+                        reward.NeedsRelicChoice ? (int?)0 : null), current.Id + " 보상 확정");
+                    Assert.IsFalse(map.ConfirmReward(0, reward.NeedsRelicChoice ? (int?)0 : null), current.Id + " 보상 중복 차단");
+                }
+                else if (current.Kind == NodeKind.Event)
+                {
+                    int completed = 0;
+                    BattleScreenSession forced = null;
+                    var eventScreen = map.EnterEvent(session => { completed++; forced = session; });
+                    Assert.IsTrue(eventScreen.Choose(3), current.Id + " 이벤트 안전 선택");
+                    Assert.AreEqual(EventScreenPhase.Result, eventScreen.Phase);
+                    Assert.IsTrue(eventScreen.Continue(), current.Id + " 이벤트 계속");
+                    Assert.IsFalse(eventScreen.Continue(), current.Id + " 이벤트 중복 진행 차단");
+                    Assert.AreEqual(1, completed, current.Id + " 노드 완료 한 번");
+                    Assert.IsNull(forced, current.Id + " 강제 전투 없음");
+                }
+                else
+                {
+                    int completed = 0;
+                    var restScreen = map.EnterRest(() => completed++);
+                    var rest = restScreen.Capture();
+                    if (rest.CanHeal) Assert.IsTrue(restScreen.ChooseHeal(), current.Id + " 회복 선택");
+                    else if (rest.CanUpgrade)
+                    {
+                        Assert.IsTrue(restScreen.ChooseUpgrade(), current.Id + " 강화 선택");
+                        int instanceId = restScreen.Capture().UpgradeCandidates[0].InstanceId;
+                        Assert.IsTrue(restScreen.SelectUpgrade(instanceId), current.Id + " 강화 대상");
+                    }
+                    if (restScreen.Capture().ContinueOnly)
+                    {
+                        Assert.IsTrue(restScreen.Continue(), current.Id + " 선택지 없음 계속");
+                    }
+                    else
+                    {
+                        Assert.IsTrue(restScreen.Confirm(), current.Id + " 휴식 확정");
+                        Assert.IsFalse(restScreen.Confirm(), current.Id + " 휴식 효과 중복 차단");
+                        Assert.IsTrue(restScreen.Continue(), current.Id + " 휴식 계속");
+                    }
+                    Assert.IsFalse(restScreen.Continue(), current.Id + " 휴식 중복 진행 차단");
+                    Assert.AreEqual(1, completed, current.Id + " 노드 완료 한 번");
+                }
+
+                Assert.AreEqual(i + 1, map.Run.VisitedNodeIds.Count, current.Id + " 완료 카운트");
+                if (i < kinds.Length - 1)
+                {
+                    var checkpoint = RunSave.Capture(map.Run, RunSavePhase.Map);
+                    map = new RunMapSession(RunSave.Restore(SaveJson.Read(SaveJson.Write(checkpoint))), Data);
+                    var restored = map.Capture().Nodes.Single(n => n.State == MapNodeState.Current);
+                    Assert.AreEqual(i < 8 ? "F1-N" + (i + 2) : "F2-N" + (i - 7), restored.Id, "복구 후 다음 노드");
+                }
+            }
+
+            Assert.AreEqual((RunOutcome.Victory, 18), (map.Run.Outcome, map.Run.VisitedNodeIds.Count));
+            Assert.AreEqual("F2-N9", map.Run.VisitedNodeIds.Last());
+            Assert.IsTrue(map.Capture().Nodes.All(n => !n.Enterable), "승리 뒤 진행 가능한 노드가 없다");
+        }
+
+        [Test]
         public void Restart_StartsNewRunWithStartValues()
         {
             var map = NewMap();
