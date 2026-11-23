@@ -454,7 +454,12 @@ def r15_doc_structure():
     d01 = md("01_MVP_설계_동결_선언.md")
     rows = [int(x) for x in re.findall(r"^\| D-(\d+) \|", d01, re.M)]
     secs = [int(x) for x in re.findall(r"^### D-(\d+)\.", d01, re.M)]
-    check("R15 D-log table contiguous", rows == list(range(1, len(rows) + 1)), "01 §7 표", rows[-3:], f"1..{len(rows)}")
+    reserved_line = re.search(r"^> 예약된 D 번호: (.+)$", d01, re.M)
+    reserved = [int(n) for n in re.findall(r"D-(\d+) \(#\d+\)", reserved_line.group(1))] if reserved_line else []
+    missing = [n for n in range(1, max(rows, default=0) + 1) if n not in rows]
+    active_reservations = [n for n in reserved if n not in rows]
+    dlog_ok = rows == sorted(set(rows)) and missing == active_reservations
+    check("R15 D-log table contiguous (reserved open-PR numbers allowed)", dlog_ok, "01 §7 표", {"tail": rows[-3:], "missing": missing, "reserved": active_reservations}, f"1..{max(rows, default=0)} excluding declared open-PR reservations")
     check("R15 D-log sections match table", secs == rows, "01 §7 본문", secs[-3:], rows[-3:])
     for n in secs:
         if n >= 27:
