@@ -127,7 +127,7 @@ namespace DarkLegion.UI
             int width = ResolutionWidths[_resolutionIndex];
             var resolution = SelectSupportedResolution(width, Screen.currentResolution.width, Screen.currentResolution.height);
             _resolutionIndex = Array.IndexOf(ResolutionWidths, resolution.x);
-            Screen.SetResolution(resolution.width, resolution.height, mode);
+            Screen.SetResolution(resolution.x, resolution.y, mode);
             UpdateDisplayOptions();
         }
 
