@@ -229,6 +229,85 @@ namespace DarkLegion.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Continue_RestoresBattleRewardChoiceAndAdvancesOnlyOnce()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1 전투 진입");
+            yield return EndBattle(BattleOutcome.Victory);
+            yield return Press(b => TextOf(b) == "결과 보기", "전투 보상 열기");
+            var reward = Result;
+            int expectedGold = reward.RewardGold;
+            string expectedCard = reward.CardChoices[1];
+            yield return Press(b => TextOf(b).Contains(expectedCard), "보상 카드 선택");
+            Assert.AreEqual(RunSavePhase.RewardPending, store.LoadRun().Phase);
+
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+            yield return Press(b => b.name == "ContinueGame", "보상 이어하기");
+            Assert.AreEqual((1, expectedGold - reward.RewardGold), (Map.Run.Node, Map.Run.Gold), "복구 전에는 보상 미지급");
+            Assert.IsTrue(Buttons.Any(b => TextOf(b).Contains(expectedCard)), "선택 후보 복구");
+            yield return Press(b => TextOf(b).StartsWith("확정: "), "보상 확정");
+
+            Assert.AreEqual((2, expectedGold, 11), (Map.Run.Node, Map.Run.Gold, Map.Run.Deck.Count));
+            Assert.AreEqual(expectedCard, Map.Run.Deck.Last().CardId);
+            Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase);
+            Assert.AreEqual(1, store.LoadRun().Map.VisitedNodeIds.Count);
+        }
+
+        [UnityTest]
+        public IEnumerator RunMapView_CompletesAllEighteenNodesAcrossBothFloors()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var nodeKinds = new[]
+            {
+                "Battle", "Battle", "Event", "Battle", "Elite", "Event", "Battle", "Rest", "Boss",
+                "Battle", "Battle", "Event", "Battle", "Elite", "Event", "Battle", "Rest", "Boss"
+            };
+
+            for (int i = 0; i < nodeKinds.Length; i++)
+            {
+                int floor = i / 9 + 1;
+                int node = i % 9 + 1;
+                string nodeId = "F" + floor + "-N" + node;
+                yield return Press(b => TextOf(b).StartsWith(nodeId), nodeId + " 진입");
+
+                if (nodeKinds[i] == "Battle" || nodeKinds[i] == "Elite" || nodeKinds[i] == "Boss")
+                {
+                    yield return EndBattle(BattleOutcome.Victory);
+                    yield return Press(b => TextOf(b) == "결과 보기", nodeId + " 전투 결과");
+                    if (nodeKinds[i] == "Elite") yield return Press(b => TextOf(b).StartsWith("유물 "), nodeId + " 유물 선택");
+                    yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", nodeId + " 보상 확정");
+                }
+                else if (nodeKinds[i] == "Event")
+                {
+                    yield return Press(b => b.name == "Option3", nodeId + " 이벤트 선택");
+                    yield return Press(b => b.name == "Continue", nodeId + " 이벤트 계속");
+                }
+                else
+                {
+                    yield return Press(b => b.name == "Upgrade", nodeId + " 휴식 강화 선택");
+                    yield return Press(b => b.name.StartsWith("Card"), nodeId + " 강화 카드 선택");
+                    yield return Press(b => b.name == "Confirm", nodeId + " 강화 확정");
+                    yield return Press(b => b.name == "Continue", nodeId + " 휴식 계속");
+                }
+
+                Assert.AreEqual(i + 1, store.LoadRun().Map.VisitedNodeIds.Count, nodeId + " 방문 기록");
+                if (i < nodeKinds.Length - 1)
+                {
+                    Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase, nodeId + " 다음 맵 저장");
+                    Assert.AreEqual(floor == 1 && node == 9 ? (2, 1) : node == 9 ? (2, 1) : (floor, node + 1),
+                        (store.LoadRun().Floor, store.LoadRun().StageIndex + 1), nodeId + " 다음 위치");
+                }
+            }
+
+            Assert.AreEqual(RunOutcome.Victory, Map.Run.Outcome);
+            Assert.AreEqual(18, store.LoadRun().Map.VisitedNodeIds.Count);
+            Assert.AreEqual(2, store.LoadRun().Settlement.ClearedFloors.Count, "두 층 정산 기록");
+        }
+
+        [UnityTest]
         public IEnumerator Start_ShowsEighteenNodes_WithFirstNodeCurrent()
         {
             Assert.NotNull(Map, AllText());
