@@ -232,6 +232,7 @@ namespace DarkLegion.Tests.PlayMode
         public IEnumerator Continue_RestoresBattleRewardChoiceAndAdvancesOnlyOnce()
         {
             var store = new SaveFileStore(_saveDirectory);
+            int goldBefore = Map.Run.Gold;
             yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1 전투 진입");
             yield return EndBattle(BattleOutcome.Victory);
             yield return Press(b => TextOf(b) == "결과 보기", "전투 보상 열기");
@@ -246,7 +247,7 @@ namespace DarkLegion.Tests.PlayMode
             yield return null;
             yield return OpenTitle();
             yield return Press(b => b.name == "ContinueGame", "보상 이어하기");
-            Assert.AreEqual((1, expectedGold - reward.RewardGold), (Map.Run.Node, Map.Run.Gold), "복구 전에는 보상 미지급");
+            Assert.AreEqual((1, goldBefore), (Map.Run.Node, Map.Run.Gold), "복구 전에는 보상 미지급");
             Assert.IsTrue(Buttons.Any(b => TextOf(b).Contains(expectedCard)), "선택 후보 복구");
             yield return Press(b => TextOf(b).StartsWith("확정: "), "보상 확정");
 
