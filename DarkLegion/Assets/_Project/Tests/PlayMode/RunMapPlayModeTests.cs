@@ -282,8 +282,22 @@ namespace DarkLegion.Tests.PlayMode
                 }
                 else if (nodeKinds[i] == "Event")
                 {
-                    yield return Press(b => b.name == "Option3", nodeId + " 이벤트 선택");
+                    bool forcedBattle = nodeId == "F1-N3";
+                    if (forcedBattle)
+                    {
+                        UseSecondEventBranch("EVT_SOUL_PRISON");
+                        yield return Press(b => b.name == "Option1", nodeId + " 영혼 감옥 강제 전투 선택");
+                    }
+                    else yield return Press(b => b.name == "Option3", nodeId + " 이벤트 안전 선택");
                     yield return Press(b => b.name == "Continue", nodeId + " 이벤트 계속");
+                    if (forcedBattle)
+                    {
+                        Assert.AreEqual(RunSavePhase.BattleEntry, store.LoadRun().Phase, "강제 전투 진입 체크포인트");
+                        Assert.IsTrue(store.LoadRun().BattleEntryEvent.Result.ForcedBattle);
+                        yield return EndBattle(BattleOutcome.Victory);
+                        yield return Press(b => TextOf(b) == "결과 보기", nodeId + " 강제 전투 결과");
+                        yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", nodeId + " 강제 전투 보상 확정");
+                    }
                 }
                 else
                 {
