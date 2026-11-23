@@ -15,8 +15,19 @@ namespace DarkLegion.Core
     {
         public static object Parse(string text)
         {
+            return Parse(text, false);
+        }
+
+        /// <summary>Save 파일처럼 long 정수 정밀도가 필요한 JSON을 읽는다. 기존 데이터 JSON 동작은 유지한다.</summary>
+        public static object ParseExactIntegers(string text)
+        {
+            return Parse(text, true);
+        }
+
+        private static object Parse(string text, bool exactIntegers)
+        {
             if (text == null) throw new System.FormatException("JSON: null text");
-            var p = new Parser(text);
+            var p = new Parser(text, exactIntegers);
             p.SkipWhitespace();
             var value = p.ReadValue();
             p.SkipWhitespace();
@@ -27,11 +38,13 @@ namespace DarkLegion.Core
         private sealed class Parser
         {
             private readonly string _s;
+            private readonly bool _exactIntegers;
             private int _i;
 
-            public Parser(string s)
+            public Parser(string s, bool exactIntegers)
             {
                 _s = s;
+                _exactIntegers = exactIntegers;
             }
 
             public bool AtEnd => _i >= _s.Length;
@@ -168,13 +181,18 @@ namespace DarkLegion.Core
                 }
             }
 
-            private double ReadNumber()
+            private object ReadNumber()
             {
                 int start = _i;
                 if (!AtEnd && _s[_i] == '-') _i++;
                 while (!AtEnd && (char.IsDigit(_s[_i]) || _s[_i] == '.' || _s[_i] == 'e' || _s[_i] == 'E' || _s[_i] == '+' || _s[_i] == '-')) _i++;
                 if (_i == start) throw Error("unexpected character");
                 string token = _s.Substring(start, _i - start);
+                if (_exactIntegers && token.IndexOfAny(new[] { '.', 'e', 'E' }) < 0)
+                {
+                    if (long.TryParse(token, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out long integer)) return integer;
+                    throw Error($"integer out of range {token}");
+                }
                 if (!double.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out double v)) throw Error($"bad number {token}");
                 return v;
             }
