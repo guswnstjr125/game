@@ -172,6 +172,19 @@ namespace DarkLegion.Core
             return StartBattle(CurrentKind, forced: false);
         }
 
+        public BattleScreenSession ResumeForcedBattle()
+        {
+            if (!CanEnterCurrent || CurrentKind != NodeKind.Event)
+                throw new InvalidOperationException("강제 전투를 재개할 수 없습니다.");
+            return StartBattle(NodeKind.Battle, forced: true);
+        }
+
+        public SaveData CaptureBattleReward()
+        {
+            if (!Result().CanConfirm) throw new InvalidOperationException("확정할 보상이 없습니다.");
+            return RunSave.CaptureRewardPending(Run, _reward);
+        }
+
         public EventScreenSession EnterEvent(Action<BattleScreenSession> onComplete, Func<string, string> nameOf = null)
         {
             if (!CanEnterCurrent || CurrentKind != NodeKind.Event)

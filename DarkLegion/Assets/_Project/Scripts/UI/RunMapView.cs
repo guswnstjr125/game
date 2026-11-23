@@ -40,11 +40,163 @@ namespace DarkLegion.UI
         int? _pickRelic;
         readonly System.Collections.Generic.Dictionary<string, string> _names = new System.Collections.Generic.Dictionary<string, string>();
 
+        GameDataLoadResult _loaded;
+        SaveFileStore _store;
+        SaveData _checkpoint;
+        RectTransform _title;
+        Text _status;
+        Button _continue;
+        RectTransform _replaceDialog;
+        Button _replaceConfirm;
+        SaveData _replaceExpected;
+        bool _startingNew;
+        Action _retry;
+        public string SaveDirectory { get; set; }
+
+        void ShowTitle()
+        {
+            _title.gameObject.SetActive(true);
+            _resultRoot.gameObject.SetActive(false);
+            _mapRoot.gameObject.SetActive(false);
+            _status.text = "";
+            _continue.interactable = false;
+            _checkpoint = null;
+            try
+            {
+                _checkpoint = _store.LoadRun();
+                if (_checkpoint != null) RunSave.Restore(_checkpoint);
+                _continue.interactable = _checkpoint != null;
+            }
+            catch (Exception ex) { _status.text = "저장을 읽을 수 없습니다. " + ex.Message; }
+        }
+
+        void StartNew()
+        {
+            if (!_title.gameObject.activeSelf || _startingNew) return;
+            if (!_store.HasRunSlot)
+            {
+                BeginNewRun(null);
+                return;
+            }
+
+            if (!_continue.interactable || _checkpoint.Phase == RunSavePhase.SettlementPending)
+            {
+                _status.text = "기존 저장을 확인해 주세요. 정산 대기 중이면 이어하기로 결과를 마쳐 주세요.";
+                return;
+            }
+
+            _replaceExpected = _checkpoint;
+            _replaceConfirm.interactable = true;
+            _title.gameObject.SetActive(false);
+            _replaceDialog.gameObject.SetActive(true);
+        }
+
+        void CancelReplacement()
+        {
+            if (_startingNew || !_replaceDialog.gameObject.activeSelf) return;
+            _replaceExpected = null;
+            _replaceDialog.gameObject.SetActive(false);
+            _title.gameObject.SetActive(true);
+        }
+
+        void ConfirmReplacement()
+        {
+            if (_startingNew || !_replaceDialog.gameObject.activeSelf || _replaceExpected == null) return;
+            _replaceConfirm.interactable = false;
+            BeginNewRun(_replaceExpected);
+        }
+
+        void BeginNewRun(SaveData expected)
+        {
+            _startingNew = true;
+            SaveData next = null;
+            Attempt(() =>
+            {
+                if (next == null)
+                {
+                    var run = RunMapSession.NewNecRun(_loaded, DateTime.UtcNow.Ticks, !_store.LoadMeta().TutorialDone).Run;
+                    run.RunId = Guid.NewGuid().ToString("N");
+                    next = RunSave.Capture(run, RunSavePhase.Map);
+                }
+
+                bool saved = expected == null
+                    ? !_store.HasRunSlot && _store.SaveRun(next)
+                    : _store.ReplaceActiveRun(expected, next);
+                if (!saved)
+                    throw new InvalidOperationException("새 게임을 저장하지 못했습니다. 기존 저장을 유지했습니다.");
+
+                _checkpoint = next;
+                _replaceExpected = null;
+                _replaceDialog.gameObject.SetActive(false);
+                _startingNew = false;
+                Attempt(() => Resume(next));
+            });
+        }
+
+        void Resume(SaveData save)
+        {
+            if (save == null) throw new InvalidOperationException("이어할 저장이 없습니다.");
+            _map = new RunMapSession(RunSave.Restore(save), _loaded);
+            _title.gameObject.SetActive(false);
+            _resultRoot.gameObject.SetActive(false);
+            switch (save.Phase)
+            {
+                case RunSavePhase.Map: RefreshMap(); break;
+                case RunSavePhase.BattleEntry:
+                    ShowBattle(save.BattleEntryEvent == null ? _map.EnterBattle() : _map.ResumeForcedBattle());
+                    break;
+                case RunSavePhase.RewardPending:
+                    if (save.Reward.Event != null) OpenEvent(save.Reward.Event);
+                    else
+                    {
+                        var r = save.Reward;
+                        ShowResult(new BattleResultView
+                        {
+                            Battle = BattleOutcome.Victory, Run = _map.Run.Outcome,
+                            NodeId = r.NodeId, Kind = r.Source == RewardSource.Boss ? NodeKind.Boss : r.Source == RewardSource.Elite ? NodeKind.Elite : NodeKind.Battle,
+                            HpBefore = _map.Run.CurrentHp, HpAfter = _map.Run.CurrentHp, MaxHp = _map.Run.MaxHp,
+                            RewardGold = r.Gold, CardChoices = r.CardChoices.ToArray(), RelicChoices = r.RelicChoices.ToArray(),
+                            AutoRelic = r.AutoRelic, CanConfirm = true
+                        });
+                        _pickCard = r.SelectedCard < 0 ? (int?)null : r.SelectedCard;
+                        _pickRelic = r.SelectedRelic < 0 ? (int?)null : r.SelectedRelic;
+                        RenderChoices();
+                    }
+                    break;
+                case RunSavePhase.RestPending: OpenRest(save.Rest); break;
+                case RunSavePhase.SettlementPending:
+                    if (!_store.ApplySettlement(save.Settlement)) throw new InvalidOperationException("정산을 저장할 수 없습니다.");
+                    ShowRunEnd();
+                    _resultText.text += "\n영혼 +" + save.Settlement.MetaSoul + "  인장 +" + save.Settlement.MetaSigil;
+                    break;
+            }
+        }
+
+        void WriteCheckpoint(SaveData save)
+        {
+            if (!_store.SaveRun(save)) throw new InvalidOperationException("기존 저장을 유지했습니다.");
+            _checkpoint = save;
+        }
+
+        void Attempt(Action action)
+        {
+            try { action(); }
+            catch (Exception ex)
+            {
+                _retry = action;
+                _errorText.text = "진행 상태를 저장하거나 불러올 수 없습니다.\n" + ex.Message;
+                _errorRoot.gameObject.SetActive(true);
+            }
+        }
+
+        RectTransform _errorRoot;
+        Text _errorText;
+
         void Start()
         {
             _font = BattleScreenView.LoadFont();
             _white = BattleScreenView.White();
-            Build();
+            if (_canvasGo == null) Build();
             try
             {
                 _data = BattleScreenView.LoadData();
@@ -52,13 +204,17 @@ namespace DarkLegion.UI
                 foreach (var row in _data.Rows("Cards_Text")) _names[row.Str("Card_ID")] = row.Str("Name_KO");
                 foreach (var row in _data.Rows("Curse_Cards")) _names[row.Str("Curse_ID")] = row.Str("Name_KO");
                 foreach (var row in _data.Rows("Relics_MVP")) _names[row.Str("Relic_ID")] = row.Str("Name_KO");
-                var loaded = GameDataLoader.Load(_data);
-                _map = RunMapSession.NewNecRun(loaded, DateTime.UtcNow.Ticks, tutorialEnabled: true);
-                RefreshMap();
+                _loaded = GameDataLoader.Load(_data);
+                string directory = SaveDirectory ?? System.IO.Path.Combine(Application.persistentDataPath, "SaveData");
+                _store = new SaveFileStore(directory);
+                _store.CleanupTemporaryFiles();
+                ShowTitle();
             }
             catch (Exception ex)
             {
-                _top.text = "데이터를 읽지 못했습니다. " + ex.Message;
+                _retry = Start;
+                _errorText.text = "초기화할 수 없습니다. " + ex.Message;
+                _errorRoot.gameObject.SetActive(true);
             }
         }
 
@@ -108,28 +264,103 @@ namespace DarkLegion.UI
         void ClickNode(MapNodeView node)
         {
             if (!node.Enterable || !_map.CanEnter(node.Floor, node.Node)) return;
-            switch (node.Kind)
+            Attempt(() =>
             {
-                case NodeKind.Event:
+                switch (node.Kind)
                 {
-                    var session = _map.EnterEvent(OnEventDone, NameOf);
-                    _mapRoot.gameObject.SetActive(false);
-                    _nodeGo = new GameObject("EventScreen");
-                    _nodeGo.AddComponent<EventScreenView>().Attach(session, NameOf);
-                    break;
+                    case NodeKind.Event:
+                        string id = EventFlow.Enter(_map.Run, _loaded);
+                        WriteCheckpoint(RunSave.CaptureEventPending(_map.Run, new EventPendingDTO
+                        {
+                            NodeId = node.Id, EventId = id, Phase = EventScreenPhase.Choosing
+                        }));
+                        OpenEvent(_checkpoint.Reward.Event);
+                        break;
+                    case NodeKind.Rest:
+                        OpenRest(null);
+                        break;
+                    default:
+                        WriteCheckpoint(RunSave.Capture(_map.Run, RunSavePhase.BattleEntry));
+                        ShowBattle(_map.EnterBattle());
+                        break;
                 }
-                case NodeKind.Rest:
+            });
+        }
+
+        void OpenEvent(EventPendingDTO pending)
+        {
+            _mapRoot.gameObject.SetActive(false);
+            var session = EventScreenSession.RestorePending(_map.Run, _loaded, pending, nameOf: NameOf);
+            _nodeGo = new GameObject("EventScreen");
+            var view = _nodeGo.AddComponent<EventScreenView>();
+            view.Attach(session, NameOf);
+            view.HandleInput = (name, action) =>
+            {
+                if (_nodeGo != view.gameObject || _errorRoot.gameObject.activeSelf) return;
+                if (name == "Continue")
                 {
-                    var session = _map.EnterRest(OnNodeScreenDone, NameOf);
-                    _mapRoot.gameObject.SetActive(false);
-                    _nodeGo = new GameObject("RestScreen");
-                    _nodeGo.AddComponent<RestScreenView>().Attach(session, NameOf);
-                    break;
+                    Attempt(() =>
+                    {
+                        if (!_store.ContinueEventAndPersist(_checkpoint))
+                            throw new InvalidOperationException("이벤트 노드 완료를 저장하지 못했습니다.");
+                        Attempt(LoadAfterNode);
+                    });
+                    return;
                 }
-                default:
-                    ShowBattle(_map.EnterBattle());
-                    break;
-            }
+
+                action();
+                Attempt(() =>
+                {
+                    var run = _map.Run;
+                    if (run.Outcome == RunOutcome.InProgress)
+                        WriteCheckpoint(RunSave.CaptureEventPending(run, session.CapturePending()));
+                    else
+                    {
+                        WriteCheckpoint(RunSave.CaptureSettlement(run, Settlement(run)));
+                        CloseNodeScreen();
+                        Attempt(() => Resume(_checkpoint));
+                    }
+                });
+            };
+        }
+
+        void OpenRest(RestPendingDTO pending)
+        {
+            _mapRoot.gameObject.SetActive(false);
+            var session = pending == null ? new RestScreenSession(_map.Run, _loaded, nameOf: NameOf)
+                : RestScreenSession.RestorePending(_map.Run, _loaded, pending, nameOf: NameOf);
+            _nodeGo = new GameObject("RestScreen");
+            var view = _nodeGo.AddComponent<RestScreenView>();
+            view.Attach(session, NameOf);
+            view.HandleInput = (name, action) =>
+            {
+                if (_nodeGo != view.gameObject || _errorRoot.gameObject.activeSelf) return;
+                if (name == "Continue")
+                {
+                    if (session.Result == null) action();
+                    if (session.Result == null) return;
+                    Attempt(() =>
+                    {
+                        if (_checkpoint.Phase != RunSavePhase.RestPending)
+                            WriteCheckpoint(RunSave.CaptureRest(_map.Run, session.Result));
+                        if (!_store.ContinueRestAndPersist(_checkpoint))
+                            throw new InvalidOperationException("휴식 노드 완료를 저장하지 못했습니다.");
+                        Attempt(LoadAfterNode);
+                    });
+                    return;
+                }
+
+                action();
+                if (session.Result != null)
+                    Attempt(() => WriteCheckpoint(RunSave.CaptureRest(_map.Run, session.Result)));
+            };
+        }
+
+        void LoadAfterNode()
+        {
+            _checkpoint = _store.LoadRun();
+            CloseNodeScreen();
+            Resume(_checkpoint);
         }
 
         void ShowBattle(BattleScreenSession session)
@@ -138,37 +369,62 @@ namespace DarkLegion.UI
             _battleGo = new GameObject("BattleScreen");
             var view = _battleGo.AddComponent<BattleScreenView>();
             view.Attach(session, _data, OnBattleDone);
-        }
-
-        void OnEventDone(BattleScreenSession forcedBattle)
-        {
-            if (forcedBattle == null)
-            {
-                OnNodeScreenDone();
-                return;
-            }
-            CloseNodeScreen();
-            ShowBattle(forcedBattle);
+            view.OnBattleFinished = () => Attempt(SaveBattleOutcome);
         }
 
         void CloseNodeScreen()
         {
+            if (_nodeGo != null) _nodeGo.SetActive(false);
             Destroy(_nodeGo);
             _nodeGo = null;
         }
 
-        void OnNodeScreenDone()
+        void SaveBattleOutcome()
         {
-            CloseNodeScreen();
-            if (_map.Run.Outcome == RunOutcome.Defeat) ShowRunEnd();
-            else RefreshMap();
+            if (_checkpoint.Phase == RunSavePhase.BattleEntry)
+            {
+                var result = _map.Result();
+                var save = result.Battle == BattleOutcome.Victory
+                    ? _map.CaptureBattleReward()
+                    : RunSave.CaptureSettlement(_map.Run, Settlement(_map.Run));
+                WriteCheckpoint(save);
+            }
+
+            if (!_store.ReconcileTutorialCompletion(_checkpoint))
+                throw new InvalidOperationException("안내 전투 완료를 저장하지 못했습니다.");
         }
 
         void OnBattleDone()
         {
-            if (_battleGo != null) Destroy(_battleGo);
-            _battleGo = null;
-            ShowResult(_map.Result());
+            if (_battleGo == null) return;
+            Attempt(() =>
+            {
+                SaveBattleOutcome();
+                var result = _map.Result();
+                _battleGo.SetActive(false);
+                Destroy(_battleGo);
+                _battleGo = null;
+                if (result.Battle == BattleOutcome.Victory) ShowResult(result);
+                else Attempt(() => Resume(_checkpoint));
+            });
+        }
+
+        SettlementPendingDTO Settlement(RunState run)
+        {
+            var settlement = new SettlementPendingDTO
+            {
+                RunId = run.RunId, Outcome = run.Outcome,
+                ReachedFloor = run.Floor, ReachedStageIndex = run.StageIndex
+            };
+            for (int floor = 1; floor <= run.Floor; floor++)
+            {
+                if (!run.VisitedNodeIds.Contains(RunState.NodeId(floor, 9))) continue;
+                var row = _data.Rows("Meta_Currency").Single(r => r.Str("Condition") == "ClearFloor" + floor);
+                settlement.ClearedFloors.Add(floor);
+                settlement.MetaSoul += row.Int("META_SOUL");
+                settlement.MetaSigil += row.Int("META_SIGIL");
+            }
+            return settlement;
         }
 
         void ShowResult(BattleResultView result)
@@ -208,14 +464,14 @@ namespace DarkLegion.UI
                 int index = i;
                 bool picked = _pickCard == i;
                 var b = ChoiceButton(NameOf(_result.CardChoices[i]) + "\n" + _result.CardChoices[i], new Vector2(-340f + i * 340f, -20f), picked);
-                b.onClick.AddListener(() => { _pickCard = _pickCard == index ? (int?)null : index; RenderChoices(); });
+                b.onClick.AddListener(() => { SaveChoice(_pickCard == index ? (int?)null : index, _pickRelic); });
             }
             for (int i = 0; i < _result.RelicChoices.Length; i++)
             {
                 int index = i;
                 bool picked = _pickRelic == i;
                 var b = ChoiceButton("유물 " + NameOf(_result.RelicChoices[i]) + "\n" + _result.RelicChoices[i], new Vector2(-340f + i * 340f, -140f), picked);
-                b.onClick.AddListener(() => { _pickRelic = index; RenderChoices(); });
+                b.onClick.AddListener(() => { SaveChoice(_pickCard, index); });
             }
 
             bool needRelic = _result.NeedsRelicChoice && _pickRelic == null;
@@ -234,13 +490,31 @@ namespace DarkLegion.UI
             return button;
         }
 
+        void SaveChoice(int? card, int? relic)
+        {
+            Attempt(() =>
+            {
+                var run = RunSave.Restore(_checkpoint);
+                var reward = RunSave.RestoreReward(_checkpoint.Reward);
+                WriteCheckpoint(RunSave.CaptureRewardPending(run, reward, card ?? -1, relic ?? -1));
+                _pickCard = card;
+                _pickRelic = relic;
+                RenderChoices();
+            });
+        }
+
         void OnConfirm()
         {
-            if (_result == null || !_result.CanConfirm) return;
-            if (!_map.ConfirmReward(_pickCard, _pickRelic)) return;
-            _result = null;
-            RefreshMap();
-            if (_map.Capture().Outcome == RunOutcome.Victory) ShowRunEnd();
+            if (_result == null || !_result.CanConfirm || !_confirm.interactable) return;
+            Attempt(() =>
+            {
+                var run = RunSave.Restore(_checkpoint);
+                RunFlow.CompleteNode(run);
+                var settlement = run.Outcome == RunOutcome.Victory ? Settlement(run) : null;
+                if (!_store.ConfirmRewardAndPersist(_checkpoint, _pickCard, _pickRelic, settlement))
+                    throw new InvalidOperationException("보상 확정을 저장하지 못했습니다.");
+                Attempt(() => Resume(_checkpoint = _store.LoadRun()));
+            });
         }
 
         void ShowRunEnd()
@@ -263,8 +537,11 @@ namespace DarkLegion.UI
 
         void OnRestart()
         {
-            _map.Restart(DateTime.UtcNow.Ticks);
-            RefreshMap();
+            Attempt(() =>
+            {
+                _store.DeleteSettledRun();
+                ShowTitle();
+            });
         }
 
         static Color NodeColor(MapNodeView node)
@@ -308,8 +585,44 @@ namespace DarkLegion.UI
             _confirm = ActionButton(panel, "확정", new Vector2(0f, -290f), OnConfirm);
             _confirm.GetComponent<RectTransform>().sizeDelta = new Vector2(420f, 64f);
             _confirmLabel = _confirm.GetComponentInChildren<Text>();
-            _restart = ActionButton(panel, "다시 시작", new Vector2(0f, -290f), OnRestart);
+            _restart = ActionButton(panel, "타이틀로", new Vector2(0f, -290f), OnRestart);
             _resultRoot.gameObject.SetActive(false);
+
+            _title = Stretch(_canvasGo.transform, "Title");
+            Label(_title, "다크 레기온", 44).rectTransform.anchoredPosition = new Vector2(0f, 230f);
+            ActionButton(_title, "새 게임", new Vector2(0f, 90f), StartNew).name = "NewGame";
+            _continue = ActionButton(_title, "이어하기", new Vector2(0f, 0f), () => Attempt(() => Resume(_checkpoint = _store.LoadRun())));
+            _continue.name = "ContinueGame";
+            _status = Label(_title, "", 24);
+            _status.rectTransform.anchoredPosition = new Vector2(0f, -180f);
+            _status.raycastTarget = false;
+
+            _replaceDialog = Stretch(_canvasGo.transform, "ReplaceRunDialog");
+            var replacePanel = Box(_replaceDialog, new Color(0.08f, 0.08f, 0.1f, 1f), 1000f, 420f);
+            Place(replacePanel, 0f, 0f);
+            var question = Label(replacePanel, "기존 런 포기\n기존 진행을 포기하고 새 게임을 시작할까요?\n포기한 런의 정산 보상은 지급되지 않습니다.", 30);
+            question.rectTransform.anchoredPosition = new Vector2(0f, 75f);
+            question.raycastTarget = false;
+            _replaceConfirm = ActionButton(replacePanel, "포기하고 시작", new Vector2(-170f, -100f), ConfirmReplacement);
+            _replaceConfirm.name = "ConfirmReplaceRun";
+            ActionButton(replacePanel, "취소", new Vector2(170f, -100f), CancelReplacement).name = "CancelReplaceRun";
+            _replaceDialog.gameObject.SetActive(false);
+
+            var overlay = new GameObject("SaveErrorCanvas", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
+            overlay.transform.SetParent(_canvasGo.transform, false);
+            var errorCanvas = overlay.GetComponent<Canvas>();
+            errorCanvas.overrideSorting = true;
+            errorCanvas.sortingOrder = 100;
+            _errorRoot = Stretch(overlay.transform, "SaveError");
+            var backdrop = Box(_errorRoot, new Color(0f, 0f, 0f, 0.95f), 1920f, 1080f);
+            _errorText = Label(backdrop, "", 30);
+            _errorText.raycastTarget = false;
+            ActionButton(backdrop, "다시 시도", new Vector2(0f, -180f), () =>
+            {
+                _errorRoot.gameObject.SetActive(false);
+                if (_retry != null) Attempt(_retry);
+            });
+            _errorRoot.gameObject.SetActive(false);
         }
 
         RectTransform Box(Transform parent, Color color, float width, float height)

@@ -19,16 +19,27 @@ namespace DarkLegion.Tests.PlayMode
     {
         GameObject _root;
         Component _view;
+        string _saveDirectory;
+
+        IEnumerator OpenTitle()
+        {
+            var type = Type.GetType("DarkLegion.UI.RunMapView, Assembly-CSharp");
+            Assert.NotNull(type);
+            _root = new GameObject("RunMap");
+            _view = _root.AddComponent(type);
+            type.GetProperty("SaveDirectory").SetValue(_view, _saveDirectory);
+            yield return null;
+            yield return null;
+        }
+
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var type = Type.GetType("DarkLegion.UI.RunMapView, Assembly-CSharp");
-            Assert.NotNull(type, "RunMapView를 찾지 못했습니다");
-            _root = new GameObject("RunMap");
-            _view = _root.AddComponent(type);
-            yield return null;
-            yield return null;
+            _saveDirectory = System.IO.Path.Combine(Application.temporaryCachePath, Guid.NewGuid().ToString("N"));
+            yield return OpenTitle();
+            Assert.IsFalse(Buttons.Single(b => b.name == "ContinueGame").interactable);
+            yield return Press(b => b.name == "NewGame", "새 게임");
         }
 
         [TearDown]
@@ -41,9 +52,13 @@ namespace DarkLegion.Tests.PlayMode
                 if (go != null) UnityEngine.Object.DestroyImmediate(go);
             }
             if (_root != null) UnityEngine.Object.DestroyImmediate(_root);
+            if (System.IO.Directory.Exists(_saveDirectory)) System.IO.Directory.Delete(_saveDirectory, true);
         }
 
         RunMapSession Map => (RunMapSession)_view.GetType().GetField("_map", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_view);
+
+        BattleResultView Result => (BattleResultView)_view.GetType()
+            .GetField("_result", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_view);
 
         static Button[] Buttons => UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None);
 
@@ -83,6 +98,69 @@ namespace DarkLegion.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator NewGame_WithActiveSlot_CancelPreservesAndConfirmReplacesOnce()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var previous = store.LoadRun();
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+
+            yield return Press(b => b.name == "NewGame", "새 게임");
+            StringAssert.Contains("기존 런 포기", AllText());
+            yield return Press(b => b.name == "CancelReplaceRun", "취소");
+            Assert.AreEqual(previous.RunId, store.LoadRun().RunId);
+            Assert.IsTrue(Buttons.Single(b => b.name == "ContinueGame").interactable);
+
+            yield return Press(b => b.name == "NewGame", "새 게임");
+            var confirm = Buttons.Single(b => b.name == "ConfirmReplaceRun");
+            confirm.onClick.Invoke();
+            var savedId = store.LoadRun().RunId;
+            confirm.onClick.Invoke();
+            Assert.AreNotEqual(previous.RunId, savedId);
+            Assert.AreEqual(savedId, store.LoadRun().RunId);
+            Assert.AreEqual("F1-N1", Map.Run.CurrentNodeId);
+            Assert.IsNull(store.LoadMeta().LastSettledRunId);
+        }
+
+        [UnityTest]
+        public IEnumerator Continue_RestartsBattleFromItsEntryCheckpoint()
+        {
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1");
+            var seed = Map.Run.NodeSeed;
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+
+            Assert.IsTrue(Buttons.Single(b => b.name == "ContinueGame").interactable);
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.NotNull(BattleView());
+            Assert.AreEqual(seed, Map.Run.NodeSeed);
+            Assert.AreEqual("F1-N1", Map.Run.CurrentNodeId);
+        }
+
+        [UnityTest]
+        public IEnumerator Continue_RestoresConfirmedRestWithoutHealingTwice()
+        {
+            yield return ShowNode(1, 8);
+            Map.Run.CurrentHp = 50;
+            yield return Press(b => TextOf(b).StartsWith("F1-N8"), "휴식 노드");
+            yield return Press(b => Named(b, "Heal"), "회복");
+            yield return Press(b => Named(b, "Confirm"), "회복 확정");
+            UnityEngine.Object.Destroy(_root);
+            yield return null;
+            yield return null;
+            yield return OpenTitle();
+
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.AreEqual((8, 74), (Map.Run.Node, Map.Run.CurrentHp));
+            yield return Press(b => Named(b, "Continue"), "휴식 결과 계속");
+            Assert.AreEqual((9, 74), (Map.Run.Node, Map.Run.CurrentHp));
+        }
+
+        [UnityTest]
         public IEnumerator Start_ShowsEighteenNodes_WithFirstNodeCurrent()
         {
             Assert.NotNull(Map, AllText());
@@ -118,8 +196,8 @@ namespace DarkLegion.Tests.PlayMode
             StringAssert.Contains("F1-N1 전투", AllText());
             StringAssert.Contains("HP 80 → 80 / 80", AllText());
             Assert.AreEqual(1, Map.Capture().Node, "확정하기 전에는 노드가 그대로");
-            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "다시 시작"), "일반 승리에는 다시 시작이 없습니다");
-            var result = Map.Result();
+            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "타이틀로"), "일반 승리에는 다시 시작이 없습니다");
+            var result = Result;
             Assert.AreEqual(3, result.CardChoices.Length);
             foreach (var id in result.CardChoices)
                 Assert.IsTrue(Buttons.Any(b => TextOf(b).Contains(id)), id + " 카드 후보 버튼");
@@ -149,7 +227,7 @@ namespace DarkLegion.Tests.PlayMode
             yield return Press(b => TextOf(b).StartsWith("F1-N1"), "F1-N1");
             yield return EndBattle(BattleOutcome.Victory);
             yield return Press(b => TextOf(b) == "결과 보기", "결과 보기");
-            var gold = Map.Result().RewardGold;
+            var gold = Result.RewardGold;
 
             yield return Press(b => TextOf(b) == "카드 건너뛰고 확정", "건너뛰기 확정");
             Assert.AreEqual(2, Map.Capture().Node);
@@ -171,7 +249,7 @@ namespace DarkLegion.Tests.PlayMode
 
             StringAssert.Contains("승리", AllText());
             StringAssert.Contains("유물 1개를 고르세요", AllText());
-            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "다시 시작"), "유물 선택 대기에서는 재시작 버튼이 없습니다");
+            Assert.IsFalse(Buttons.Any(b => TextOf(b) == "타이틀로"), "유물 선택 대기에서는 재시작 버튼이 없습니다");
             foreach (var id in new[] { "REL_COM_001", "REL_COM_002", "REL_COM_003" })
                 Assert.IsTrue(Buttons.Any(b => TextOf(b).StartsWith("유물 ") && TextOf(b).Contains(id)), id + " 유물 후보 버튼");
 
@@ -246,7 +324,7 @@ namespace DarkLegion.Tests.PlayMode
             yield return EndBattle(BattleOutcome.Victory);
             yield return Press(b => TextOf(b) == "결과 보기", "강제 전투 결과");
             Assert.AreEqual((3, 0, 0), (Map.Run.Node, Map.Run.Gold, Map.Run.FusionCharge));
-            var result = Map.Result();
+            var result = Result;
             Assert.That(result.RewardGold, Is.InRange(5, 10));
             Assert.IsFalse(result.NeedsRelicChoice);
             Assert.AreEqual(3, result.CardChoices.Length);
@@ -278,12 +356,11 @@ namespace DarkLegion.Tests.PlayMode
             UseSecondEventBranch("EVT_DARK_WAGER");
             yield return Press(b => TextOf(b).StartsWith("F2-N6"), "어둠의 내기 노드");
             yield return Press(b => Named(b, "Option1"), "첫 내기");
-            yield return Press(b => Named(b, "Continue"), "이벤트 결과 계속");
             Assert.IsNull(GameObject.Find("EventScreen"));
             Assert.IsNull(GameObject.Find("BattleScreen"));
             StringAssert.Contains("패배 — 런 종료", AllText());
             Assert.AreEqual((RunOutcome.Defeat, 6, 0), (Map.Run.Outcome, Map.Run.Node, Map.Run.FusionCharge));
-            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "다시 시작"));
+            Assert.IsTrue(Buttons.Any(b => TextOf(b) == "타이틀로"));
         }
 
         [UnityTest]
@@ -339,7 +416,8 @@ namespace DarkLegion.Tests.PlayMode
             Assert.IsFalse(Buttons.Any(b => TextOf(b).StartsWith("확정") || TextOf(b).Contains("건너뛰고")), "패배하면 보상 선택이 없습니다");
             Assert.AreEqual(RunOutcome.Defeat, Map.Capture().Outcome);
 
-            yield return Press(b => TextOf(b) == "다시 시작", "다시 시작");
+            yield return Press(b => TextOf(b) == "타이틀로", "타이틀로");
+            yield return Press(b => b.name == "NewGame", "새 게임");
             var snap = Map.Capture();
             Assert.AreEqual(RunOutcome.InProgress, snap.Outcome);
             Assert.AreEqual(1, snap.Node);

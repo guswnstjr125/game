@@ -40,6 +40,8 @@ namespace DarkLegion.UI
             _attachedNames = nameOf;
         }
 
+        internal Action<string, Action> HandleInput;
+
         internal EventScreenSession Session => _session;
 
         void OnDestroy()
@@ -271,7 +273,7 @@ namespace DarkLegion.UI
             Label(box, text, 20);
             var button = box.gameObject.AddComponent<Button>();
             button.targetGraphic = box.GetComponent<Image>();
-            button.onClick.AddListener(() => action());
+            button.onClick.AddListener(() => { if (HandleInput == null) action(); else HandleInput(name, action); });
             return button;
         }
     }
