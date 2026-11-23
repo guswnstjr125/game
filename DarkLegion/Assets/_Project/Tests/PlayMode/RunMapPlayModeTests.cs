@@ -87,7 +87,23 @@ namespace DarkLegion.Tests.PlayMode
         {
             var battle = BattleView();
             var session = (BattleScreenSession)battle.GetType().GetField("_session", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(battle);
-            if (outcome == BattleOutcome.Victory) session.Context.EvaluateOutcome(session.Context.Player.CurrentHP, 0);
+            if (outcome == BattleOutcome.Victory)
+            {
+                var context = session.Context;
+                while (context.PendingWaveCount > 0)
+                {
+                    int pendingWaves = context.PendingWaveCount;
+                    foreach (var enemy in context.Enemies.Where(enemy => !enemy.IsDead).ToArray())
+                    {
+                        enemy.CurrentHP = 1;
+                        context.Queue.EnqueueMain(new DamageAction { Source = context.Player, Target = enemy, BaseDamage = 1, IsStatusTick = true });
+                    }
+                    context.Queue.Process();
+                    Assert.AreEqual(BattleOutcome.None, context.EndTurn(), "중간 웨이브는 전투를 종료하지 않는다");
+                    Assert.AreEqual(pendingWaves - 1, context.PendingWaveCount, "다음 웨이브 진행");
+                }
+                Assert.AreEqual(BattleOutcome.Victory, context.EvaluateOutcome(context.Player.CurrentHP, 0));
+            }
             else
             {
                 session.Context.Player.CurrentHP = 0;
@@ -272,6 +288,8 @@ namespace DarkLegion.Tests.PlayMode
                 int floor = i / 9 + 1;
                 int node = i % 9 + 1;
                 string nodeId = "F" + floor + "-N" + node;
+                bool forcedBattle = nodeId == "F1-N3";
+                if (forcedBattle) UseSecondEventBranch("EVT_SOUL_PRISON");
                 yield return Press(b => TextOf(b).StartsWith(nodeId), nodeId + " 진입");
 
                 if (nodeKinds[i] == "Battle" || nodeKinds[i] == "Elite" || nodeKinds[i] == "Boss")
@@ -283,12 +301,8 @@ namespace DarkLegion.Tests.PlayMode
                 }
                 else if (nodeKinds[i] == "Event")
                 {
-                    bool forcedBattle = nodeId == "F1-N3";
                     if (forcedBattle)
-                    {
-                        UseSecondEventBranch("EVT_SOUL_PRISON");
                         yield return Press(b => b.name == "Option1", nodeId + " 영혼 감옥 강제 전투 선택");
-                    }
                     else yield return Press(b => b.name == "Option3", nodeId + " 이벤트 안전 선택");
                     yield return Press(b => b.name == "Continue", nodeId + " 이벤트 계속");
                     if (forcedBattle)
