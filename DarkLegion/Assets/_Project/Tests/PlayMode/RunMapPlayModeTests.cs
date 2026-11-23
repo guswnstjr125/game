@@ -98,6 +98,74 @@ namespace DarkLegion.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator PauseForfeit_CancelKeepsRunAndConfirmSettlesThenReturnsToTitle()
+        {
+            var store = new SaveFileStore(_saveDirectory);
+            var id = Map.Run.RunId;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "OpenForfeit", "런 포기");
+            yield return Press(b => b.name == "CancelForfeit", "취소");
+            Assert.AreEqual(RunSavePhase.Map, store.LoadRun().Phase);
+
+            yield return Press(b => b.name == "OpenForfeit", "런 포기");
+            yield return Press(b => b.name == "ConfirmForfeit", "런 포기 확인");
+            Assert.AreEqual(RunOutcome.Forfeit, Map.Run.Outcome);
+            Assert.AreEqual(id, store.LoadMeta().LastSettledRunId);
+            yield return Press(b => TextOf(b) == "타이틀로", "결과에서 타이틀로");
+            Assert.IsFalse(store.HasRunSlot);
+        }
+
+        [UnityTest]
+        public IEnumerator PauseFromMap_CanResumeOrReturnToTitleAndContinue()
+        {
+            var id = Map.Run.RunId;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "정지 중 맵 입력");
+            Assert.IsNull(GameObject.Find("BattleScreen"));
+            yield return Press(b => b.name == "ResumeGame", "계속");
+            Assert.AreEqual(id, Map.Run.RunId);
+
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "PauseToTitle", "타이틀로");
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.AreEqual(id, Map.Run.RunId);
+            Assert.AreEqual("F1-N1", Map.Run.CurrentNodeId);
+        }
+
+        [UnityTest]
+        public IEnumerator PauseFromBattle_ResumeKeepsBattleAndTitleKeepsEntrySave()
+        {
+            yield return Press(b => TextOf(b).StartsWith("F1-N1"), "전투");
+            var battle = BattleView();
+            var seed = Map.Run.NodeSeed;
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "ResumeGame", "계속");
+            Assert.AreSame(battle, BattleView());
+
+            yield return Press(b => b.name == "PauseGame", "일시정지");
+            yield return Press(b => b.name == "PauseToTitle", "타이틀로");
+            Assert.IsNull(GameObject.Find("BattleScreen"));
+            yield return Press(b => b.name == "ContinueGame", "이어하기");
+            Assert.NotNull(BattleView());
+            Assert.AreEqual(seed, Map.Run.NodeSeed);
+        }
+
+        [Test]
+        public void DisplayResolution_UsesOnlyD59IntegerScaleAndFitsMonitor()
+        {
+            var type = Type.GetType("DarkLegion.UI.RunMapView, Assembly-CSharp");
+            Assert.NotNull(type);
+            var select = type.GetMethod("SelectSupportedResolution", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(select);
+            Assert.AreEqual(new Vector2Int(2560, 1440), select.Invoke(null, new object[] { 3840, 2560, 1440 }));
+            Assert.AreEqual(new Vector2Int(1920, 1080), select.Invoke(null, new object[] { 2560, 1920, 1080 }));
+            Assert.AreEqual(new Vector2Int(1280, 720), select.Invoke(null, new object[] { 1280, 1366, 768 }));
+            Assert.AreEqual(new Vector2Int(1280, 720), select.Invoke(null, new object[] { 1280, 1024, 768 }));
+            var scaler = GameObject.Find("MapCanvas").GetComponent<CanvasScaler>();
+            Assert.AreEqual(CanvasScaler.ScreenMatchMode.Expand, scaler.screenMatchMode);
+        }
+
+        [UnityTest]
         public IEnumerator NewGame_WithActiveSlot_CancelPreservesAndConfirmReplacesOnce()
         {
             var store = new SaveFileStore(_saveDirectory);

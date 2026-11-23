@@ -48,6 +48,8 @@ namespace DarkLegion.UI
         GameData _attachedData;
         Action _onResult;
         internal Action OnBattleFinished;
+        internal Action OpenPause;
+        internal Func<bool> InputBlocked;
 
         /// <summary>
         /// 맵 화면이 만든 전투를 이어받는다 (Start 전에 호출). 전투가 끝나면 "결과 보기" 버튼이 나오고 누르면 onResult를 부른다.
@@ -95,7 +97,7 @@ namespace DarkLegion.UI
 
         void Update()
         {
-            if (_session == null) return;
+            if (_session == null || InputBlocked?.Invoke() == true) return;
             var before = _session.TutorialStep;
             if (before == 4 || before == 5) _session.AdvanceTipClock(Time.unscaledDeltaTime);
             var keys = Keyboard.current;
@@ -113,7 +115,12 @@ namespace DarkLegion.UI
             if (keys.escapeKey.wasPressedThisFrame)
             {
                 if (_modal) CloseModal();
-                else ClearSelection();
+                else if (_selectedCard >= 0 || _selectedAlly != null) ClearSelection();
+                else if (_session.Context.Outcome == BattleOutcome.None)
+                {
+                    OpenPause?.Invoke();
+                    return;
+                }
                 Refresh();
                 return;
             }
@@ -141,7 +148,7 @@ namespace DarkLegion.UI
 
         public void DropOn(SlotPosition position, bool allySlot, int cardInstance, string unitId)
         {
-            if (_session == null || _modal || _session.Context.Outcome != BattleOutcome.None) return;
+            if (_session == null || _modal || InputBlocked?.Invoke() == true || _session.Context.Outcome != BattleOutcome.None) return;
             if (cardInstance >= 0 && allySlot)
             {
                 var card = _session.Capture().Hand.FirstOrDefault(c => c.InstanceId == cardInstance);
