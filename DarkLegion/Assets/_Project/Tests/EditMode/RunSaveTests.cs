@@ -204,11 +204,11 @@ namespace DarkLegion.Tests.EditMode
         {
             var files = new MemorySaveFileSystem();
             var store = new SaveFileStore("save", files);
-            files.WriteAllText("save/save_slot_0.json", "{\"SaveVersion\":2}");
+            files.WriteAllText(System.IO.Path.Combine("save", "save_slot_0.json"), "{\"SaveVersion\":2}");
 
             var error = Assert.Throws<UnsupportedRunSaveVersionException>(() => store.LoadRun());
             Assert.AreEqual(2, error.Version);
-            Assert.IsFalse(files.Exists("save/save_slot_0.json"));
+            Assert.IsFalse(files.Exists(System.IO.Path.Combine("save", "save_slot_0.json")));
         }
 
         [Test]
@@ -228,12 +228,12 @@ namespace DarkLegion.Tests.EditMode
             var store = new SaveFileStore("save", files);
             var first = RunSave.Capture(RunFlow.NewRun("RUN-OLD", 3, "NEC", 80, StageOneBattleSim.NecStartDeck, new[] { "REL_BLOOD_CHALICE" }), RunSavePhase.Map);
             Assert.IsTrue(store.SaveRun(first));
-            var oldJson = files.ReadAllText("save/save_slot_0.json");
+            var oldJson = files.ReadAllText(System.IO.Path.Combine("save", "save_slot_0.json"));
             files.FailReplace = true;
             first.Gold = 27;
 
             Assert.IsFalse(store.SaveRun(first));
-            Assert.AreEqual(oldJson, files.ReadAllText("save/save_slot_0.json"));
+            Assert.AreEqual(oldJson, files.ReadAllText(System.IO.Path.Combine("save", "save_slot_0.json")));
             Assert.AreEqual("RUN-OLD", store.LoadRun().RunId);
         }
 
@@ -281,11 +281,11 @@ namespace DarkLegion.Tests.EditMode
             var files = new MemorySaveFileSystem();
             var store = new SaveFileStore("save", files);
             Assert.IsTrue(store.SaveRun(pending));
-            string committed = files.ReadAllText("save/save_slot_0.json");
+            string committed = files.ReadAllText(System.IO.Path.Combine("save", "save_slot_0.json"));
             files.FailReplace = true;
 
             Assert.IsFalse(store.ConfirmRewardAndPersist(pending, null, null));
-            Assert.AreEqual(committed, files.ReadAllText("save/save_slot_0.json"));
+            Assert.AreEqual(committed, files.ReadAllText(System.IO.Path.Combine("save", "save_slot_0.json")));
             Assert.AreEqual(RunSavePhase.RewardPending, store.LoadRun().Phase);
         }
 
