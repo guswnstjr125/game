@@ -109,7 +109,7 @@ namespace DarkLegion.Core
                 try { next = RunSave.CaptureSettlement(run, settlement); }
                 catch (InvalidOperationException) { return false; }
             }
-            return SaveRun(next);
+            return ReplaceCheckpoint(pendingSave, next);
         }
 
         public bool SaveEventResult(RunState run, EventPendingDTO result, SettlementPendingDTO settlement = null)
@@ -149,7 +149,7 @@ namespace DarkLegion.Core
                     catch (InvalidOperationException) { return false; }
                 }
             }
-            return SaveRun(next);
+            return ReplaceCheckpoint(eventSave, next);
         }
 
         public bool SaveRestResult(RunState run, RestScreenResult result)
@@ -174,7 +174,7 @@ namespace DarkLegion.Core
                 try { next = RunSave.CaptureSettlement(run, settlement); }
                 catch (InvalidOperationException) { return false; }
             }
-            return SaveRun(next);
+            return ReplaceCheckpoint(restSave, next);
         }
 
         /// <summary>D-67: 지급과 LastSettledRunId를 같은 meta.json 교체로 확정한다.</summary>
@@ -211,6 +211,24 @@ namespace DarkLegion.Core
         public void CleanupTemporaryFiles()
         {
             foreach (string path in _files.GetFiles(_directory, "*.tmp")) _files.Delete(path);
+        }
+
+        private bool ReplaceCheckpoint(SaveData expected, SaveData next)
+        {
+            string path = Path.Combine(_directory, RunFileName);
+            try
+            {
+                if (!_files.Exists(path)) return false;
+                var current = SaveJson.Read(_files.ReadAllText(path));
+                if (!string.Equals(SaveJson.Write(current), SaveJson.Write(expected), StringComparison.Ordinal))
+                    return false;
+                return SaveRun(next);
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+            catch (FormatException) { return false; }
+            catch (InvalidOperationException) { return false; }
+            catch (ArgumentException) { return false; }
         }
 
         private bool AtomicWrite(string path, string contents)
